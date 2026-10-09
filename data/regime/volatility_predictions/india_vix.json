@@ -1,0 +1,36 @@
+{
+  "symbol": "INDIA_VIX",
+  "model_version": "volatility_v1",
+  "evaluation": {
+    "garch_1d_mse": 2.207207076974247e-05,
+    "garch_1d_qlike": -5.0589978022123105,
+    "garch_5d_mse": 0.00020293698683026694,
+    "garch_5d_qlike": -3.6520177235125897,
+    "garch_21d_mse": 0.009095453936384,
+    "garch_21d_qlike": -1.441390352561725,
+    "har_1d_mse": 1.5206677765811871e-05,
+    "har_1d_qlike": -5.104582512226521
+  },
+  "live": {
+    "latest_date": "2026-08-06T00:00:00+05:30",
+    "latest_close": 12.16,
+    "current_realized_vol_21d": 0.7522714362972608,
+    "long_run_vol_21d": 0.688339711666418,
+    "volatility_ratio": 1.0928781581932399,
+    "volatility_level": "MEDIUM",
+    "garch": {
+      "model": "GARCH(1,1)-Student-t",
+      "forecast_variance_1d": 0.0016688683563090248,
+      "forecast_variance_5d": 0.009537527637920006,
+      "forecast_variance_21d": 0.04992544018483672,
+      "forecast_vol_1d": 0.6485019859567697,
+      "forecast_vol_5d": 0.6933191133606287,
+      "forecast_vol_21d": 0.77401891593038
+    },
+    "har": {
+      "model": "HAR-RV",
+      "forecast_variance_1d": 0.0022035721946500417,
+      "forecast_vol_1d": 0.7451846704353294
+    }
+  }
+}

@@ -1,0 +1,1408 @@
+Model is not converging.  Current: -19274.8937002087 is not greater than -19274.747738926213. Delta is -0.1459612824874057
+
+======================================================================
+QUANTOS HMM V4
+PROBABILISTIC MARKET REGIME ENGINE
+======================================================================
+
+======================================================================
+LOADING INDEX DATA
+======================================================================
+Loaded rows: 61,210
+Symbols: 8
+Date range: 1927-12-30 -> 2026-08-21
+
+======================================================================
+BUILDING HMM FEATURES
+======================================================================
+
+
+######################################################################
+QUANTOS HMM V4: NIFTY50
+######################################################################
+
+======================================================================
+NIFTY50 | VALIDATION 2019-2020
+======================================================================
+Training rows:   2,760
+Evaluation rows: 491
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 17
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH          1126   0.002546    0.009897    0.013334 53.414647      0.963485     0.008784        1.367386
+     1 TRENDING_BULLISH           701   0.012431    0.038885    0.007570 68.438350      1.091680     0.034254        7.382798
+     2  HIGH_VOLATILITY           271  -0.003830   -0.025325    0.026312 45.661841      1.028991    -0.029731       -1.737561
+     3   HIGH_VOL_TREND           662  -0.007419   -0.015825    0.008553 42.051345      0.998319    -0.012783       -3.183913
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.992    0.002    0.006    0.000
+STATE_1    0.000    0.939    0.000    0.061
+STATE_2    0.030    0.004    0.952    0.015
+STATE_3    0.000    0.061    0.009    0.930
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0         9     125.111111             42.0           881    11.111111
+     1        43      16.302326             13.0            68     2.325581
+     2        13      20.846154             20.0            48     0.000000
+     3        47      14.085106             10.0            51     0.000000
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH             3    0.000087    0.003737     0.050896     0.666667    0.012343
+     1 TRENDING_BULLISH           109    0.000632    0.001238     0.004603     0.458716    0.006875
+     2  HIGH_VOLATILITY           205    0.001489    0.005947     0.039711     0.619512    0.017968
+     3   HIGH_VOL_TREND           174   -0.000311    0.001601    -0.010101     0.574713    0.008247
+
+======================================================================
+NIFTY50 | VALIDATION 2021-2022
+======================================================================
+Training rows:   3,251
+Evaluation rows: 496
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 49
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH           945   0.017275    0.053583    0.009518 72.192575      1.036750     0.046489        8.887395
+     1   HIGH_VOL_TREND           478   0.001286   -0.004122    0.026633 50.519922      0.987074    -0.009458        0.208740
+     2  HIGH_VOLATILITY           765  -0.016021   -0.041282    0.010972 35.220254      1.183934    -0.035475       -5.921511
+     3 TRENDING_BULLISH          1063   0.002351    0.009641    0.008286 52.821200      0.951431     0.009966        1.129891
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.925    0.004    0.001    0.070
+STATE_1    0.023    0.971    0.006    0.000
+STATE_2    0.005    0.013    0.902    0.080
+STATE_3    0.054    0.000    0.067    0.880
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        72      13.125000             12.0            38     0.000000
+     1        14      34.142857             10.5           115    14.285714
+     2        75      10.200000              5.0            38    13.333333
+     3       128       8.304688              6.0            38     7.031250
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH           196    0.001199    0.005641     0.015758     0.673469    0.007703
+     1   HIGH_VOL_TREND           191    0.000302    0.000053     0.006686     0.528796    0.012882
+     2  HIGH_VOLATILITY            66   -0.000352    0.002630     0.002029     0.469697    0.010529
+     3 TRENDING_BULLISH            43    0.000424    0.001542     0.013505     0.465116    0.005424
+
+======================================================================
+NIFTY50 | VALIDATION 2023-2024
+======================================================================
+Training rows:   3,747
+Evaluation rows: 491
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 34
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH           952   0.017795    0.058159    0.009610 73.151316      1.113060     0.050270        9.271204
+     1   HIGH_VOL_TREND           473   0.002270   -0.006578    0.026873 50.347273      0.963980    -0.011087        0.140271
+     2  HIGH_VOLATILITY          1100  -0.013600   -0.033997    0.011230 37.363138      1.044825    -0.029183       -5.062904
+     3 TRENDING_BULLISH          1222   0.004572    0.015611    0.007862 56.487713      0.947451     0.015278        2.597829
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.916    0.003    0.016    0.065
+STATE_1    0.021    0.968    0.011    0.000
+STATE_2    0.014    0.011    0.926    0.049
+STATE_3    0.045    0.000    0.051    0.904
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        80      11.900000              8.0            59     7.500000
+     1        15      31.533333              9.0           112     6.666667
+     2        82      13.414634              8.5            59     3.658537
+     3       117      10.444444              8.0            53     5.128205
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH           194    0.000654    0.002068     0.010448     0.577320    0.006714
+     1   HIGH_VOL_TREND            10    0.002959    0.011659     0.048392     1.000000    0.018850
+     2  HIGH_VOLATILITY           227    0.000391    0.003132     0.009498     0.599119    0.007599
+     3 TRENDING_BULLISH            60    0.000587    0.003887     0.014241     0.650000    0.005146
+
+======================================================================
+NIFTY50 | FINAL TEST 2025-2026
+======================================================================
+Training rows:   4,238
+Evaluation rows: 406
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 38
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH           964   0.017889    0.058061    0.008785 75.544404      1.122373     0.050397       10.228495
+     1  HIGH_VOLATILITY          1132  -0.014600   -0.034688    0.010433 36.255153      1.059347    -0.029668       -5.506699
+     2 TRENDING_BULLISH          1558   0.004452    0.015732    0.008045 56.369598      0.947286     0.015195        2.550510
+     3   HIGH_VOL_TREND           584   0.004123   -0.002889    0.024992 51.007648      0.965329    -0.007147        0.405533
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.904    0.002    0.092    0.002
+STATE_1    0.001    0.912    0.073    0.013
+STATE_2    0.052    0.061    0.886    0.001
+STATE_3    0.019    0.005    0.007    0.969
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        93      10.365591              8.0            39     7.526882
+     1       100      11.320000              8.0            42     3.000000
+     2       177       8.802260              7.0            52     3.954802
+     3        18      32.444444              9.5           242     5.555556
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH            25   -0.001073   -0.005419     0.010548     0.320000    0.008303
+     1  HIGH_VOLATILITY           137   -0.000870    0.000120     0.006786     0.452555    0.007451
+     2 TRENDING_BULLISH           205    0.000113   -0.001150    -0.004267     0.463415    0.006755
+     3   HIGH_VOL_TREND            39    0.004043    0.012649     0.017080     0.769231    0.014903
+
+
+######################################################################
+QUANTOS HMM V4: NIFTYBANK
+######################################################################
+
+======================================================================
+NIFTYBANK | VALIDATION 2019-2020
+======================================================================
+Training rows:   2,775
+Evaluation rows: 492
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 27
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0  HIGH_VOLATILITY           522  -0.032817   -0.098734    0.023846 33.916827      0.799170    -0.088161       -6.452959
+     1 TRENDING_BULLISH           542   0.037811    0.117375    0.023199 68.831144      0.856912     0.099192        7.555144
+     2 TRENDING_BULLISH          1131   0.010353    0.035273    0.011008 62.007468      0.504125     0.032961        4.809199
+     3   HIGH_VOL_TREND           580  -0.009771   -0.026489    0.012931 40.813805      1.955368    -0.023453       -3.680341
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.925    0.034    0.000    0.040
+STATE_1    0.022    0.932    0.044    0.002
+STATE_2    0.000    0.013    0.939    0.048
+STATE_3    0.047    0.007    0.078    0.869
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        39      13.384615              7.0            49     0.000000
+     1        37      14.648649              7.0            69     2.702703
+     2        70      16.157143             11.0           126     2.857143
+     3        76       7.631579              4.5            47    23.684211
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0  HIGH_VOLATILITY           103   -0.000011    0.003901     0.025337     0.611650    0.033806
+     1 TRENDING_BULLISH            93    0.003538    0.007538     0.052488     0.580645    0.019027
+     2 TRENDING_BULLISH            99    0.001029    0.006092    -0.001595     0.606061    0.009851
+     3   HIGH_VOL_TREND           197   -0.000941   -0.001920    -0.007366     0.451777    0.011937
+
+======================================================================
+NIFTYBANK | VALIDATION 2021-2022
+======================================================================
+Training rows:   3,267
+Evaluation rows: 496
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 46
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0  HIGH_VOLATILITY           743  -0.022009   -0.054421    0.015280 35.981476      2.242893    -0.048266       -5.620615
+     1 TRENDING_BULLISH          1230   0.002768    0.010630    0.011531 53.088174      0.436397     0.011583        1.236931
+     2 TRENDING_BULLISH           787   0.029100    0.085870    0.013554 73.437128      0.621137     0.075493        9.392312
+     3   HIGH_VOL_TREND           507   0.001370    0.002679    0.034216 48.942041      0.858072    -0.006543       -0.422362
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.879    0.097    0.016    0.008
+STATE_1    0.060    0.898    0.042    0.000
+STATE_2    0.017    0.064    0.911    0.009
+STATE_3    0.006    0.006    0.014    0.974
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        90       8.255556              4.0            38    27.777778
+     1       126       9.761905              6.0            51     5.555556
+     2        71      11.084507              8.0            35     4.225352
+     3        13      39.000000             19.0           262     0.000000
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0  HIGH_VOLATILITY           126   -0.000846    0.004112     0.028057     0.492063    0.013486
+     1 TRENDING_BULLISH            66   -0.000167    0.000743     0.013288     0.560606    0.009165
+     2 TRENDING_BULLISH           194    0.001818    0.005629     0.015458     0.634021    0.010943
+     3   HIGH_VOL_TREND           110    0.001250    0.001072    -0.006711     0.490909    0.018993
+
+======================================================================
+NIFTYBANK | VALIDATION 2023-2024
+======================================================================
+Training rows:   3,763
+Evaluation rows: 491
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 64
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH          1398   0.012652    0.042997    0.010605 64.645764      0.594594     0.039454        5.865897
+     1  HIGH_VOLATILITY           631  -0.034786   -0.102647    0.024768 33.029452      0.772069    -0.092663       -6.809091
+     2   HIGH_VOL_TREND           687   0.037791    0.110265    0.023198 67.808483      0.718750     0.093457        7.146068
+     3       TRANSITION          1047  -0.008722   -0.020031    0.013054 42.473332      1.829364    -0.016893       -3.015900
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.930    0.000    0.010    0.060
+STATE_1    0.000    0.916    0.033    0.051
+STATE_2    0.032    0.015    0.924    0.029
+STATE_3    0.072    0.041    0.016    0.871
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        98      14.265306              8.5           114     2.040816
+     1        53      11.905660              8.0            49     1.886792
+     2        52      13.211538              7.5            69     5.769231
+     3       136       7.698529              5.0            47    18.382353
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH           230    0.000766    0.001324     0.000376     0.547826    0.007695
+     1  HIGH_VOLATILITY             1    0.045303    0.059178     0.131277     1.000000    0.022400
+     2   HIGH_VOL_TREND            21    0.000027    0.013391     0.018765     0.809524    0.023112
+     3       TRANSITION           239   -0.000134    0.001296     0.011932     0.556485    0.009074
+
+======================================================================
+NIFTYBANK | FINAL TEST 2025-2026
+======================================================================
+Training rows:   4,254
+Evaluation rows: 405
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 68
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0   HIGH_VOL_TREND           626   0.002060   -0.001309    0.031672 48.919045      0.959698    -0.006569       -0.431146
+     1 TRENDING_BULLISH          1546   0.000638    0.006605    0.010757 51.582696      0.596460     0.007698        0.633461
+     2 TRENDING_BULLISH          1169   0.025009    0.076756    0.012490 72.725461      0.712774     0.066734        9.105189
+     3  HIGH_VOLATILITY           913  -0.019735   -0.049825    0.014720 36.055483      2.171274    -0.043869       -5.589648
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.962    0.000    0.026    0.013
+STATE_1    0.000    0.890    0.048    0.062
+STATE_2    0.009    0.071    0.907    0.013
+STATE_3    0.014    0.094    0.021    0.871
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        24      26.083333              7.5           288     4.166667
+     1       170       9.094118              7.0            39     4.705882
+     2       109      10.724771              8.0            40     4.587156
+     3       119       7.672269              4.0            39    25.210084
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0   HIGH_VOL_TREND            27    0.001168    0.009082     0.006404     0.592593    0.021148
+     1 TRENDING_BULLISH           266    0.000787    0.003534     0.005628     0.548872    0.007367
+     2 TRENDING_BULLISH            63    0.000553   -0.000124     0.018990     0.460317    0.009618
+     3  HIGH_VOLATILITY            49   -0.002712   -0.008969     0.015094     0.408163    0.010476
+
+
+######################################################################
+QUANTOS HMM V4: NIFTYIT
+######################################################################
+
+======================================================================
+NIFTYIT | VALIDATION 2019-2020
+======================================================================
+Training rows:   2,775
+Evaluation rows: 492
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 67
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0   HIGH_VOL_TREND          1036  -0.009638   -0.029127    0.017620 43.828489           NaN    -0.025625       -2.474387
+     1 TRENDING_BULLISH           344   0.037175    0.123493    0.018490 74.861601      0.761456     0.109293        9.966945
+     2 TRENDING_BULLISH           945   0.010614    0.033411    0.010075 63.180744      0.603847     0.029424        5.278666
+     3  HIGH_VOLATILITY           450  -0.012194   -0.032560    0.012492 38.874301      1.688033    -0.028652       -4.457596
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.965    0.011    0.016    0.008
+STATE_1    0.047    0.910    0.041    0.003
+STATE_2    0.019    0.021    0.926    0.034
+STATE_3    0.007    0.000    0.084    0.909
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        37      28.000000             18.0           194     0.000000
+     1        31      11.096774              7.0            64     3.225806
+     2        70      13.500000             10.0            59     1.428571
+     3        41      10.975610              8.0            48    29.268293
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0   HIGH_VOL_TREND           109    0.000559    0.001942     0.019174     0.477064    0.012412
+     1 TRENDING_BULLISH            69    0.004755    0.017935     0.052777     0.710145    0.015821
+     2 TRENDING_BULLISH           166    0.001402    0.007508     0.018982     0.614458    0.009675
+     3  HIGH_VOLATILITY           148   -0.000203    0.003022     0.029864     0.587838    0.017927
+
+======================================================================
+NIFTYIT | VALIDATION 2021-2022
+======================================================================
+Training rows:   3,267
+Evaluation rows: 496
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 51
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0   HIGH_VOL_TREND           662   0.000625   -0.000476    0.025822 50.490156      0.915768    -0.002798        0.196437
+     1 TRENDING_BULLISH          1003   0.020521    0.058265    0.011383 70.042041      0.706811     0.052204        8.029129
+     2  HIGH_VOLATILITY           499  -0.019023   -0.039558    0.012367 34.758492      2.668441    -0.033823       -6.108017
+     3 TRENDING_BULLISH          1103  -0.001101    0.002121    0.010566 49.853624      0.509923     0.002702       -0.059211
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.973    0.015    0.006    0.006
+STATE_1    0.010    0.907    0.009    0.074
+STATE_2    0.010    0.032    0.840    0.118
+STATE_3    0.003    0.062    0.061    0.875
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        18      36.777778             19.5           195     0.000000
+     1        94      10.670213              8.0            40     2.127660
+     2        80       6.237500              4.5            20    26.250000
+     3       138       7.992754              5.0            33     3.623188
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0   HIGH_VOL_TREND           379   -0.000517   -0.002372    -0.007666     0.514512    0.014964
+     1 TRENDING_BULLISH            85    0.003237    0.014743     0.054624     0.764706    0.009508
+     2  HIGH_VOLATILITY            28    0.003581    0.012629     0.045720     0.714286    0.012827
+     3 TRENDING_BULLISH             4    0.008107    0.042317     0.078030     1.000000    0.008729
+
+======================================================================
+NIFTYIT | VALIDATION 2023-2024
+======================================================================
+Training rows:   3,763
+Evaluation rows: 491
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 34
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0       TRANSITION           612  -0.000401   -0.008427    0.026632 49.165565      1.012095    -0.009813       -0.334014
+     1 TRENDING_BULLISH          1408  -0.002630   -0.002981    0.010703 48.205530      0.529302    -0.001584       -0.719366
+     2   HIGH_VOL_TREND          1161   0.020638    0.063898    0.011705 70.286246      0.691090     0.056829        8.126881
+     3  HIGH_VOLATILITY           582  -0.014854   -0.032017    0.014181 39.765878      2.348908    -0.027568       -4.102561
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.967    0.010    0.021    0.002
+STATE_1    0.006    0.921    0.039    0.034
+STATE_2    0.008    0.054    0.912    0.026
+STATE_3    0.005    0.071    0.059    0.866
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        20      30.600000             14.0           194     5.000000
+     1       111      12.684685              9.0            62     1.801802
+     2       102      11.382353              9.0            40     4.901961
+     3        79       7.367089              3.0            78    39.240506
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     1 TRENDING_BULLISH             8    0.003722    0.018881     0.054806     0.625000    0.008028
+     2   HIGH_VOL_TREND           246    0.001776    0.006235     0.020041     0.613821    0.011618
+     3  HIGH_VOLATILITY           237   -0.000088    0.002659     0.013373     0.552743    0.011346
+
+======================================================================
+NIFTYIT | FINAL TEST 2025-2026
+======================================================================
+Training rows:   4,254
+Evaluation rows: 405
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 78
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0   HIGH_VOL_TREND          1267   0.021578    0.065732    0.011666 71.491430      0.843949     0.058243        8.609519
+     1       TRANSITION           670  -0.000930   -0.009731    0.025927 48.787484      0.983902    -0.011430       -0.485565
+     2 TRENDING_BULLISH          1583   0.000683    0.005042    0.011074 51.179781      0.562500     0.005875        0.472322
+     3  HIGH_VOLATILITY           734  -0.019214   -0.039680    0.012461 34.868807      2.298226    -0.034146       -6.064005
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.909    0.008    0.072    0.011
+STATE_1    0.016    0.970    0.007    0.006
+STATE_2    0.056    0.002    0.882    0.060
+STATE_3    0.020    0.010    0.123    0.847
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0       115      11.017391              9.0            39     6.956522
+     1        20      33.500000             17.0           195     0.000000
+     2       187       8.465241              6.0            39     4.812834
+     3       113       6.495575              4.0            37    21.238938
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0   HIGH_VOL_TREND           105    0.000258   -0.000037    -0.009861     0.485714    0.013706
+     1       TRANSITION            97   -0.000147    0.003371     0.018187     0.577320    0.018481
+     2 TRENDING_BULLISH            93    0.000803    0.000151    -0.034614     0.494624    0.012270
+     3  HIGH_VOLATILITY           110   -0.003504   -0.017057    -0.029854     0.336364    0.014206
+
+
+######################################################################
+QUANTOS HMM V4: NIFTYAUTO
+######################################################################
+
+======================================================================
+NIFTYAUTO | VALIDATION 2019-2020
+======================================================================
+Training rows:   1,836
+Evaluation rows: 492
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 39
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0  HIGH_VOLATILITY           179  -0.017785   -0.067806    0.015878 36.267171      1.077003    -0.060486       -5.503803
+     1   HIGH_VOL_TREND           260   0.018760    0.054076    0.010426 68.475518      1.218661     0.046907        7.401463
+     2       TRANSITION           422  -0.002228    0.003487    0.009198 50.128299      0.987127     0.003356        0.049983
+     3 TRENDING_BULLISH           975   0.004594    0.018633    0.011778 55.261595           NaN     0.017872        2.107394
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.944    0.011    0.045    0.000
+STATE_1    0.000    0.915    0.085    0.000
+STATE_2    0.024    0.045    0.931    0.000
+STATE_3    0.000    0.001    0.000    0.999
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        10      17.900000             17.5            41    10.000000
+     1        22      11.818182              8.0            30     4.545455
+     2        30      14.066667             12.5            52     3.333333
+     3         1     975.000000            975.0           975     0.000000
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state          regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 HIGH_VOLATILITY           229   -0.000257   -0.000051     0.005890     0.515284    0.021673
+     1  HIGH_VOL_TREND           138    0.001463    0.003433     0.028425     0.500000    0.013483
+     2      TRANSITION           125   -0.000177    0.002758    -0.000397     0.544000    0.011865
+
+======================================================================
+NIFTYAUTO | VALIDATION 2021-2022
+======================================================================
+Training rows:   2,328
+Evaluation rows: 485
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 54
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH           822   0.020646    0.063080    0.011373 70.087655      0.941840     0.056288        8.047450
+     1       TRANSITION           677  -0.013875   -0.032866    0.012314 37.846964      0.945826    -0.029228       -4.869539
+     2  HIGH_VOLATILITY           252  -0.007103   -0.047700    0.022926 42.606528      1.195773    -0.045935       -2.961650
+     3   HIGH_VOL_TREND           577  -0.000275    0.010420    0.009940 52.039940      1.175195     0.010811        0.815811
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.917    0.012    0.010    0.061
+STATE_1    0.025    0.905    0.028    0.041
+STATE_2    0.060    0.056    0.885    0.000
+STATE_3    0.064    0.069    0.003    0.863
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        69      11.913043              8.0            46     1.449275
+     1        64      10.578125              7.5            64     4.687500
+     2        29       8.689655              2.0            75    31.034483
+     3        79       7.303797              6.0            23    10.126582
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH           131    0.001737    0.006142     0.015392     0.572519    0.011975
+     1       TRANSITION            88   -0.002497    0.000282     0.022044     0.545455    0.013410
+     2  HIGH_VOLATILITY           186    0.001946    0.006766     0.010244     0.612903    0.016879
+     3   HIGH_VOL_TREND            80   -0.000309   -0.005087    -0.001149     0.387500    0.008454
+
+======================================================================
+NIFTYAUTO | VALIDATION 2023-2024
+======================================================================
+Training rows:   2,813
+Evaluation rows: 489
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 33
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0  HIGH_VOLATILITY           826  -0.014387   -0.038083    0.013179 37.274288      0.957434    -0.033330       -5.098917
+     1   HIGH_VOL_TREND           253  -0.000554   -0.023047    0.023823 47.832752      1.189999    -0.023338       -0.867232
+     2 TRENDING_BULLISH          1052   0.019435    0.060937    0.011712 69.060493      0.954410     0.053969        7.635858
+     3 TRENDING_BULLISH           682  -0.001381    0.006556    0.009564 50.643604      1.152457     0.007549        0.256613
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.932    0.015    0.025    0.028
+STATE_1    0.028    0.901    0.071    0.000
+STATE_2    0.013    0.012    0.923    0.051
+STATE_3    0.053    0.000    0.062    0.886
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        57      14.491228             11.0            59     1.754386
+     1        25      10.120000              3.0            73    20.000000
+     2        81      12.987654             10.0            46     2.469136
+     3        78       8.743590              6.0            46     5.128205
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0  HIGH_VOLATILITY            62    0.000946    0.007615     0.025316     0.645161    0.009015
+     1   HIGH_VOL_TREND           162    0.000970    0.003643     0.008065     0.617284    0.012418
+     2 TRENDING_BULLISH           190    0.001891    0.009236     0.039435     0.678947    0.008304
+     3 TRENDING_BULLISH            75    0.001214    0.006447     0.025932     0.666667    0.008042
+
+======================================================================
+NIFTYAUTO | FINAL TEST 2025-2026
+======================================================================
+Training rows:   3,302
+Evaluation rows: 379
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 34
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH          1262   0.020284    0.065255    0.011166 70.971580      0.975716     0.058246        8.400802
+     1   LOW_VOLATILITY          1262  -0.005279   -0.009109    0.011240 45.375349      0.896150    -0.006868       -1.853028
+     2  HIGH_VOLATILITY           494  -0.017208   -0.061397    0.018911 35.938619      1.063470    -0.055177       -5.634877
+     3   HIGH_VOL_TREND           284   0.000650    0.011660    0.010253 50.692544      1.497522     0.010158        0.277408
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.927    0.040    0.005    0.028
+STATE_1    0.041    0.911    0.025    0.023
+STATE_2    0.022    0.057    0.909    0.012
+STATE_3    0.102    0.113    0.032    0.754
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        92      13.717391             11.0            45     3.260870
+     1       112      11.267857              7.0            68     2.678571
+     2        46      10.739130              7.0            69    15.217391
+     3        70       4.057143              2.0            20    38.571429
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH            69    0.001119    0.000889     0.009661     0.478261    0.013373
+     1   LOW_VOLATILITY             1   -0.000466   -0.029605    -0.063311     0.000000    0.014725
+     2  HIGH_VOLATILITY            98    0.000951    0.007326     0.024751     0.500000    0.017747
+     3   HIGH_VOL_TREND           211    0.000275    0.000582     0.004249     0.511848    0.009662
+
+
+######################################################################
+QUANTOS HMM V4: NIFTYPHARMA
+######################################################################
+
+======================================================================
+NIFTYPHARMA | VALIDATION 2019-2020
+======================================================================
+Training rows:   1,948
+Evaluation rows: 492
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 18
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH           731  -0.002335   -0.001018    0.008887 48.149267      0.981894     0.000048       -0.741694
+     1   HIGH_VOL_TREND           305  -0.000649   -0.028913    0.016190 45.455224      0.881211    -0.021781       -1.818300
+     2 TRENDING_BULLISH           671   0.019355    0.060534    0.009835 72.184753      1.035931     0.051897        8.885514
+     3  HIGH_VOLATILITY           241  -0.029956   -0.062110    0.011676 28.625531      1.477287    -0.055437       -8.567761
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.926    0.000    0.041    0.033
+STATE_1    0.000    0.918    0.053    0.030
+STATE_2    0.057    0.009    0.931    0.003
+STATE_3    0.062    0.083    0.000    0.855
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        54      13.537037             10.0            47     1.851852
+     1        26      11.730769             11.0            29     3.846154
+     2        46      14.586957             12.5            80     4.347826
+     3        35       6.885714              5.0            25    20.000000
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH           130    0.000836    0.004604    -0.007270     0.600000    0.009821
+     1   HIGH_VOL_TREND           145    0.002129    0.012256     0.065867     0.565517    0.018872
+     2 TRENDING_BULLISH           158    0.000877    0.001282     0.011300     0.531646    0.014525
+     3  HIGH_VOLATILITY            59   -0.001893   -0.003683    -0.019258     0.440678    0.011891
+
+======================================================================
+NIFTYPHARMA | VALIDATION 2021-2022
+======================================================================
+Training rows:   2,440
+Evaluation rows: 496
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 49
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0   LOW_VOLATILITY           836  -0.003142   -0.002327    0.009332 47.635349      0.974616    -0.001418       -0.947745
+     1 TRENDING_BULLISH           712   0.015569    0.048142    0.009258 69.595845      0.996883     0.041275        7.847679
+     2  HIGH_VOLATILITY           502  -0.019408   -0.057000    0.013301 32.965207      1.216043    -0.048761       -6.825562
+     3   HIGH_VOL_TREND           390   0.019078    0.054425    0.017423 62.899716      1.031148     0.047958        5.171333
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.904    0.060    0.036    0.000
+STATE_1    0.079    0.906    0.003    0.013
+STATE_2    0.046    0.000    0.918    0.036
+STATE_3    0.000    0.044    0.023    0.933
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        80      10.450000              6.0            46     3.750000
+     1        67      10.626866              8.0            36     2.985075
+     2        41      12.243902              9.0            44     7.317073
+     3        27      14.444444              7.0            64     0.000000
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0   LOW_VOLATILITY           145    0.000125    0.001101    -0.004868     0.551724    0.008785
+     1 TRENDING_BULLISH           122   -0.000481   -0.005974    -0.015347     0.450820    0.009333
+     2  HIGH_VOLATILITY           156   -0.000558    0.001943     0.008910     0.455128    0.012267
+     3   HIGH_VOL_TREND            73    0.001668    0.003221     0.016646     0.589041    0.013818
+
+======================================================================
+NIFTYPHARMA | VALIDATION 2023-2024
+======================================================================
+Training rows:   2,936
+Evaluation rows: 491
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 22
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0  HIGH_VOLATILITY           679  -0.017546   -0.052490    0.013309 33.967998      1.168757    -0.044983       -6.423329
+     1   LOW_VOLATILITY           917  -0.004303   -0.005148    0.009316 46.649416      0.963006    -0.003692       -1.342816
+     2   HIGH_VOL_TREND           442   0.021290    0.061437    0.016587 65.449579      1.068413     0.053883        6.192605
+     3 TRENDING_BULLISH           898   0.014095    0.043276    0.009231 67.682240      0.984196     0.037071        7.081353
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.926    0.043    0.031    0.000
+STATE_1    0.037    0.896    0.003    0.063
+STATE_2    0.029    0.000    0.928    0.043
+STATE_3    0.003    0.073    0.009    0.914
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        50      13.580000             12.0            44     4.000000
+     1        96       9.552083              6.0            40     4.166667
+     2        32      13.812500              7.5            64     6.250000
+     3        77      11.662338             10.0            59     2.597403
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0  HIGH_VOLATILITY            52    0.000295   -0.000043     0.011147     0.519231    0.008333
+     1   LOW_VOLATILITY           150    0.000210    0.005655     0.010784     0.640000    0.007887
+     2   HIGH_VOL_TREND            78    0.001684    0.005205     0.021763     0.564103    0.009836
+     3 TRENDING_BULLISH           211    0.002204    0.009050     0.038277     0.682464    0.007841
+
+======================================================================
+NIFTYPHARMA | FINAL TEST 2025-2026
+======================================================================
+Training rows:   3,427
+Evaluation rows: 404
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 47
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0  HIGH_VOLATILITY           733  -0.018079   -0.051386    0.012875 33.561556      1.172106    -0.044349       -6.586225
+     1 TRENDING_BULLISH          1095   0.014685    0.047895    0.009089 69.101612      0.971057     0.041745        7.649456
+     2   HIGH_VOL_TREND           413   0.023285    0.065088    0.016550 66.582734      1.120494     0.057050        6.647065
+     3   LOW_VOLATILITY          1186  -0.002649   -0.003427    0.009286 47.566013      0.964247    -0.001921       -0.975184
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.917    0.000    0.026    0.057
+STATE_1    0.004    0.911    0.014    0.071
+STATE_2    0.024    0.061    0.913    0.002
+STATE_3    0.040    0.062    0.002    0.897
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        61      12.016393              9.0            44    13.114754
+     1        98      11.173469              8.5            56     2.040816
+     2        36      11.472222              5.5            64     8.333333
+     3       122       9.721311              6.0            59     4.098361
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0  HIGH_VOLATILITY           101   -0.000169    0.002837     0.013504     0.594059    0.011955
+     1 TRENDING_BULLISH           130   -0.000028   -0.003282    -0.001667     0.461538    0.007616
+     2   HIGH_VOL_TREND            60    0.002305    0.006634     0.022712     0.633333    0.013108
+     3   LOW_VOLATILITY           113    0.000116    0.004153     0.010262     0.646018    0.007739
+
+
+######################################################################
+QUANTOS HMM V4: NIFTYNEXT50
+######################################################################
+
+======================================================================
+NIFTYNEXT50 | VALIDATION 2019-2020
+======================================================================
+Training rows:   2,775
+Evaluation rows: 492
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 103
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0  HIGH_VOLATILITY           459  -0.034912   -0.103828    0.021296 30.714479      1.023752    -0.093092       -7.735156
+     1 TRENDING_BULLISH           934   0.015107    0.050616    0.008423 70.134508      1.022320     0.044678        8.062867
+     2   HIGH_VOL_TREND           336   0.036278    0.120579    0.021337 69.435705      1.081754     0.102696        7.796049
+     3       TRANSITION          1046  -0.002556   -0.009261    0.011317 45.958820      0.955539    -0.006693       -1.618006
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.915    0.000    0.015    0.070
+STATE_1    0.000    0.940    0.004    0.056
+STATE_2    0.012    0.018    0.943    0.027
+STATE_3    0.033    0.048    0.008    0.911
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        39      11.769231              8.0            56    12.820513
+     1        57      16.385965             11.0            54     3.508772
+     2        19      17.684211             14.0            72    10.526316
+     3        93      11.247312              8.0            45     0.000000
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0  HIGH_VOLATILITY            61   -0.001531   -0.001623     0.025169     0.622951    0.022766
+     1 TRENDING_BULLISH           138    0.000961    0.006540     0.011606     0.594203    0.008304
+     2   HIGH_VOL_TREND            46    0.001005    0.001112     0.026741     0.586957    0.014661
+     3       TRANSITION           247    0.000470    0.001449     0.003924     0.522267    0.010203
+
+======================================================================
+NIFTYNEXT50 | VALIDATION 2021-2022
+======================================================================
+Training rows:   3,267
+Evaluation rows: 496
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 28
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH          1351   0.012853    0.043131    0.008707 67.310896      0.995161     0.038586        6.932070
+     1  HIGH_VOLATILITY           358  -0.038455   -0.124497    0.025078 30.126736      1.003186    -0.111836       -7.972378
+     2   HIGH_VOL_TREND           421   0.034588    0.111968    0.020479 68.839450      1.097153     0.094532        7.556533
+     3       TRANSITION          1137  -0.008333   -0.022368    0.011413 41.340452      0.996081    -0.018768       -3.468819
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.943    0.000    0.007    0.050
+STATE_1    0.000    0.930    0.022    0.047
+STATE_2    0.038    0.007    0.929    0.026
+STATE_3    0.054    0.019    0.011    0.916
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        78      17.320513             12.0           108     0.000000
+     1        25      14.320000              9.0            55     0.000000
+     2        30      14.033333              6.0            72     3.333333
+     3        96      11.843750              8.0            58     3.125000
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH           184    0.000640    0.000970     0.003346     0.548913    0.008024
+     1  HIGH_VOLATILITY            94    0.000724   -0.001110     0.007632     0.553191    0.014836
+     2   HIGH_VOL_TREND            70    0.002390    0.010721     0.029194     0.671429    0.011411
+     3       TRANSITION           148   -0.000452    0.003195     0.010813     0.614865    0.011204
+
+======================================================================
+NIFTYNEXT50 | VALIDATION 2023-2024
+======================================================================
+Training rows:   3,763
+Evaluation rows: 491
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 45
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH           412   0.034478    0.111574    0.020583 68.762163      1.146120     0.094244        7.525552
+     1 TRENDING_BULLISH          1513   0.013748    0.046701    0.008757 69.042516      1.003929     0.041584        7.625255
+     2   HIGH_VOL_TREND          1332  -0.004892   -0.014870    0.011216 43.464617      0.963495    -0.011935       -2.617088
+     3  HIGH_VOLATILITY           506  -0.036215   -0.108128    0.021735 30.113899      1.029622    -0.096576       -7.976169
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.915    0.039    0.036    0.010
+STATE_1    0.007    0.935    0.058    0.000
+STATE_2    0.012    0.061    0.894    0.033
+STATE_3    0.018    0.000    0.077    0.905
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        35      11.771429              5.0            72    17.142857
+     1        98      15.438776             11.0            56     0.000000
+     2       142       9.380282              7.0            41     3.521127
+     3        48      10.541667              5.5            56    14.583333
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH            21   -0.001046    0.014081     0.049070     0.761905    0.012720
+     1 TRENDING_BULLISH           227    0.001666    0.005503     0.028422     0.656388    0.007858
+     2   HIGH_VOL_TREND           160    0.000103    0.004228     0.009427     0.618750    0.009353
+     3  HIGH_VOLATILITY            83    0.001626    0.003971     0.006556     0.542169    0.014822
+
+======================================================================
+NIFTYNEXT50 | FINAL TEST 2025-2026
+======================================================================
+Training rows:   4,254
+Evaluation rows: 405
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 29
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0   HIGH_VOL_TREND           588   0.005004    0.014350    0.026055 53.450995      1.015752     0.007796        1.383400
+     1 TRENDING_BULLISH          1435   0.004833    0.014650    0.009694 55.684350      0.947303     0.014370        2.276640
+     2 TRENDING_BULLISH          1117   0.019620    0.064461    0.008727 75.000826      1.072633     0.056856       10.012103
+     3  HIGH_VOLATILITY          1114  -0.017136   -0.044123    0.012102 35.369213      1.021482    -0.038292       -5.862596
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.964    0.012    0.017    0.007
+STATE_1    0.002    0.889    0.055    0.054
+STATE_2    0.004    0.073    0.920    0.004
+STATE_3    0.013    0.064    0.000    0.924
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        21      28.000000              6.0           172     4.761905
+     1       160       8.968750              7.0            50     5.625000
+     2        89      12.550562             10.0            48     3.370787
+     3        86      12.953488              8.0            39     5.813953
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0   HIGH_VOL_TREND            54    0.005155    0.019167     0.032997     0.685185    0.017070
+     1 TRENDING_BULLISH           130    0.000151    0.000548    -0.002062     0.515385    0.007563
+     2 TRENDING_BULLISH            70   -0.000343   -0.008723    -0.009467     0.385714    0.010423
+     3  HIGH_VOLATILITY           151   -0.001112    0.000455     0.014059     0.516556    0.011557
+
+
+######################################################################
+QUANTOS HMM V4: NASDAQ100
+######################################################################
+
+======================================================================
+NASDAQ100 | VALIDATION 2019-2020
+======================================================================
+Training rows:   8,382
+Evaluation rows: 505
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 27
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH          2891   0.013003    0.040909    0.008791 67.599661      1.012504     0.036891        7.047666
+     1  HIGH_VOLATILITY          1266  -0.024684   -0.080649    0.026393 37.224881      1.002909    -0.073305       -5.124858
+     2   HIGH_VOL_TREND          1340   0.030441    0.089833    0.019332 67.920742      1.038778     0.077863        7.186562
+     3       TRANSITION          2885  -0.007549   -0.012093    0.011523 44.190488      0.982126    -0.009222       -2.328334
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.927    0.000    0.007    0.066
+STATE_1    0.000    0.940    0.028    0.032
+STATE_2    0.029    0.019    0.928    0.024
+STATE_3    0.059    0.018    0.014    0.908
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0       211      13.701422              9.0            67     0.473934
+     1        77      16.441558              7.0           101     2.597403
+     2        96      13.958333              9.0            75     2.083333
+     3       264      10.928030              7.0            74     3.787879
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH           130    0.001324    0.005182     0.016001     0.730769    0.007102
+     1  HIGH_VOLATILITY           152    0.001538    0.010259     0.049628     0.631579    0.022916
+     2   HIGH_VOL_TREND           206    0.001991    0.007389     0.023365     0.655340    0.014288
+     3       TRANSITION            17   -0.002608    0.000161     0.027535     0.411765    0.008239
+
+======================================================================
+NASDAQ100 | VALIDATION 2021-2022
+======================================================================
+Training rows:   8,887
+Evaluation rows: 503
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 22
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH          3089   0.013005    0.041051    0.008746 67.795486      1.011594     0.037048        7.125997
+     1   HIGH_VOL_TREND          1544   0.028184    0.086707    0.019203 67.326502      1.032813     0.075054        6.947511
+     2  HIGH_VOLATILITY          1322  -0.024324   -0.082225    0.026320 37.170362      1.007035    -0.074160       -5.146450
+     3   LOW_VOLATILITY          2932  -0.007596   -0.012198    0.011597 44.070268      0.983666    -0.009307       -2.376450
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.929    0.006    0.000    0.065
+STATE_1    0.027    0.937    0.016    0.019
+STATE_2    0.000    0.030    0.939    0.031
+STATE_3    0.060    0.013    0.019    0.908
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0       219      14.105023              9.0            70     0.456621
+     1        98      15.755102             10.0           104     2.040816
+     2        81      16.320988              8.0           100     1.234568
+     3       271      10.819188              7.0            74     4.059041
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH             1    0.008485    0.016371     0.059983     1.000000    0.007870
+     1   HIGH_VOL_TREND           221    0.001111    0.003144    -0.011186     0.597285    0.011952
+     2  HIGH_VOLATILITY           281   -0.001210   -0.004331     0.003378     0.473310    0.018355
+
+======================================================================
+NASDAQ100 | VALIDATION 2023-2024
+======================================================================
+Training rows:   9,390
+Evaluation rows: 502
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 32
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH          3089   0.013041    0.041173    0.008747 67.821741      1.011498     0.037162        7.136521
+     1   HIGH_VOL_TREND          1792   0.026285    0.080980    0.018297 66.870670      1.028563     0.070053        6.764039
+     2   LOW_VOLATILITY          2925  -0.007769   -0.012369    0.011558 44.006332      0.983650    -0.009471       -2.402129
+     3  HIGH_VOLATILITY          1584  -0.022737   -0.076545    0.025044 37.640886      1.005736    -0.068898       -4.957288
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.930    0.006    0.064    0.000
+STATE_1    0.023    0.943    0.017    0.018
+STATE_2    0.060    0.013    0.909    0.018
+STATE_3    0.000    0.030    0.023    0.948
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0       217      14.235023              9.0            70     0.460829
+     1       103      17.398058             13.0           104     0.970874
+     2       265      11.037736              7.0            90     4.150943
+     3        84      18.857143             13.0           100     0.000000
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state          regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     1  HIGH_VOL_TREND           373    0.001538    0.005922     0.020505     0.619303    0.010733
+     2  LOW_VOLATILITY             1    0.004802    0.031589     0.138130     1.000000    0.014810
+     3 HIGH_VOLATILITY           128    0.000880    0.009725     0.040614     0.656250    0.012709
+
+======================================================================
+NASDAQ100 | FINAL TEST 2025-2026
+======================================================================
+Training rows:   9,892
+Evaluation rows: 409
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 22
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0  HIGH_VOLATILITY          1663  -0.023065   -0.074479    0.024504 37.310560      1.008111    -0.067056       -5.089615
+     1 TRENDING_BULLISH          3077   0.013073    0.041150    0.008717 67.830407      1.011871     0.037126        7.140006
+     2   HIGH_VOL_TREND          2254   0.023526    0.071836    0.016830 66.054581      1.022514     0.062680        6.435948
+     3   LOW_VOLATILITY          2898  -0.007800   -0.012458    0.011528 44.001581      0.983884    -0.009543       -2.404048
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.941    0.000    0.038    0.021
+STATE_1    0.000    0.930    0.005    0.065
+STATE_2    0.021    0.017    0.949    0.013
+STATE_3    0.018    0.061    0.012    0.909
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0        99      16.797980             12.0           100     3.030303
+     1       216      14.245370              9.0            67     0.462963
+     2       115      19.600000             13.0           110     0.869565
+     3       264      10.977273              7.0            90     3.787879
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0  HIGH_VOLATILITY           163    0.000236    0.002839     0.015840     0.509202    0.016296
+     1 TRENDING_BULLISH             1    0.016712   -0.006104     0.015349     0.000000    0.012867
+     2   HIGH_VOL_TREND           245    0.001303    0.005769     0.018972     0.628571    0.010667
+
+
+######################################################################
+QUANTOS HMM V4: SP500
+######################################################################
+
+======================================================================
+SP500 | VALIDATION 2019-2020
+======================================================================
+Training rows:   22,857
+Evaluation rows: 505
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 42
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH          5227   0.015995    0.048942    0.007674 74.285321      1.086304     0.043236        9.723726
+     1 TRENDING_BEARISH          5527  -0.009006   -0.024554    0.008612 37.412106      0.953477    -0.021022       -5.040561
+     2   HIGH_VOL_TREND          4397  -0.005049   -0.020346    0.019234 44.822551      1.030690    -0.020125       -2.074009
+     3   HIGH_VOL_TREND          7706   0.002714    0.013237    0.006509 57.368286      0.988688     0.012509        2.948943
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.909    0.004    0.005    0.082
+STATE_1    0.008    0.929    0.014    0.049
+STATE_2    0.011    0.015    0.958    0.015
+STATE_3    0.050    0.039    0.011    0.900
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0       477      10.958071              8.0            59     4.402516
+     1       390      14.171795             10.0            75     1.538462
+     2       185      23.767568              8.0           347     7.567568
+     3       768      10.033854              7.0           135     5.859375
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0 TRENDING_BULLISH            52    0.000703    0.002499     0.016569     0.730769    0.005498
+     2   HIGH_VOL_TREND           328    0.001033    0.004970     0.021300     0.658537    0.015945
+     3   HIGH_VOL_TREND           125    0.000645    0.003889     0.006673     0.672000    0.005919
+
+======================================================================
+SP500 | VALIDATION 2021-2022
+======================================================================
+Training rows:   23,362
+Evaluation rows: 503
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 72
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0   HIGH_VOL_TREND          3492   0.020986    0.052758    0.015734 64.424708      1.001313     0.044392        5.782475
+     1   LOW_VOLATILITY          8269  -0.005616   -0.011430    0.007595 42.529065      0.960808    -0.009360       -2.991743
+     2  HIGH_VOLATILITY          2979  -0.025090   -0.074266    0.018625 32.594339      1.071739    -0.066378       -6.977318
+     3 TRENDING_BULLISH          8622   0.009596    0.031560    0.006436 68.482200      1.041321     0.028407        7.398638
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.931    0.014    0.021    0.035
+STATE_1    0.007    0.920    0.021    0.052
+STATE_2    0.045    0.042    0.914    0.000
+STATE_3    0.006    0.057    0.001    0.936
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0       243      14.370370             10.0           147     0.823045
+     1       661      12.509834              9.0            85     1.361573
+     2       257      11.591440              7.0            84     7.782101
+     3       551      15.647913             11.0            99     1.633394
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state          regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0  HIGH_VOL_TREND           291    0.000838    0.001722     0.000339     0.570447    0.009513
+     1  LOW_VOLATILITY             1    0.007083    0.026741     0.033956     1.000000    0.006329
+     2 HIGH_VOLATILITY           211   -0.000855   -0.001118     0.006247     0.521327    0.013999
+
+======================================================================
+SP500 | VALIDATION 2023-2024
+======================================================================
+Training rows:   23,865
+Evaluation rows: 502
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 43
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0 TRENDING_BULLISH          8713   0.010015    0.032558    0.006508 68.773395      1.043441     0.029285        7.515367
+     1   LOW_VOLATILITY          8398  -0.005526   -0.011148    0.007580 42.740318      0.961461    -0.009106       -2.907188
+     2  HIGH_VOLATILITY          3090  -0.025400   -0.073968    0.018305 32.509925      1.074452    -0.066026       -7.011270
+     3   HIGH_VOL_TREND          3664   0.019863    0.049331    0.015701 63.446327      0.988786     0.041383        5.390448
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.936    0.057    0.001    0.006
+STATE_1    0.053    0.921    0.021    0.006
+STATE_2    0.000    0.040    0.913    0.047
+STATE_3    0.031    0.012    0.023    0.934
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0       557      15.642729             11.0            99     1.795332
+     1       666      12.609610              9.0            86     1.501502
+     2       269      11.486989              7.0            84     7.434944
+     3       242      15.140496             10.0           147     2.066116
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state          regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     1  LOW_VOLATILITY             1    0.007539    0.024871     0.077160     1.000000    0.011559
+     2 HIGH_VOLATILITY           109    0.000522    0.006303     0.027588     0.614679    0.008689
+     3  HIGH_VOL_TREND           392    0.000971    0.003879     0.013944     0.627551    0.007687
+
+======================================================================
+SP500 | FINAL TEST 2025-2026
+======================================================================
+Training rows:   24,367
+Evaluation rows: 409
+
+HMM CONVERGENCE
+Converged: True
+Iterations: 85
+
+LEARNED REGIME PROFILES
+ state           regime  observations  return_5d  return_20d  volatility       rsi  volume_ratio  trend_score  momentum_score
+     0   HIGH_VOL_TREND          7600   0.012748    0.040571    0.007963 69.359937      1.023556     0.036160        7.751624
+     1 TRENDING_BEARISH          6451  -0.010919   -0.025509    0.009030 37.127560      0.977082    -0.021843       -5.155527
+     2 TRENDING_BULLISH          6542   0.003714    0.012712    0.006120 58.026359      1.010535     0.011802        3.212772
+     3   HIGH_VOL_TREND          3774  -0.003512   -0.019943    0.021089 46.231355      1.040906    -0.020108       -1.509565
+
+EMPIRICAL TRAINING TRANSITION MATRIX
+         STATE_0  STATE_1  STATE_2  STATE_3
+STATE_0    0.939    0.028    0.027    0.006
+STATE_1    0.031    0.913    0.041    0.015
+STATE_2    0.028    0.043    0.928    0.001
+STATE_3    0.021    0.017    0.000    0.962
+
+REGIME PERSISTENCE
+ state  episodes  mean_duration  median_duration  max_duration  one_day_pct
+     0       460      16.521739             12.0           113     1.521739
+     1       560      11.519643              8.0            62     3.214286
+     2       470      13.919149             10.0           112     2.127660
+     3       146      25.849315              9.5           347     8.904110
+
+OUT-OF-SAMPLE REGIME PERFORMANCE
+ state           regime  observations  forward_1d  forward_5d  forward_20d  win_rate_5d  volatility
+     0   HIGH_VOL_TREND            84    0.000633    0.003991     0.018009     0.678571    0.005661
+     1 TRENDING_BEARISH             1    0.012596   -0.007073     0.021474     0.000000    0.009239
+     3   HIGH_VOL_TREND           324    0.000685    0.003419     0.012182     0.577160    0.010316
+
+
+======================================================================
+QUANTOS HMM V4 SUMMARY
+======================================================================
+     symbol     period  state           regime  observations  forward_5d  forward_20d  win_rate_5d
+    NIFTY50  2019-2020      0 TRENDING_BULLISH             3    0.003737     0.050896     0.666667
+    NIFTY50  2019-2020      1 TRENDING_BULLISH           109    0.001238     0.004603     0.458716
+    NIFTY50  2019-2020      2  HIGH_VOLATILITY           205    0.005947     0.039711     0.619512
+    NIFTY50  2019-2020      3   HIGH_VOL_TREND           174    0.001601    -0.010101     0.574713
+    NIFTY50  2021-2022      0 TRENDING_BULLISH           196    0.005641     0.015758     0.673469
+    NIFTY50  2021-2022      1   HIGH_VOL_TREND           191    0.000053     0.006686     0.528796
+    NIFTY50  2021-2022      2  HIGH_VOLATILITY            66    0.002630     0.002029     0.469697
+    NIFTY50  2021-2022      3 TRENDING_BULLISH            43    0.001542     0.013505     0.465116
+    NIFTY50  2023-2024      0 TRENDING_BULLISH           194    0.002068     0.010448     0.577320
+    NIFTY50  2023-2024      1   HIGH_VOL_TREND            10    0.011659     0.048392     1.000000
+    NIFTY50  2023-2024      2  HIGH_VOLATILITY           227    0.003132     0.009498     0.599119
+    NIFTY50  2023-2024      3 TRENDING_BULLISH            60    0.003887     0.014241     0.650000
+    NIFTY50 FINAL_TEST      0 TRENDING_BULLISH            25   -0.005419     0.010548     0.320000
+    NIFTY50 FINAL_TEST      1  HIGH_VOLATILITY           137    0.000120     0.006786     0.452555
+    NIFTY50 FINAL_TEST      2 TRENDING_BULLISH           205   -0.001150    -0.004267     0.463415
+    NIFTY50 FINAL_TEST      3   HIGH_VOL_TREND            39    0.012649     0.017080     0.769231
+  NIFTYBANK  2019-2020      0  HIGH_VOLATILITY           103    0.003901     0.025337     0.611650
+  NIFTYBANK  2019-2020      1 TRENDING_BULLISH            93    0.007538     0.052488     0.580645
+  NIFTYBANK  2019-2020      2 TRENDING_BULLISH            99    0.006092    -0.001595     0.606061
+  NIFTYBANK  2019-2020      3   HIGH_VOL_TREND           197   -0.001920    -0.007366     0.451777
+  NIFTYBANK  2021-2022      0  HIGH_VOLATILITY           126    0.004112     0.028057     0.492063
+  NIFTYBANK  2021-2022      1 TRENDING_BULLISH            66    0.000743     0.013288     0.560606
+  NIFTYBANK  2021-2022      2 TRENDING_BULLISH           194    0.005629     0.015458     0.634021
+  NIFTYBANK  2021-2022      3   HIGH_VOL_TREND           110    0.001072    -0.006711     0.490909
+  NIFTYBANK  2023-2024      0 TRENDING_BULLISH           230    0.001324     0.000376     0.547826
+  NIFTYBANK  2023-2024      1  HIGH_VOLATILITY             1    0.059178     0.131277     1.000000
+  NIFTYBANK  2023-2024      2   HIGH_VOL_TREND            21    0.013391     0.018765     0.809524
+  NIFTYBANK  2023-2024      3       TRANSITION           239    0.001296     0.011932     0.556485
+  NIFTYBANK FINAL_TEST      0   HIGH_VOL_TREND            27    0.009082     0.006404     0.592593
+  NIFTYBANK FINAL_TEST      1 TRENDING_BULLISH           266    0.003534     0.005628     0.548872
+  NIFTYBANK FINAL_TEST      2 TRENDING_BULLISH            63   -0.000124     0.018990     0.460317
+  NIFTYBANK FINAL_TEST      3  HIGH_VOLATILITY            49   -0.008969     0.015094     0.408163
+    NIFTYIT  2019-2020      0   HIGH_VOL_TREND           109    0.001942     0.019174     0.477064
+    NIFTYIT  2019-2020      1 TRENDING_BULLISH            69    0.017935     0.052777     0.710145
+    NIFTYIT  2019-2020      2 TRENDING_BULLISH           166    0.007508     0.018982     0.614458
+    NIFTYIT  2019-2020      3  HIGH_VOLATILITY           148    0.003022     0.029864     0.587838
+    NIFTYIT  2021-2022      0   HIGH_VOL_TREND           379   -0.002372    -0.007666     0.514512
+    NIFTYIT  2021-2022      1 TRENDING_BULLISH            85    0.014743     0.054624     0.764706
+    NIFTYIT  2021-2022      2  HIGH_VOLATILITY            28    0.012629     0.045720     0.714286
+    NIFTYIT  2021-2022      3 TRENDING_BULLISH             4    0.042317     0.078030     1.000000
+    NIFTYIT  2023-2024      1 TRENDING_BULLISH             8    0.018881     0.054806     0.625000
+    NIFTYIT  2023-2024      2   HIGH_VOL_TREND           246    0.006235     0.020041     0.613821
+    NIFTYIT  2023-2024      3  HIGH_VOLATILITY           237    0.002659     0.013373     0.552743
+    NIFTYIT FINAL_TEST      0   HIGH_VOL_TREND           105   -0.000037    -0.009861     0.485714
+    NIFTYIT FINAL_TEST      1       TRANSITION            97    0.003371     0.018187     0.577320
+    NIFTYIT FINAL_TEST      2 TRENDING_BULLISH            93    0.000151    -0.034614     0.494624
+    NIFTYIT FINAL_TEST      3  HIGH_VOLATILITY           110   -0.017057    -0.029854     0.336364
+  NIFTYAUTO  2019-2020      0  HIGH_VOLATILITY           229   -0.000051     0.005890     0.515284
+  NIFTYAUTO  2019-2020      1   HIGH_VOL_TREND           138    0.003433     0.028425     0.500000
+  NIFTYAUTO  2019-2020      2       TRANSITION           125    0.002758    -0.000397     0.544000
+  NIFTYAUTO  2021-2022      0 TRENDING_BULLISH           131    0.006142     0.015392     0.572519
+  NIFTYAUTO  2021-2022      1       TRANSITION            88    0.000282     0.022044     0.545455
+  NIFTYAUTO  2021-2022      2  HIGH_VOLATILITY           186    0.006766     0.010244     0.612903
+  NIFTYAUTO  2021-2022      3   HIGH_VOL_TREND            80   -0.005087    -0.001149     0.387500
+  NIFTYAUTO  2023-2024      0  HIGH_VOLATILITY            62    0.007615     0.025316     0.645161
+  NIFTYAUTO  2023-2024      1   HIGH_VOL_TREND           162    0.003643     0.008065     0.617284
+  NIFTYAUTO  2023-2024      2 TRENDING_BULLISH           190    0.009236     0.039435     0.678947
+  NIFTYAUTO  2023-2024      3 TRENDING_BULLISH            75    0.006447     0.025932     0.666667
+  NIFTYAUTO FINAL_TEST      0 TRENDING_BULLISH            69    0.000889     0.009661     0.478261
+  NIFTYAUTO FINAL_TEST      1   LOW_VOLATILITY             1   -0.029605    -0.063311     0.000000
+  NIFTYAUTO FINAL_TEST      2  HIGH_VOLATILITY            98    0.007326     0.024751     0.500000
+  NIFTYAUTO FINAL_TEST      3   HIGH_VOL_TREND           211    0.000582     0.004249     0.511848
+NIFTYPHARMA  2019-2020      0 TRENDING_BULLISH           130    0.004604    -0.007270     0.600000
+NIFTYPHARMA  2019-2020      1   HIGH_VOL_TREND           145    0.012256     0.065867     0.565517
+NIFTYPHARMA  2019-2020      2 TRENDING_BULLISH           158    0.001282     0.011300     0.531646
+NIFTYPHARMA  2019-2020      3  HIGH_VOLATILITY            59   -0.003683    -0.019258     0.440678
+NIFTYPHARMA  2021-2022      0   LOW_VOLATILITY           145    0.001101    -0.004868     0.551724
+NIFTYPHARMA  2021-2022      1 TRENDING_BULLISH           122   -0.005974    -0.015347     0.450820
+NIFTYPHARMA  2021-2022      2  HIGH_VOLATILITY           156    0.001943     0.008910     0.455128
+NIFTYPHARMA  2021-2022      3   HIGH_VOL_TREND            73    0.003221     0.016646     0.589041
+NIFTYPHARMA  2023-2024      0  HIGH_VOLATILITY            52   -0.000043     0.011147     0.519231
+NIFTYPHARMA  2023-2024      1   LOW_VOLATILITY           150    0.005655     0.010784     0.640000
+NIFTYPHARMA  2023-2024      2   HIGH_VOL_TREND            78    0.005205     0.021763     0.564103
+NIFTYPHARMA  2023-2024      3 TRENDING_BULLISH           211    0.009050     0.038277     0.682464
+NIFTYPHARMA FINAL_TEST      0  HIGH_VOLATILITY           101    0.002837     0.013504     0.594059
+NIFTYPHARMA FINAL_TEST      1 TRENDING_BULLISH           130   -0.003282    -0.001667     0.461538
+NIFTYPHARMA FINAL_TEST      2   HIGH_VOL_TREND            60    0.006634     0.022712     0.633333
+NIFTYPHARMA FINAL_TEST      3   LOW_VOLATILITY           113    0.004153     0.010262     0.646018
+NIFTYNEXT50  2019-2020      0  HIGH_VOLATILITY            61   -0.001623     0.025169     0.622951
+NIFTYNEXT50  2019-2020      1 TRENDING_BULLISH           138    0.006540     0.011606     0.594203
+NIFTYNEXT50  2019-2020      2   HIGH_VOL_TREND            46    0.001112     0.026741     0.586957
+NIFTYNEXT50  2019-2020      3       TRANSITION           247    0.001449     0.003924     0.522267
+NIFTYNEXT50  2021-2022      0 TRENDING_BULLISH           184    0.000970     0.003346     0.548913
+NIFTYNEXT50  2021-2022      1  HIGH_VOLATILITY            94   -0.001110     0.007632     0.553191
+NIFTYNEXT50  2021-2022      2   HIGH_VOL_TREND            70    0.010721     0.029194     0.671429
+NIFTYNEXT50  2021-2022      3       TRANSITION           148    0.003195     0.010813     0.614865
+NIFTYNEXT50  2023-2024      0 TRENDING_BULLISH            21    0.014081     0.049070     0.761905
+NIFTYNEXT50  2023-2024      1 TRENDING_BULLISH           227    0.005503     0.028422     0.656388
+NIFTYNEXT50  2023-2024      2   HIGH_VOL_TREND           160    0.004228     0.009427     0.618750
+NIFTYNEXT50  2023-2024      3  HIGH_VOLATILITY            83    0.003971     0.006556     0.542169
+NIFTYNEXT50 FINAL_TEST      0   HIGH_VOL_TREND            54    0.019167     0.032997     0.685185
+NIFTYNEXT50 FINAL_TEST      1 TRENDING_BULLISH           130    0.000548    -0.002062     0.515385
+NIFTYNEXT50 FINAL_TEST      2 TRENDING_BULLISH            70   -0.008723    -0.009467     0.385714
+NIFTYNEXT50 FINAL_TEST      3  HIGH_VOLATILITY           151    0.000455     0.014059     0.516556
+  NASDAQ100  2019-2020      0 TRENDING_BULLISH           130    0.005182     0.016001     0.730769
+  NASDAQ100  2019-2020      1  HIGH_VOLATILITY           152    0.010259     0.049628     0.631579
+  NASDAQ100  2019-2020      2   HIGH_VOL_TREND           206    0.007389     0.023365     0.655340
+  NASDAQ100  2019-2020      3       TRANSITION            17    0.000161     0.027535     0.411765
+  NASDAQ100  2021-2022      0 TRENDING_BULLISH             1    0.016371     0.059983     1.000000
+  NASDAQ100  2021-2022      1   HIGH_VOL_TREND           221    0.003144    -0.011186     0.597285
+  NASDAQ100  2021-2022      2  HIGH_VOLATILITY           281   -0.004331     0.003378     0.473310
+  NASDAQ100  2023-2024      1   HIGH_VOL_TREND           373    0.005922     0.020505     0.619303
+  NASDAQ100  2023-2024      2   LOW_VOLATILITY             1    0.031589     0.138130     1.000000
+  NASDAQ100  2023-2024      3  HIGH_VOLATILITY           128    0.009725     0.040614     0.656250
+  NASDAQ100 FINAL_TEST      0  HIGH_VOLATILITY           163    0.002839     0.015840     0.509202
+  NASDAQ100 FINAL_TEST      1 TRENDING_BULLISH             1   -0.006104     0.015349     0.000000
+  NASDAQ100 FINAL_TEST      2   HIGH_VOL_TREND           245    0.005769     0.018972     0.628571
+      SP500  2019-2020      0 TRENDING_BULLISH            52    0.002499     0.016569     0.730769
+      SP500  2019-2020      2   HIGH_VOL_TREND           328    0.004970     0.021300     0.658537
+      SP500  2019-2020      3   HIGH_VOL_TREND           125    0.003889     0.006673     0.672000
+      SP500  2021-2022      0   HIGH_VOL_TREND           291    0.001722     0.000339     0.570447
+      SP500  2021-2022      1   LOW_VOLATILITY             1    0.026741     0.033956     1.000000
+      SP500  2021-2022      2  HIGH_VOLATILITY           211   -0.001118     0.006247     0.521327
+      SP500  2023-2024      1   LOW_VOLATILITY             1    0.024871     0.077160     1.000000
+      SP500  2023-2024      2  HIGH_VOLATILITY           109    0.006303     0.027588     0.614679
+      SP500  2023-2024      3   HIGH_VOL_TREND           392    0.003879     0.013944     0.627551
+      SP500 FINAL_TEST      0   HIGH_VOL_TREND            84    0.003991     0.018009     0.678571
+      SP500 FINAL_TEST      1 TRENDING_BEARISH             1   -0.007073     0.021474     0.000000
+      SP500 FINAL_TEST      3   HIGH_VOL_TREND           324    0.003419     0.012182     0.577160
+
+======================================================================
+V4 VALIDATION DESIGN
+======================================================================
+2019-2020 -> validation
+2021-2022 -> validation
+2023-2024 -> validation
+2025-2026 -> FINAL TEST ONLY
+
+IMPORTANT:
+HMM states are latent regimes.
+Regime labels are descriptive, not direct price predictions.
+State characterization uses training data only.
+Future returns are evaluation-only.
+Final test results must not be used for model tuning.
+
+======================================================================
+QUANTOS HMM V4 COMPLETE
+======================================================================

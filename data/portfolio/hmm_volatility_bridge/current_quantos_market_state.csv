@@ -1,0 +1,2 @@
+date,regime,p_bull,p_side,p_bear,current_vol_5d,current_vol_20d,current_vol_60d,expected_forward_21d_vol,historical_bull_forward_21d_vol,historical_side_forward_21d_vol,historical_bear_forward_21d_vol,hmm_training_window,hmm_seed,transition_shrinkage,probability_temperature
+2026-10-01,BEAR,0.2243443708270822,0.10506767112980742,0.6705879580431104,0.11277999433009754,0.1034566449879248,0.09561783253529203,0.15622249130156832,0.12487457263615914,0.14616511384014735,0.16828568781479086,504,7,0.35,2.5

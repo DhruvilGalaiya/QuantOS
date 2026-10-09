@@ -1,0 +1,50 @@
+{
+  "asset": "NIFTY_50",
+  "market": {
+    "latest_date": "2026-10-01",
+    "next_trading_session": "2026-10-05",
+    "latest_close": 22421.95
+  },
+  "data_freshness": {
+    "market_date": "2026-10-01",
+    "volatility_date": "2026-10-01T00:00:00",
+    "hmm_date": "2026-10-01",
+    "option_database": "/Users/dhruvil/QuantOS/data/regime/options_live/options_live.sqlite",
+    "iv_surface": "/Users/dhruvil/QuantOS/data/regime/volatility_surface/nifty_50_iv_surface.json"
+  },
+  "realized_volatility": {
+    "realized_vol_1d": 0.13991750932990923,
+    "realized_vol_5d": 0.13486220095543874,
+    "realized_vol_21d": 0.11221578961140448
+  },
+  "garch": {
+    "model": "GARCH(1,1)-Student-t",
+    "forecast_vol_1d": 0.1282010753370178,
+    "forecast_vol_5d": 0.1290525236335984,
+    "forecast_vol_21d": 0.1318198225202427
+  },
+  "har": {
+    "forecast_vol_1d": 0.14051745672419247
+  },
+  "options": {
+    "atm_iv": 0.120391845703125,
+    "available": true,
+    "source": "/Users/dhruvil/QuantOS/data/regime/volatility_surface/nifty_50_iv_surface.json",
+    "definition": "Nearest-expiry ATM IV from validated NIFTY 50 IV surface"
+  },
+  "volatility_anchor": {
+    "value": 0.12610583411168386,
+    "method": "GARCH 21D + ATM IV average"
+  },
+  "hmm": {
+    "current_regime": "BEAR",
+    "current_confidence": 1.0,
+    "next_regime": "BEAR",
+    "next_day_probability": 0.6049024905273688,
+    "probabilities": {},
+    "transition_matrix": {},
+    "stickiness_score": 52.294149431642126,
+    "stickiness_level": "MODERATE",
+    "current_regime_streak": 4
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "symbol": "NIFTY_50",
+  "model_version": "volatility_v3_3_underlyings",
+  "data": {
+    "input_file": "/Users/dhruvil/QuantOS/data/regime/volatility/nifty_50.parquet",
+    "dataset_start": "2016-01-01T00:00:00",
+    "dataset_end": "2026-10-01T00:00:00",
+    "rows": 2664
+  },
+  "evaluation": {
+    "garch_1d_mse": 1.7791016091699843e-07,
+    "garch_1d_qlike": -8.441400718827962,
+    "garch_5d_mse": 1.6329062641534268e-06,
+    "garch_5d_qlike": -7.6890199073992225,
+    "garch_21d_mse": 2.4044292934306032e-05,
+    "garch_21d_qlike": -6.360031864153212,
+    "har_1d_mse": 6.756340596816966e-07,
+    "har_1d_qlike": -8.388508347963253
+  },
+  "live": {
+    "latest_date": "2026-10-01T00:00:00",
+    "latest_close": 22421.95,
+    "current_realized_vol_21d": 0.024487492860166677,
+    "long_run_vol_21d": 0.026120635219699366,
+    "volatility_ratio": 0.9374769278849304,
+    "volatility_level": "MEDIUM",
+    "garch": {
+      "model": "GARCH(1,1)-Student-t",
+      "forecast_vol_1d": 0.1282010753370178,
+      "forecast_vol_5d": 0.1290525236335984,
+      "forecast_vol_21d": 0.1318198225202427
+    },
+    "har": {
+      "model": "HAR-RV",
+      "forecast_vol_1d": 0.14051745672419247
+    }
+  }
+}
