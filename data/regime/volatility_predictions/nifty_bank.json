@@ -1,0 +1,38 @@
+{
+  "symbol": "NIFTY_BANK",
+  "model_version": "volatility_v3_3_underlyings",
+  "data": {
+    "input_file": "/Users/dhruvil/QuantOS/data/regime/volatility/nifty_bank.parquet",
+    "dataset_start": "2022-02-02T00:00:00+05:30",
+    "dataset_end": "2026-09-04T00:00:00+05:30",
+    "rows": 1139
+  },
+  "evaluation": {
+    "garch_1d_mse": 5.6153144773894656e-08,
+    "garch_1d_qlike": -8.443330334295366,
+    "garch_5d_mse": 4.5115989491244444e-07,
+    "garch_5d_qlike": -6.814435123538745,
+    "garch_21d_mse": 5.7997556829844106e-06,
+    "garch_21d_qlike": -5.084981132352384,
+    "har_1d_mse": 4.66448611534776e-08,
+    "har_1d_qlike": -8.448784065739032
+  },
+  "live": {
+    "latest_date": "2026-09-04T00:00:00+05:30",
+    "latest_close": 57369.65,
+    "current_realized_vol_21d": 0.07583379231221626,
+    "long_run_vol_21d": 0.1445496999663447,
+    "volatility_ratio": 0.5246208904610147,
+    "volatility_level": "LOW",
+    "garch": {
+      "model": "GARCH(1,1)-Student-t",
+      "forecast_vol_1d": 0.1125310804158084,
+      "forecast_vol_5d": 0.11700097282482255,
+      "forecast_vol_21d": 0.1302398140324514
+    },
+    "har": {
+      "model": "HAR-RV",
+      "forecast_vol_1d": 0.12101196226231738
+    }
+  }
+}

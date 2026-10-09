@@ -1,0 +1,36 @@
+{
+  "symbol": "NIFTY_IT",
+  "model_version": "volatility_v1",
+  "evaluation": {
+    "garch_1d_mse": 2.4143856945106893e-08,
+    "garch_1d_qlike": -8.277200334665359,
+    "garch_5d_mse": 1.1308357633741491e-06,
+    "garch_5d_qlike": -5.962098182544763,
+    "garch_21d_mse": 4.422228554099768e-06,
+    "garch_21d_qlike": -4.483236562462204,
+    "har_1d_mse": 2.430519230131167e-08,
+    "har_1d_qlike": -8.263664808292303
+  },
+  "live": {
+    "latest_date": "2026-08-06T00:00:00+05:30",
+    "latest_close": 31106.25,
+    "current_realized_vol_21d": 0.2692255814276295,
+    "long_run_vol_21d": 0.2069783501353823,
+    "volatility_ratio": 1.30074271657655,
+    "volatility_level": "HIGH",
+    "garch": {
+      "model": "GARCH(1,1)-Student-t",
+      "forecast_variance_1d": 0.0003390071452672956,
+      "forecast_variance_5d": 0.0016947101795548496,
+      "forecast_variance_21d": 0.007112392805596551,
+      "forecast_vol_1d": 0.29228376726626215,
+      "forecast_vol_5d": 0.2922556980617562,
+      "forecast_vol_21d": 0.2921450216367868
+    },
+    "har": {
+      "model": "HAR-RV",
+      "forecast_variance_1d": 0.00021350384016389324,
+      "forecast_vol_1d": 0.23195466738417034
+    }
+  }
+}

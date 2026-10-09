@@ -1,0 +1,36 @@
+{
+  "symbol": "NIFTY_PHARMA",
+  "model_version": "volatility_v1",
+  "evaluation": {
+    "garch_1d_mse": 2.1459042105264213e-08,
+    "garch_1d_qlike": -8.143773003439373,
+    "garch_5d_mse": 7.427000074637218e-08,
+    "garch_5d_qlike": -6.775854715008471,
+    "garch_21d_mse": 1.438421212388518e-06,
+    "garch_21d_qlike": -5.204690876760417,
+    "har_1d_mse": 1.9327272845726613e-08,
+    "har_1d_qlike": -8.204700671928023
+  },
+  "live": {
+    "latest_date": "2026-08-06T00:00:00+05:30",
+    "latest_close": 26564.8,
+    "current_realized_vol_21d": 0.12658343432788657,
+    "long_run_vol_21d": 0.14021551294163428,
+    "volatility_ratio": 0.9027776718299196,
+    "volatility_level": "MEDIUM",
+    "garch": {
+      "model": "GARCH(1,1)-Student-t",
+      "forecast_variance_1d": 6.210554479797532e-05,
+      "forecast_variance_5d": 0.0003496517914332822,
+      "forecast_variance_21d": 0.0017179795265621048,
+      "forecast_vol_1d": 0.12510234725651545,
+      "forecast_vol_5d": 0.13274957735615367,
+      "forecast_vol_21d": 0.14358187322480945
+    },
+    "har": {
+      "model": "HAR-RV",
+      "forecast_variance_1d": 6.224693345645002e-05,
+      "forecast_vol_1d": 0.12524466947150048
+    }
+  }
+}

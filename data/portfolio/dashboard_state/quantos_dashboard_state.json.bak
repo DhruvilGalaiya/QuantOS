@@ -1,0 +1,1127 @@
+{
+  "project": "QuantOS",
+  "generated_from": {
+    "unified_market_state": "data/portfolio/unified_market_state/current_market_state.csv",
+    "portfolio_summary": "data/portfolio/hmm_allocation/hmm_allocation_summary.csv"
+  },
+  "market": {
+    "asset": "NIFTY_50",
+    "hmm_date": "2026-09-04",
+    "regime": "BULL",
+    "regime_probability": {
+      "bull": 0.9627287585897374,
+      "side": 0.0093593267146707,
+      "bear": 0.0279119146955919
+    },
+    "hmm_current_volatility": {
+      "vol_5d": 0.0424406924566959,
+      "vol_20d": 0.0544382213500954,
+      "vol_60d": 0.105753924857126
+    },
+    "realized_volatility": {
+      "vol_21d": 0.0568212909375449,
+      "long_run_vol_21d": 0.1149118497156238,
+      "volatility_ratio": 0.4944772108199675,
+      "volatility_level": "LOW"
+    },
+    "forecast_volatility": {
+      "garch_1d": 0.0922517284237904,
+      "garch_5d": 0.0953994392293449,
+      "garch_21d": 0.1046704297178644,
+      "har_1d": 0.0975561641492551
+    },
+    "options": {
+      "timestamp": "2026-09-23T20:46:46.606879+05:30",
+      "spot": 23446.8,
+      "atm_strike": 23450.0,
+      "nearest_expiry": "2026-09-29",
+      "next_expiry": "2026-10-06",
+      "atm_iv_nearest": 0.08697509765625,
+      "atm_iv_next": 0.0870132446289062,
+      "iv_realized_ratio": 1.530677959285517,
+      "iv_minus_realized": 0.030153806718705,
+      "moneyness_skew": 0.0385284423828125,
+      "term_structure_difference": 3.814697265625e-05
+    },
+    "sabr": {
+      "sabr_iv": 0.0880667808777798,
+      "alpha": null,
+      "beta": null,
+      "rho": null,
+      "nu": null
+    },
+    "risk_state": {
+      "regime_conditioned_21d_vol": 0.12714111103282,
+      "realized_vol_state": "LOW",
+      "iv_vs_realized": "IV_ABOVE_REALIZED",
+      "term_structure_state": "FLAT"
+    },
+    "market_data": {
+      "volatility_model_date": "2026-09-04 00:00:00+05:30",
+      "latest_close": 23897.7
+    }
+  },
+  "portfolio": {
+    "strategies": {
+      "Equal Weight": {
+        "cagr": 0.2233828425223061,
+        "volatility": 0.1984641394514196,
+        "sharpe": 1.115617950357821,
+        "sortino": 1.4306826137530462,
+        "max_drawdown": -0.3050366758430405,
+        "calmar": 0.7323147025023635,
+        "final_wealth": 8.006107857183878,
+        "var_95": -0.0200853336537272,
+        "cvar_95": -0.0300227076449689,
+        "turnover": 0.0,
+        "transaction_cost": 0.0
+      },
+      "Minimum Variance": {
+        "cagr": 0.1000865688480956,
+        "volatility": 0.135333296985027,
+        "sharpe": 0.7729068359646465,
+        "sortino": 0.9410435614026892,
+        "max_drawdown": -0.3257074639020207,
+        "calmar": 0.3072897613368899,
+        "final_wealth": 2.6755927360037592,
+        "var_95": -0.0118916557630268,
+        "cvar_95": -0.0199897781387871,
+        "turnover": 10.799736284671994,
+        "transaction_cost": 0.0215994725693439
+      },
+      "Constrained Min Variance": {
+        "cagr": 0.1200714277635637,
+        "volatility": 0.1390345677013019,
+        "sharpe": 0.885572373810454,
+        "sortino": 1.0717947109559671,
+        "max_drawdown": -0.3261923198878741,
+        "calmar": 0.3681001067248832,
+        "final_wealth": 3.2217419333005104,
+        "var_95": -0.012818737195723,
+        "cvar_95": -0.020685788871267,
+        "turnover": 8.50872615898317,
+        "transaction_cost": 0.0170174523179663
+      },
+      "Risk Parity": {
+        "cagr": 0.1717791304221931,
+        "volatility": 0.1589135933342934,
+        "sharpe": 1.0774184669444042,
+        "sortino": 1.3776890731079898,
+        "max_drawdown": -0.305648887956837,
+        "calmar": 0.5620145768253259,
+        "final_wealth": 5.132315964561343,
+        "var_95": -0.0154911223660854,
+        "cvar_95": -0.0236867286567965,
+        "turnover": 2.3475607604464592,
+        "transaction_cost": 0.0046951215208929
+      },
+      "HMM Conditional Risk Parity": {
+        "cagr": 0.1680532570628334,
+        "volatility": 0.1562603832292659,
+        "sharpe": 1.0726325810580657,
+        "sortino": 1.3723827114775982,
+        "max_drawdown": -0.306291915377018,
+        "calmar": 0.5486702345896883,
+        "final_wealth": 4.966416753333973,
+        "var_95": -0.0153410646846104,
+        "cvar_95": -0.0233820398188697,
+        "turnover": 13.10309126738874,
+        "transaction_cost": 0.0262061825347774
+      }
+    },
+    "source": "data/portfolio/hmm_allocation/hmm_allocation_summary.csv"
+  },
+  "allocation": {
+    "hmm_conditional": {
+      "available": true,
+      "rows": 130,
+      "first_rebalance": "2017-11-02",
+      "last_rebalance": "2026-08-11"
+    }
+  },
+  "monte_carlo": {
+    "metadata": {
+      "asset": "NIFTY_50",
+      "market_date": "2026-10-01",
+      "starting_value": 22421.95,
+      "n_paths": 10000,
+      "seed": 42,
+      "historical_observations": 2663,
+      "current_regime": "BEAR",
+      "next_regime": "BEAR",
+      "next_day_probabilities": {
+        "BULL": 0.12681180790957713,
+        "SIDE": 0.2682857015630541,
+        "BEAR": 0.6049024905273688
+      },
+      "hmm_transition_matrix": [
+        [
+          0.696969696969697,
+          0.2727272727272727,
+          0.030303030303030304
+        ],
+        [
+          0.02723146747352496,
+          0.9591527987897126,
+          0.01361573373676248
+        ],
+        [
+          0.043478260869565216,
+          0.17391304347826086,
+          0.782608695652174
+        ]
+      ],
+      "garch_forecast": {
+        "model": "GARCH(1,1)-Student-t",
+        "forecast_vol_1d": 0.1282010753370178,
+        "forecast_vol_5d": 0.1290525236335984,
+        "forecast_vol_21d": 0.1318198225202427
+      },
+      "atm_iv": null
+    },
+    "horizons": {
+      "1M": {
+        "student_t": {
+          "model": "Student-t",
+          "horizon_days": 21,
+          "summary": {
+            "terminal_p05": -0.06584075500536916,
+            "terminal_p25": -0.023592602092547987,
+            "terminal_median": 0.008088708136369638,
+            "terminal_p75": 0.03970241960600818,
+            "terminal_p95": 0.08829174583483193,
+            "terminal_mean": 0.008804761132293754,
+            "VaR_95": 0.06584075500536914,
+            "CVaR_95": 0.0848042819912559,
+            "VaR_99": 0.0969086302098234,
+            "CVaR_99": 0.11234167057557759,
+            "max_drawdown_mean": -0.04080572419517817,
+            "max_drawdown_p05": -0.08220667967425425,
+            "max_drawdown_median": -0.0362831723753671,
+            "max_drawdown_p95": -0.014151770164336332,
+            "prob_finish_below_start": 0.4347,
+            "terminal_wealth_mean": 1.008804761132294,
+            "terminal_wealth_median": 1.0080887081363696,
+            "terminal_wealth_p05": 0.9341592449946309,
+            "terminal_wealth_p95": 1.088291745834832,
+            "prob_hit_target": 0.0415,
+            "prob_hit_stop": 0.0129
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.06584075500536916,
+            "p25": -0.023592602092547987,
+            "median": 0.008088708136369638,
+            "p75": 0.03970241960600818,
+            "p95": 0.08829174583483193
+          },
+          "possible_outcome_levels": {
+            "p05": 20945.671883307365,
+            "p25": 21892.957855510995,
+            "median": 22603.314609398272,
+            "p75": 23312.155667284936,
+            "p95": 24401.623110521312
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.4347,
+            "hit_plus_10pct": 0.0415,
+            "hit_minus_10pct": 0.0129
+          }
+        },
+        "garch_t": {
+          "model": "GARCH-t",
+          "horizon_days": 21,
+          "summary": {
+            "terminal_p05": -0.051745240007003354,
+            "terminal_p25": -0.014727688182364085,
+            "terminal_median": 0.008626282359621928,
+            "terminal_p75": 0.032745854726232204,
+            "terminal_p95": 0.0726115974210646,
+            "terminal_mean": 0.00924195754000692,
+            "VaR_95": 0.05174524000700335,
+            "CVaR_95": 0.07115122156218388,
+            "VaR_99": 0.08260992408492664,
+            "CVaR_99": 0.10123160677285206,
+            "max_drawdown_mean": -0.031765721097803123,
+            "max_drawdown_p05": -0.06794656736579449,
+            "max_drawdown_median": -0.02737306746950552,
+            "max_drawdown_p95": -0.010026873421168666,
+            "prob_finish_below_start": 0.4033,
+            "terminal_wealth_mean": 1.009241957540007,
+            "terminal_wealth_median": 1.008626282359622,
+            "terminal_wealth_p05": 0.9482547599929967,
+            "terminal_wealth_p95": 1.0726115974210646,
+            "prob_hit_target": 0.0175,
+            "prob_hit_stop": 0.0055
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.051745240007003354,
+            "p25": -0.014727688182364085,
+            "median": 0.008626282359621928,
+            "p75": 0.032745854726232204,
+            "p95": 0.0726115974210646
+          },
+          "possible_outcome_levels": {
+            "p05": 21261.720815824974,
+            "p25": 22091.72651195944,
+            "median": 22615.368071753324,
+            "p75": 23156.175917378845,
+            "p95": 24050.04360679524
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.4033,
+            "hit_plus_10pct": 0.0175,
+            "hit_minus_10pct": 0.0055
+          }
+        },
+        "garch_jump": {
+          "model": "GARCH-t + empirical jumps",
+          "horizon_days": 21,
+          "summary": {
+            "terminal_p05": -0.06780102140829167,
+            "terminal_p25": -0.019762000111290062,
+            "terminal_median": 0.007977978679796882,
+            "terminal_p75": 0.035900231618205214,
+            "terminal_p95": 0.08514578979688535,
+            "terminal_mean": 0.008242262036092962,
+            "VaR_95": 0.06780102140829163,
+            "CVaR_95": 0.09513580107085758,
+            "VaR_99": 0.11481869271799584,
+            "CVaR_99": 0.13714855842317267,
+            "max_drawdown_mean": -0.03627822284812314,
+            "max_drawdown_p05": -0.08748500760101835,
+            "max_drawdown_median": -0.029148527534330337,
+            "max_drawdown_p95": -0.01038743738304906,
+            "prob_finish_below_start": 0.4208,
+            "terminal_wealth_mean": 1.008242262036093,
+            "terminal_wealth_median": 1.0079779786797969,
+            "terminal_wealth_p05": 0.9321989785917083,
+            "terminal_wealth_p95": 1.0851457897968853,
+            "prob_hit_target": 0.0388,
+            "prob_hit_stop": 0.0247
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.06780102140829167,
+            "p25": -0.019762000111290062,
+            "median": 0.007977978679796882,
+            "p75": 0.035900231618205214,
+            "p95": 0.08514578979688535
+          },
+          "possible_outcome_levels": {
+            "p05": 20901.718888034356,
+            "p25": 21978.84742160466,
+            "median": 22600.831839059472,
+            "p75": 23226.90319833182,
+            "p95": 24331.084641536272
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.4208,
+            "hit_plus_10pct": 0.0388,
+            "hit_minus_10pct": 0.0247
+          }
+        },
+        "bootstrap": {
+          "model": "Block bootstrap",
+          "horizon_days": 21,
+          "summary": {
+            "terminal_p05": -0.056593791048626316,
+            "terminal_p25": -0.01368234102689131,
+            "terminal_median": 0.011892952249678124,
+            "terminal_p75": 0.03708463590942784,
+            "terminal_p95": 0.07455549728056204,
+            "terminal_mean": 0.009861717001562116,
+            "VaR_95": 0.05659379104862631,
+            "CVaR_95": 0.10235311122647789,
+            "VaR_99": 0.1083738894453328,
+            "CVaR_99": 0.21380008266936126,
+            "max_drawdown_mean": -0.036242648330417786,
+            "max_drawdown_p05": -0.0795578197645661,
+            "max_drawdown_median": -0.03041696700517227,
+            "max_drawdown_p95": -0.009779089129197834,
+            "prob_finish_below_start": 0.372,
+            "terminal_wealth_mean": 1.009861717001562,
+            "terminal_wealth_median": 1.0118929522496782,
+            "terminal_wealth_p05": 0.9434062089513737,
+            "terminal_wealth_p95": 1.074555497280562,
+            "prob_hit_target": 0.0238,
+            "prob_hit_stop": 0.0182
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.056593791048626316,
+            "p25": -0.01368234102689131,
+            "median": 0.011892952249678124,
+            "p75": 0.03708463590942784,
+            "p95": 0.07455549728056204
+          },
+          "possible_outcome_levels": {
+            "p05": 21153.006846797256,
+            "p25": 22115.165233612093,
+            "median": 22688.613180694672,
+            "p75": 23253.4598521294,
+            "p95": 24093.629632249897
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.372,
+            "hit_plus_10pct": 0.0238,
+            "hit_minus_10pct": 0.0182
+          }
+        },
+        "hmm": {
+          "model": "HMM regime switching",
+          "horizon_days": 21,
+          "summary": {
+            "terminal_p05": -0.06532147907739336,
+            "terminal_p25": -0.02184829341222952,
+            "terminal_median": 0.008846498064629449,
+            "terminal_p75": 0.0407257614793875,
+            "terminal_p95": 0.08714339331787149,
+            "terminal_mean": 0.009720915965606444,
+            "VaR_95": 0.06532147907739333,
+            "CVaR_95": 0.0832121558705771,
+            "VaR_99": 0.09649941410092797,
+            "CVaR_99": 0.10934562849154407,
+            "max_drawdown_mean": -0.040662321551187,
+            "max_drawdown_p05": -0.08172026427118963,
+            "max_drawdown_median": -0.03652505771172482,
+            "max_drawdown_p95": -0.014392018612497481,
+            "prob_finish_below_start": 0.4269,
+            "terminal_wealth_mean": 1.0097209159656066,
+            "terminal_wealth_median": 1.0088464980646294,
+            "terminal_wealth_p05": 0.9346785209226066,
+            "terminal_wealth_p95": 1.0871433933178716,
+            "prob_hit_target": 0.0396,
+            "prob_hit_stop": 0.0113
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.06532147907739336,
+            "p25": -0.02184829341222952,
+            "median": 0.008846498064629449,
+            "p75": 0.0407257614793875,
+            "p95": 0.08714339331787149
+          },
+          "possible_outcome_levels": {
+            "p05": 20957.31506220064,
+            "p25": 21932.068657525662,
+            "median": 22620.305737280218,
+            "p75": 23335.100987602753,
+            "p95": 24375.87480780365
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.4269,
+            "hit_plus_10pct": 0.0396,
+            "hit_minus_10pct": 0.0113
+          }
+        }
+      },
+      "3M": {
+        "student_t": {
+          "model": "Student-t",
+          "horizon_days": 63,
+          "summary": {
+            "terminal_p05": -0.10073159802489277,
+            "terminal_p25": -0.026519855144938043,
+            "terminal_median": 0.02692138811239997,
+            "terminal_p75": 0.08476084830263925,
+            "terminal_p95": 0.17359425407568804,
+            "terminal_mean": 0.03066708461829463,
+            "VaR_95": 0.10073159802489275,
+            "CVaR_95": 0.12948162037619984,
+            "VaR_99": 0.14802424773199907,
+            "CVaR_99": 0.17079343453356913,
+            "max_drawdown_mean": -0.07417704738489171,
+            "max_drawdown_p05": -0.13818345257272993,
+            "max_drawdown_median": -0.0675644431370267,
+            "max_drawdown_p95": -0.03268959687807439,
+            "prob_finish_below_start": 0.3724,
+            "terminal_wealth_mean": 1.0306670846182946,
+            "terminal_wealth_median": 1.0269213881124,
+            "terminal_wealth_p05": 0.8992684019751073,
+            "terminal_wealth_p95": 1.173594254075688,
+            "prob_hit_target": 0.2997,
+            "prob_hit_stop": 0.101
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.10073159802489277,
+            "p25": -0.026519855144938043,
+            "median": 0.02692138811239997,
+            "p75": 0.08476084830263925,
+            "p95": 0.17359425407568804
+          },
+          "possible_outcome_levels": {
+            "p05": 20163.351145665758,
+            "p25": 21827.323133932958,
+            "median": 23025.58001818683,
+            "p75": 24322.45350259936,
+            "p95": 26314.271685172374
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.3724,
+            "hit_plus_10pct": 0.2997,
+            "hit_minus_10pct": 0.101
+          }
+        },
+        "garch_t": {
+          "model": "GARCH-t",
+          "horizon_days": 63,
+          "summary": {
+            "terminal_p05": -0.07941014890082554,
+            "terminal_p25": -0.016253667819227546,
+            "terminal_median": 0.027504565243722134,
+            "terminal_p75": 0.07260608493538406,
+            "terminal_p95": 0.14726481492901886,
+            "terminal_mean": 0.02943343685208795,
+            "VaR_95": 0.07941014890082553,
+            "CVaR_95": 0.11087672423901947,
+            "VaR_99": 0.13070312970796402,
+            "CVaR_99": 0.1621196391890961,
+            "max_drawdown_mean": -0.05985236006311669,
+            "max_drawdown_p05": -0.12214907894219396,
+            "max_drawdown_median": -0.051941706051321423,
+            "max_drawdown_p95": -0.023820315699240514,
+            "prob_finish_below_start": 0.3368,
+            "terminal_wealth_mean": 1.0294334368520879,
+            "terminal_wealth_median": 1.027504565243722,
+            "terminal_wealth_p05": 0.9205898510991745,
+            "terminal_wealth_p95": 1.1472648149290188,
+            "prob_hit_target": 0.2187,
+            "prob_hit_stop": 0.052
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.07941014890082554,
+            "p25": -0.016253667819227546,
+            "median": 0.027504565243722134,
+            "p75": 0.07260608493538406,
+            "p95": 0.14726481492901886
+          },
+          "possible_outcome_levels": {
+            "p05": 20641.419611853136,
+            "p25": 22057.511072840673,
+            "median": 23038.655986666472,
+            "p75": 24049.920006116936,
+            "p95": 25723.914317097715
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.3368,
+            "hit_plus_10pct": 0.2187,
+            "hit_minus_10pct": 0.052
+          }
+        },
+        "garch_jump": {
+          "model": "GARCH-t + empirical jumps",
+          "horizon_days": 63,
+          "summary": {
+            "terminal_p05": -0.10864295621615853,
+            "terminal_p25": -0.026787745404191876,
+            "terminal_median": 0.02443691189983077,
+            "terminal_p75": 0.07721354311041734,
+            "terminal_p95": 0.1701802319143736,
+            "terminal_mean": 0.02661110124339076,
+            "VaR_95": 0.10864295621615848,
+            "CVaR_95": 0.14481940906704577,
+            "VaR_99": 0.16816422877672194,
+            "CVaR_99": 0.2001846655952412,
+            "max_drawdown_mean": -0.071046841345559,
+            "max_drawdown_p05": -0.15238921417824888,
+            "max_drawdown_median": -0.0606027683462626,
+            "max_drawdown_p95": -0.024807779181816873,
+            "prob_finish_below_start": 0.3715,
+            "terminal_wealth_mean": 1.0266111012433907,
+            "terminal_wealth_median": 1.0244369118998309,
+            "terminal_wealth_p05": 0.8913570437838415,
+            "terminal_wealth_p95": 1.1701802319143735,
+            "prob_hit_target": 0.2619,
+            "prob_hit_stop": 0.1103
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.10864295621615853,
+            "p25": -0.026787745404191876,
+            "median": 0.02443691189983077,
+            "p75": 0.07721354311041734,
+            "p95": 0.1701802319143736
+          },
+          "possible_outcome_levels": {
+            "p05": 19985.963067869106,
+            "p25": 21821.31651193448,
+            "median": 22969.873216772412,
+            "p75": 24153.22820294462,
+            "p95": 26237.722650972493
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.3715,
+            "hit_plus_10pct": 0.2619,
+            "hit_minus_10pct": 0.1103
+          }
+        },
+        "bootstrap": {
+          "model": "Block bootstrap",
+          "horizon_days": 63,
+          "summary": {
+            "terminal_p05": -0.09138691252263327,
+            "terminal_p25": -0.013363798289195289,
+            "terminal_median": 0.03372471081134387,
+            "terminal_p75": 0.08175648231085236,
+            "terminal_p95": 0.15204669606348228,
+            "terminal_mean": 0.03157484327397391,
+            "VaR_95": 0.09138691252263326,
+            "CVaR_95": 0.16622220225318812,
+            "VaR_99": 0.2421683502713891,
+            "CVaR_99": 0.29752237842872836,
+            "max_drawdown_mean": -0.06935811855203124,
+            "max_drawdown_p05": -0.1361971860326065,
+            "max_drawdown_median": -0.059464097169858676,
+            "max_drawdown_p95": -0.02493650140214897,
+            "prob_finish_below_start": 0.3119,
+            "terminal_wealth_mean": 1.031574843273974,
+            "terminal_wealth_median": 1.0337247108113439,
+            "terminal_wealth_p05": 0.9086130874773667,
+            "terminal_wealth_p95": 1.1520466960634823,
+            "prob_hit_target": 0.256,
+            "prob_hit_stop": 0.0837
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.09138691252263327,
+            "p25": -0.013363798289195289,
+            "median": 0.03372471081134387,
+            "p75": 0.08175648231085236,
+            "p95": 0.15204669606348228
+          },
+          "possible_outcome_levels": {
+            "p05": 20372.877216763143,
+            "p25": 22122.30758294958,
+            "median": 23178.123779576414,
+            "p75": 24255.089758549817,
+            "p95": 25831.1334168006
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.3119,
+            "hit_plus_10pct": 0.256,
+            "hit_minus_10pct": 0.0837
+          }
+        },
+        "hmm": {
+          "model": "HMM regime switching",
+          "horizon_days": 63,
+          "summary": {
+            "terminal_p05": -0.10021619604060389,
+            "terminal_p25": -0.02654484115783859,
+            "terminal_median": 0.027498798934680324,
+            "terminal_p75": 0.08489930402130114,
+            "terminal_p95": 0.17275740871348824,
+            "terminal_mean": 0.030829186742637127,
+            "VaR_95": 0.10021619604060386,
+            "CVaR_95": 0.1311631689160551,
+            "VaR_99": 0.1502822341690848,
+            "CVaR_99": 0.1728612791422117,
+            "max_drawdown_mean": -0.07431059265039797,
+            "max_drawdown_p05": -0.1387772849963386,
+            "max_drawdown_median": -0.06775638041101756,
+            "max_drawdown_p95": -0.03261961209863077,
+            "prob_finish_below_start": 0.3685,
+            "terminal_wealth_mean": 1.0308291867426371,
+            "terminal_wealth_median": 1.0274987989346802,
+            "terminal_wealth_p05": 0.8997838039593961,
+            "terminal_wealth_p95": 1.1727574087134882,
+            "prob_hit_target": 0.3049,
+            "prob_hit_stop": 0.1028
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.10021619604060389,
+            "p25": -0.02654484115783859,
+            "median": 0.027498798934680324,
+            "p75": 0.08489930402130114,
+            "p95": 0.17275740871348824
+          },
+          "possible_outcome_levels": {
+            "p05": 20174.907463187385,
+            "p25": 21826.762898801,
+            "median": 23038.526694773453,
+            "p75": 24325.55794980041,
+            "p95": 26295.5079803034
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.3685,
+            "hit_plus_10pct": 0.3049,
+            "hit_minus_10pct": 0.1028
+          }
+        }
+      },
+      "6M": {
+        "student_t": {
+          "model": "Student-t",
+          "horizon_days": 126,
+          "summary": {
+            "terminal_p05": -0.12563542612894688,
+            "terminal_p25": -0.026927234228551422,
+            "terminal_median": 0.05118098691271189,
+            "terminal_p75": 0.13525484372068747,
+            "terminal_p95": 0.2655285492998929,
+            "terminal_mean": 0.05828457892979984,
+            "VaR_95": 0.12563542612894685,
+            "CVaR_95": 0.16438377924168143,
+            "VaR_99": 0.18733533976562675,
+            "CVaR_99": 0.21692821238437557,
+            "max_drawdown_mean": -0.10386134492111225,
+            "max_drawdown_p05": -0.18672373218279953,
+            "max_drawdown_median": -0.0960931101399653,
+            "max_drawdown_p95": -0.049484031375290276,
+            "prob_finish_below_start": 0.3295,
+            "terminal_wealth_mean": 1.0582845789297999,
+            "terminal_wealth_median": 1.051180986912712,
+            "terminal_wealth_p05": 0.8743645738710532,
+            "terminal_wealth_p95": 1.265528549299893,
+            "prob_hit_target": 0.5308,
+            "prob_hit_stop": 0.1994
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.12563542612894688,
+            "p25": -0.026927234228551422,
+            "median": 0.05118098691271189,
+            "p75": 0.13525484372068747,
+            "p95": 0.2655285492998929
+          },
+          "possible_outcome_levels": {
+            "p05": 19604.95875710806,
+            "p25": 21818.188900489135,
+            "median": 23569.527529507483,
+            "p75": 25454.62734316307,
+            "p95": 28375.617855974735
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.3295,
+            "hit_plus_10pct": 0.5308,
+            "hit_minus_10pct": 0.1994
+          }
+        },
+        "garch_t": {
+          "model": "GARCH-t",
+          "horizon_days": 126,
+          "summary": {
+            "terminal_p05": -0.10485799682106971,
+            "terminal_p25": -0.013749893293920457,
+            "terminal_median": 0.052199414776613495,
+            "terminal_p75": 0.1214020345781267,
+            "terminal_p95": 0.2314568609738013,
+            "terminal_mean": 0.05675748316130361,
+            "VaR_95": 0.1048579968210697,
+            "CVaR_95": 0.14579957672145763,
+            "VaR_99": 0.17339850281815727,
+            "CVaR_99": 0.2104045241126432,
+            "max_drawdown_mean": -0.0867355547338589,
+            "max_drawdown_p05": -0.17029235383908464,
+            "max_drawdown_median": -0.07686346239535202,
+            "max_drawdown_p95": -0.037061933172197456,
+            "prob_finish_below_start": 0.2954,
+            "terminal_wealth_mean": 1.0567574831613036,
+            "terminal_wealth_median": 1.0521994147766134,
+            "terminal_wealth_p05": 0.8951420031789303,
+            "terminal_wealth_p95": 1.2314568609738012,
+            "prob_hit_target": 0.4718,
+            "prob_hit_stop": 0.129
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.10485799682106971,
+            "p25": -0.013749893293920457,
+            "median": 0.052199414776613495,
+            "p75": 0.1214020345781267,
+            "p95": 0.2314568609738013
+          },
+          "possible_outcome_levels": {
+            "p05": 20070.82923817782,
+            "p25": 22113.650580058384,
+            "median": 23592.362668150487,
+            "p75": 25144.020349209033,
+            "p95": 27611.664163911522
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.2954,
+            "hit_plus_10pct": 0.4718,
+            "hit_minus_10pct": 0.129
+          }
+        },
+        "garch_jump": {
+          "model": "GARCH-t + empirical jumps",
+          "horizon_days": 126,
+          "summary": {
+            "terminal_p05": -0.1420922291182407,
+            "terminal_p25": -0.02905864952482015,
+            "terminal_median": 0.04937188328245257,
+            "terminal_p75": 0.13354290776942906,
+            "terminal_p95": 0.27174282615347445,
+            "terminal_mean": 0.05504256991523837,
+            "VaR_95": 0.14209222911824065,
+            "CVaR_95": 0.19212020306964891,
+            "VaR_99": 0.22083863698889203,
+            "CVaR_99": 0.27239712985186504,
+            "max_drawdown_mean": -0.10460573656230918,
+            "max_drawdown_p05": -0.20809484332518655,
+            "max_drawdown_median": -0.09183461411426774,
+            "max_drawdown_p95": -0.0404968921965106,
+            "prob_finish_below_start": 0.339,
+            "terminal_wealth_mean": 1.0550425699152384,
+            "terminal_wealth_median": 1.0493718832824526,
+            "terminal_wealth_p05": 0.8579077708817593,
+            "terminal_wealth_p95": 1.2717428261534744,
+            "prob_hit_target": 0.5127,
+            "prob_hit_stop": 0.215
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.1420922291182407,
+            "p25": -0.02905864952482015,
+            "median": 0.04937188328245257,
+            "p75": 0.13354290776942906,
+            "p95": 0.27174282615347445
+          },
+          "possible_outcome_levels": {
+            "p05": 19235.965143322264,
+            "p25": 21770.39841328696,
+            "median": 23528.96389836499,
+            "p75": 25416.24240086075,
+            "p95": 28514.954060871896
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.339,
+            "hit_plus_10pct": 0.5127,
+            "hit_minus_10pct": 0.215
+          }
+        },
+        "bootstrap": {
+          "model": "Block bootstrap",
+          "horizon_days": 126,
+          "summary": {
+            "terminal_p05": -0.1349508459985306,
+            "terminal_p25": -0.007409406295106696,
+            "terminal_median": 0.0654701153619035,
+            "terminal_p75": 0.1381511163125868,
+            "terminal_p95": 0.2532327624613959,
+            "terminal_mean": 0.06263315308427875,
+            "VaR_95": 0.1349508459985305,
+            "CVaR_95": 0.22206300245800922,
+            "VaR_99": 0.2807191586092411,
+            "CVaR_99": 0.3399513192892663,
+            "max_drawdown_mean": -0.09854027975498832,
+            "max_drawdown_p05": -0.22181298257577867,
+            "max_drawdown_median": -0.08209994358217187,
+            "max_drawdown_p95": -0.04013164469971772,
+            "prob_finish_below_start": 0.2725,
+            "terminal_wealth_mean": 1.0626331530842787,
+            "terminal_wealth_median": 1.0654701153619035,
+            "terminal_wealth_p05": 0.8650491540014694,
+            "terminal_wealth_p95": 1.253232762461396,
+            "prob_hit_target": 0.5256,
+            "prob_hit_stop": 0.1656
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.1349508459985306,
+            "p25": -0.007409406295106696,
+            "median": 0.0654701153619035,
+            "p75": 0.1381511163125868,
+            "p95": 0.2532327624613959
+          },
+          "possible_outcome_levels": {
+            "p05": 19396.08887856325,
+            "p25": 22255.816662521433,
+            "median": 23889.917653138833,
+            "p75": 25519.567422405005,
+            "p95": 28099.9223382713
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.2725,
+            "hit_plus_10pct": 0.5256,
+            "hit_minus_10pct": 0.1656
+          }
+        },
+        "hmm": {
+          "model": "HMM regime switching",
+          "horizon_days": 126,
+          "summary": {
+            "terminal_p05": -0.12957327166019728,
+            "terminal_p25": -0.022105649588952364,
+            "terminal_median": 0.05504787537915712,
+            "terminal_p75": 0.13895681826297412,
+            "terminal_p95": 0.2681491154476501,
+            "terminal_mean": 0.06102432835890071,
+            "VaR_95": 0.12957327166019722,
+            "CVaR_95": 0.17092172955455898,
+            "VaR_99": 0.1957121124673056,
+            "CVaR_99": 0.22637104620152965,
+            "max_drawdown_mean": -0.10322469002409505,
+            "max_drawdown_p05": -0.18994722071500103,
+            "max_drawdown_median": -0.09404842317851037,
+            "max_drawdown_p95": -0.04883246807153246,
+            "prob_finish_below_start": 0.32,
+            "terminal_wealth_mean": 1.0610243283589007,
+            "terminal_wealth_median": 1.0550478753791572,
+            "terminal_wealth_p05": 0.8704267283398027,
+            "terminal_wealth_p95": 1.26814911544765,
+            "prob_hit_target": 0.5347,
+            "prob_hit_stop": 0.1974
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.12957327166019728,
+            "p25": -0.022105649588952364,
+            "median": 0.05504787537915712,
+            "p75": 0.13895681826297412,
+            "p95": 0.2681491154476501
+          },
+          "possible_outcome_levels": {
+            "p05": 19516.66458149864,
+            "p25": 21926.29823019899,
+            "median": 23656.230709357696,
+            "p75": 25537.632831251492,
+            "p95": 28434.376059111437
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.32,
+            "hit_plus_10pct": 0.5347,
+            "hit_minus_10pct": 0.1974
+          }
+        }
+      },
+      "1Y": {
+        "student_t": {
+          "model": "Student-t",
+          "horizon_days": 252,
+          "summary": {
+            "terminal_p05": -0.15576261138767963,
+            "terminal_p25": -0.011235326975075954,
+            "terminal_median": 0.10381232046941369,
+            "terminal_p75": 0.23014058418147976,
+            "terminal_p95": 0.4424273619788918,
+            "terminal_mean": 0.11843621906358949,
+            "VaR_95": 0.15576261138767958,
+            "CVaR_95": 0.21086435085242755,
+            "VaR_99": 0.2451398840500325,
+            "CVaR_99": 0.2808062509460983,
+            "max_drawdown_mean": -0.14079510724900246,
+            "max_drawdown_p05": -0.2482235707612985,
+            "max_drawdown_median": -0.12948766581132665,
+            "max_drawdown_p95": -0.07221649530970572,
+            "prob_finish_below_start": 0.2725,
+            "terminal_wealth_mean": 1.1184362190635893,
+            "terminal_wealth_median": 1.1038123204694137,
+            "terminal_wealth_p05": 0.8442373886123203,
+            "terminal_wealth_p95": 1.4424273619788919,
+            "prob_hit_target": 0.7229,
+            "prob_hit_stop": 0.2929
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.15576261138767963,
+            "p25": -0.011235326975075954,
+            "median": 0.10381232046941369,
+            "p75": 0.23014058418147976,
+            "p95": 0.4424273619788918
+          },
+          "possible_outcome_levels": {
+            "p05": 18929.448515596017,
+            "p25": 22170.032060331196,
+            "median": 24749.62465894917,
+            "p75": 27582.15067148793,
+            "p95": 32342.034188922615
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.2725,
+            "hit_plus_10pct": 0.7229,
+            "hit_minus_10pct": 0.2929
+          }
+        },
+        "garch_t": {
+          "model": "GARCH-t",
+          "horizon_days": 252,
+          "summary": {
+            "terminal_p05": -0.12556171390605278,
+            "terminal_p25": 0.008943111052748642,
+            "terminal_median": 0.10440088502737255,
+            "terminal_p75": 0.20846620593141857,
+            "terminal_p95": 0.38547600024018086,
+            "terminal_mean": 0.11473715927602107,
+            "VaR_95": 0.12556171390605275,
+            "CVaR_95": 0.17634759094174718,
+            "VaR_99": 0.20850589579211848,
+            "CVaR_99": 0.2510902154229779,
+            "max_drawdown_mean": -0.12015780396422185,
+            "max_drawdown_p05": -0.22586877388148377,
+            "max_drawdown_median": -0.10851655284453293,
+            "max_drawdown_p95": -0.05627950730261112,
+            "prob_finish_below_start": 0.2294,
+            "terminal_wealth_mean": 1.114737159276021,
+            "terminal_wealth_median": 1.1044008850273725,
+            "terminal_wealth_p05": 0.8744382860939472,
+            "terminal_wealth_p95": 1.385476000240181,
+            "prob_hit_target": 0.7069,
+            "prob_hit_stop": 0.209
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.12556171390605278,
+            "p25": 0.008943111052748642,
+            "median": 0.10440088502737255,
+            "p75": 0.20846620593141857,
+            "p95": 0.38547600024018086
+          },
+          "possible_outcome_levels": {
+            "p05": 19606.611528884183,
+            "p25": 22622.47198886918,
+            "median": 24762.821424039495,
+            "p75": 27096.168846083972,
+            "p95": 31065.073603585326
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.2294,
+            "hit_plus_10pct": 0.7069,
+            "hit_minus_10pct": 0.209
+          }
+        },
+        "garch_jump": {
+          "model": "GARCH-t + empirical jumps",
+          "horizon_days": 252,
+          "summary": {
+            "terminal_p05": -0.1763862439184013,
+            "terminal_p25": -0.018774975259657545,
+            "terminal_median": 0.0968101938098771,
+            "terminal_p75": 0.23076514285282645,
+            "terminal_p95": 0.45159039843685966,
+            "terminal_mean": 0.11333011373065119,
+            "VaR_95": 0.17638624391840127,
+            "CVaR_95": 0.23841437686475359,
+            "VaR_99": 0.273916619731475,
+            "CVaR_99": 0.320827959261252,
+            "max_drawdown_mean": -0.14664330084239108,
+            "max_drawdown_p05": -0.27256281389760273,
+            "max_drawdown_median": -0.13390885533878227,
+            "max_drawdown_p95": -0.06326587429701193,
+            "prob_finish_below_start": 0.2873,
+            "terminal_wealth_mean": 1.1133301137306513,
+            "terminal_wealth_median": 1.096810193809877,
+            "terminal_wealth_p05": 0.8236137560815987,
+            "terminal_wealth_p95": 1.4515903984368597,
+            "prob_hit_target": 0.7147,
+            "prob_hit_stop": 0.3141
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.1763862439184013,
+            "p25": -0.018774975259657545,
+            "median": 0.0968101938098771,
+            "p75": 0.23076514285282645,
+            "p95": 0.45159039843685966
+          },
+          "possible_outcome_levels": {
+            "p05": 18467.0264581738,
+            "p25": 22000.97844347672,
+            "median": 24592.623325095374,
+            "p75": 27596.15449478893,
+            "p95": 32547.487334231348
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.2873,
+            "hit_plus_10pct": 0.7147,
+            "hit_minus_10pct": 0.3141
+          }
+        },
+        "bootstrap": {
+          "model": "Block bootstrap",
+          "horizon_days": 252,
+          "summary": {
+            "terminal_p05": -0.17472338334948367,
+            "terminal_p25": 0.017334249115542044,
+            "terminal_median": 0.13056093407437486,
+            "terminal_p75": 0.2475039337785218,
+            "terminal_p95": 0.428096850841753,
+            "terminal_mean": 0.13073349593696976,
+            "VaR_95": 0.17472338334948365,
+            "CVaR_95": 0.2687524464687356,
+            "VaR_99": 0.32765108238825774,
+            "CVaR_99": 0.39591789756520307,
+            "max_drawdown_mean": -0.13745330634101582,
+            "max_drawdown_p05": -0.343198948643762,
+            "max_drawdown_median": -0.11189296707705387,
+            "max_drawdown_p95": -0.05970987495124447,
+            "prob_finish_below_start": 0.2181,
+            "terminal_wealth_mean": 1.13073349593697,
+            "terminal_wealth_median": 1.1305609340743747,
+            "terminal_wealth_p05": 0.8252766166505163,
+            "terminal_wealth_p95": 1.4280968508417529,
+            "prob_hit_target": 0.7539,
+            "prob_hit_stop": 0.2505
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.17472338334948367,
+            "p25": 0.017334249115542044,
+            "median": 0.13056093407437486,
+            "p75": 0.2475039337785218,
+            "p95": 0.428096850841753
+          },
+          "possible_outcome_levels": {
+            "p05": 18504.311034707047,
+            "p25": 22810.617666956226,
+            "median": 25349.38073576893,
+            "p75": 27971.47082798533,
+            "p95": 32020.716184731245
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.2181,
+            "hit_plus_10pct": 0.7539,
+            "hit_minus_10pct": 0.2505
+          }
+        },
+        "hmm": {
+          "model": "HMM regime switching",
+          "horizon_days": 252,
+          "summary": {
+            "terminal_p05": -0.1440725419154696,
+            "terminal_p25": -0.0014491616086402537,
+            "terminal_median": 0.11522893324243388,
+            "terminal_p75": 0.23914544193287685,
+            "terminal_p95": 0.4442516438194755,
+            "terminal_mean": 0.12704165127653566,
+            "VaR_95": 0.1440725419154696,
+            "CVaR_95": 0.20201386354912523,
+            "VaR_99": 0.23954837368849008,
+            "CVaR_99": 0.2782352460333721,
+            "max_drawdown_mean": -0.1378257459570518,
+            "max_drawdown_p05": -0.23972635889588143,
+            "max_drawdown_median": -0.12738362299911238,
+            "max_drawdown_p95": -0.07109060103166198,
+            "prob_finish_below_start": 0.2525,
+            "terminal_wealth_mean": 1.1270416512765355,
+            "terminal_wealth_median": 1.1152289332424339,
+            "terminal_wealth_p05": 0.8559274580845304,
+            "terminal_wealth_p95": 1.4442516438194755,
+            "prob_hit_target": 0.7424,
+            "prob_hit_stop": 0.274
+          },
+          "terminal_return_percentiles": {
+            "p05": -0.1440725419154696,
+            "p25": -0.0014491616086402537,
+            "median": 0.11522893324243388,
+            "p75": 0.23914544193287685,
+            "p95": 0.4442516438194755
+          },
+          "possible_outcome_levels": {
+            "p05": 19191.562668798437,
+            "p25": 22389.45697086915,
+            "median": 25005.60737971519,
+            "p75": 27784.05714174687,
+            "p95": 32382.93814513809
+          },
+          "risk_probabilities": {
+            "finish_below_start": 0.2525,
+            "hit_plus_10pct": 0.7424,
+            "hit_minus_10pct": 0.274
+          }
+        }
+      }
+    }
+  },
+  "summary": {
+    "market_regime": "BULL",
+    "market_regime_probability": 0.9627287585897374,
+    "realized_volatility_state": "LOW",
+    "iv_vs_realized": "IV_ABOVE_REALIZED",
+    "term_structure_state": "FLAT",
+    "strategies_available": [
+      "Equal Weight",
+      "Minimum Variance",
+      "Constrained Min Variance",
+      "Risk Parity",
+      "HMM Conditional Risk Parity"
+    ]
+  }
+}
