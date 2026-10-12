@@ -47,6 +47,8 @@ OUTPUT_JSON = (
 N_PATHS = 10_000
 SEED = 42
 
+PATH_SAMPLE_COUNT = 60
+
 HORIZONS = {
     "1M": "1M",
     "3M": "3M",
@@ -68,6 +70,103 @@ STATE_NAMES = [
     "BEAR",
 ]
 
+# ============================================================
+# PATH VISUALIZATION
+# ============================================================
+
+def build_path_visualization(
+    paths: np.ndarray,
+    initial_value: float,
+) -> dict:
+    """
+    Prepare a compact representation of Monte Carlo paths
+    for frontend visualization.
+
+    The simulation itself still uses all N_PATHS paths.
+    Only representative paths and percentile trajectories
+    are stored in the output artifact.
+    """
+
+    paths = np.asarray(paths, dtype=float)
+
+    if paths.ndim != 2 or paths.shape[0] == 0:
+        raise ValueError(
+            "Monte Carlo paths must be a non-empty 2D array."
+        )
+
+    # Normalized paths start at 1.0.
+    # Convert them back to actual NIFTY price levels.
+    price_paths = paths * float(initial_value)
+
+    n_steps = price_paths.shape[1]
+
+    days = list(range(n_steps))
+
+    # --------------------------------------------------------
+    # Representative paths
+    #
+    # Select paths according to terminal outcome rank rather
+    # than simply taking the first 60 random paths. This gives
+    # the chart a useful spread across the simulated outcomes.
+    # --------------------------------------------------------
+
+    terminal_values = price_paths[:, -1]
+
+    order = np.argsort(terminal_values)
+
+    sample_count = min(
+        PATH_SAMPLE_COUNT,
+        len(order),
+    )
+
+    sample_positions = np.linspace(
+        0,
+        len(order) - 1,
+        sample_count,
+        dtype=int,
+    )
+
+    selected_indices = order[
+        sample_positions
+    ]
+
+    representative_paths = (
+        price_paths[selected_indices]
+        .tolist()
+    )
+
+    # --------------------------------------------------------
+    # Percentile trajectories
+    #
+    # These are calculated independently at every time step.
+    # They form the probability fan on the frontend.
+    # --------------------------------------------------------
+
+    percentile_paths = {}
+
+    for percentile, key in [
+        (5, "p05"),
+        (25, "p25"),
+        (50, "median"),
+        (75, "p75"),
+        (95, "p95"),
+    ]:
+        percentile_paths[key] = (
+            np.percentile(
+                price_paths,
+                percentile,
+                axis=0,
+            )
+            .tolist()
+        )
+
+    return {
+        "days": days,
+        "paths": representative_paths,
+        "percentile_paths": percentile_paths,
+        "path_count": int(sample_count),
+        "total_simulation_paths": int(paths.shape[0]),
+    }
 
 # ============================================================
 # LOADERS
@@ -1222,20 +1321,46 @@ def main():
                 degrees_of_freedom=8.0,
             )
 
+                        # ------------------------------------------------
+            # Extract simulated paths
+            # ------------------------------------------------
 
-            paths = result.paths
+            paths = np.asarray(
+                result.paths,
+                dtype=float,
+            )
 
+            if paths.ndim != 2:
+                raise RuntimeError(
+                    "Monte Carlo paths must be a 2D array. "
+                    f"Received shape: {paths.shape}"
+                )
+
+            if paths.shape[0] != N_PATHS:
+                raise RuntimeError(
+                    "Unexpected number of Monte Carlo paths. "
+                    f"Expected {N_PATHS}, got {paths.shape[0]}"
+                )
+
+            # ------------------------------------------------
+            # Frontend path visualization
+            # ------------------------------------------------
+
+            path_visualization = build_path_visualization(
+                paths=paths,
+                initial_value=initial_value,
+            )
 
             # ------------------------------------------------
             # Summary
             # ------------------------------------------------
 
             summary = mc.summarize_simulation(
-    paths=paths,
-    initial_value=1.0,
-    target_pct=0.10,
-    stop_pct=0.10,
-)
+                paths=paths,
+                initial_value=1.0,
+                target_pct=0.10,
+                stop_pct=0.10,
+            )
 
             # ------------------------------------------------
             # Terminal return distribution
@@ -1245,37 +1370,31 @@ def main():
                 paths[:, -1] - 1.0
             )
 
-
             percentiles = {
-
                 "p05": float(
                     np.percentile(
                         terminal_returns,
                         5,
                     )
                 ),
-
                 "p25": float(
                     np.percentile(
                         terminal_returns,
                         25,
                     )
                 ),
-
                 "median": float(
                     np.percentile(
                         terminal_returns,
                         50,
                     )
                 ),
-
                 "p75": float(
                     np.percentile(
                         terminal_returns,
                         75,
                     )
                 ),
-
                 "p95": float(
                     np.percentile(
                         terminal_returns,
@@ -1284,34 +1403,23 @@ def main():
                 ),
             }
 
-
             # ------------------------------------------------
-            # Convert to actual NIFTY levels
+            # Convert returns to actual NIFTY price levels
             # ------------------------------------------------
 
             outcome_levels = {
-
-                key: initial_value
-                * (
+                key: initial_value * (
                     1.0 + value
                 )
-
-                for key, value
-                in percentiles.items()
+                for key, value in percentiles.items()
             }
-
 
             # ------------------------------------------------
             # Save model output
             # ------------------------------------------------
 
-            output[
-                "horizons"
-            ][horizon_label][model] = {
-
-                "model": model_name(
-                    model
-                ),
+            model_output = {
+                "model": model_name(model),
 
                 "horizon_days": horizon,
 
@@ -1346,7 +1454,16 @@ def main():
                         )
                     ),
                 },
+
+                "path_visualization": (
+                    path_visualization
+                ),
             }
+
+            output[
+                "horizons"
+            ][horizon_label][model] = model_output
+            
 
 
             # ------------------------------------------------
@@ -1380,6 +1497,71 @@ def main():
         f"{below_start:.2%}"
     )
             print()
+    
+        # ========================================================
+    # FINAL OUTPUT VALIDATION
+    # ========================================================
+
+    for horizon_label in HORIZONS:
+        horizon_output = output[
+            "horizons"
+        ].get(horizon_label)
+
+        if not isinstance(
+            horizon_output,
+            dict,
+        ):
+            raise RuntimeError(
+                f"Invalid horizon output: "
+                f"{horizon_label}"
+            )
+
+        for model in MODELS:
+            model_output = horizon_output.get(
+                model
+            )
+
+            if not isinstance(
+                model_output,
+                dict,
+            ):
+                raise RuntimeError(
+                    f"Invalid model output: "
+                    f"{horizon_label}/{model}"
+                )
+
+            visualization = model_output.get(
+                "path_visualization"
+            )
+
+            if not isinstance(
+                visualization,
+                dict,
+            ):
+                raise RuntimeError(
+                    f"Missing path_visualization: "
+                    f"{horizon_label}/{model}"
+                )
+
+            if not isinstance(
+                visualization.get("paths"),
+                list,
+            ):
+                raise RuntimeError(
+                    f"Invalid visualization paths: "
+                    f"{horizon_label}/{model}"
+                )
+
+            if not isinstance(
+                visualization.get(
+                    "percentile_paths"
+                ),
+                dict,
+            ):
+                raise RuntimeError(
+                    f"Invalid percentile paths: "
+                    f"{horizon_label}/{model}"
+                )
 
 
     # ========================================================

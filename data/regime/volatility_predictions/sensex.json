@@ -4,35 +4,35 @@
   "data": {
     "input_file": "/Users/dhruvil/QuantOS/data/regime/volatility/sensex.parquet",
     "dataset_start": "2022-02-02T00:00:00+05:30",
-    "dataset_end": "2026-09-04T00:00:00+05:30",
-    "rows": 1139
+    "dataset_end": "2026-10-12T00:00:00+05:30",
+    "rows": 1163
   },
   "evaluation": {
-    "garch_1d_mse": 1.1477035523558397e-08,
-    "garch_1d_qlike": -8.939866746021904,
-    "garch_5d_mse": 1.268440881292489e-07,
-    "garch_5d_qlike": -7.2808192029105046,
-    "garch_21d_mse": 2.4131325807585466e-06,
-    "garch_21d_qlike": -5.398695825082759,
-    "har_1d_mse": 6.38322647119981e-09,
-    "har_1d_qlike": -8.952758286465762
+    "garch_1d_mse": 1.114204223028965e-08,
+    "garch_1d_qlike": -8.974621605709087,
+    "garch_5d_mse": 1.2316775331295616e-07,
+    "garch_5d_qlike": -7.306198328946385,
+    "garch_21d_mse": 2.3356133575162215e-06,
+    "garch_21d_qlike": -5.419357810369627,
+    "har_1d_mse": 6.220403705839413e-09,
+    "har_1d_qlike": -8.984687102173286
   },
   "live": {
-    "latest_date": "2026-09-04T00:00:00+05:30",
-    "latest_close": 76515.43,
-    "current_realized_vol_21d": 0.06824098105148595,
-    "long_run_vol_21d": 0.11621361064798776,
-    "volatility_ratio": 0.5872030020492918,
-    "volatility_level": "LOW",
+    "latest_date": "2026-10-12T00:00:00+05:30",
+    "latest_close": 71924.68,
+    "current_realized_vol_21d": 0.13060733461991544,
+    "long_run_vol_21d": 0.1156499365168093,
+    "volatility_ratio": 1.1293333879256573,
+    "volatility_level": "MEDIUM",
     "garch": {
       "model": "GARCH(1,1)-Student-t",
-      "forecast_vol_1d": 0.09595735134718379,
-      "forecast_vol_5d": 0.09840153774132251,
-      "forecast_vol_21d": 0.10592132142420264
+      "forecast_vol_1d": 0.13753790285367815,
+      "forecast_vol_5d": 0.1370683176136345,
+      "forecast_vol_21d": 0.1355675192429524
     },
     "har": {
       "model": "HAR-RV",
-      "forecast_vol_1d": 0.10526052595201994
+      "forecast_vol_1d": 0.13044793358068763
     }
   }
 }

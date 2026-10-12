@@ -30,7 +30,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Current completed market date requested for the volatility baseline.
 FROM_DATE = "2022-01-01"
-TO_DATE = "2026-09-04"
+TO_DATE = date.today().isoformat()
 
 INSTRUMENTS = {
     "NIFTY_50": "NSE_INDEX|Nifty 50",

@@ -74,6 +74,7 @@ def load_garch() -> dict:
     return data.get("live", data)
 
 
+
 def load_hmm() -> dict:
     if not HMM_PATH.exists():
         return {}
@@ -81,7 +82,12 @@ def load_hmm() -> dict:
     with open(HMM_PATH, "r") as f:
         data = json.load(f)
 
-    return data.get("summary", data)
+    summary = data.get("summary", {})
+    if not isinstance(summary, dict):
+        summary = {}
+
+    return {**data, **summary}
+
 
 
 def get_realized_vol(
@@ -98,15 +104,12 @@ def get_realized_vol(
     mapping = {
         "realized_vol_1d": [
             "realized_vol_1d",
-            "rv_1d",
         ],
         "realized_vol_5d": [
             "realized_vol_5d",
-            "rv_5d",
         ],
         "realized_vol_21d": [
             "realized_vol_21d",
-            "rv_21d",
         ],
         "forward_vol_5d": [
             "forward_vol_5d",
@@ -365,8 +368,9 @@ def main():
                     "%Y-%m-%d"
                 ),
 
+            # Not inferred without an exchange holiday calendar.
             "next_trading_session":
-                "2026-10-05",
+                None,
 
             "latest_close":
                 latest_close,

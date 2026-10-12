@@ -140,122 +140,83 @@ def build_volatility_dataset():
         )
     )
 
+    
     # --------------------------------------------------------
-    # Realized variance.
+    # Backward realized variance
     # --------------------------------------------------------
 
-    df["rv_1d"] = (
-        df["log_return_1d"]
-        .pow(2)
-    )
+    squared_return = df["log_return_1d"].pow(2)
+
+    # Realized variance is the SUM of squared returns.
+    df["rv_1d"] = squared_return
 
     df["rv_5d"] = (
-        realized_variance(
-            df["log_return_1d"],
-            5,
-        )
+        squared_return
+        .rolling(window=5, min_periods=5)
+        .sum()
     )
 
     df["rv_21d"] = (
-        realized_variance(
-            df["log_return_1d"],
-            21,
-        )
+        squared_return
+        .rolling(window=21, min_periods=21)
+        .sum()
     )
 
-    # Daily realized variance.
-    df["rv_daily"] = (
-        df["rv_1d"]
-    )
+    # HAR features use the MEAN daily squared return.
+    df["rv_daily"] = squared_return
 
-    # Weekly realized variance.
     df["rv_weekly"] = (
-        df["rv_5d"]
+        squared_return
+        .rolling(window=5, min_periods=5)
+        .mean()
     )
 
-    # Monthly realized variance.
     df["rv_monthly"] = (
-        df["rv_21d"]
-    )
-
-    # --------------------------------------------------------
-    # Annualized realized volatility.
-    # --------------------------------------------------------
-
-    df["realized_vol_1d"] = (
-        np.sqrt(
-            df["rv_1d"]
-            * ANNUALIZATION
-        )
-    )
-
-    df["realized_vol_5d"] = (
-        np.sqrt(
-            df["rv_5d"]
-            * ANNUALIZATION
-        )
-    )
-
-    df["realized_vol_21d"] = (
-        np.sqrt(
-            df["rv_21d"]
-            * ANNUALIZATION
-        )
-    )
-
-    # --------------------------------------------------------
-    # Forward realized variance.
-    #
-    # These are useful for historical model evaluation.
-    # They are deliberately shifted into the future and therefore
-    # must never be used as today's input.
-    # --------------------------------------------------------
-
-    df["forward_rv_1d"] = (
-        df["rv_1d"]
-        .shift(-1)
-    )
-
-    df["forward_rv_5d"] = (
-        df["rv_1d"]
-        .rolling(
-            5,
-            min_periods=5,
-        )
+        squared_return
+        .rolling(window=21, min_periods=21)
         .mean()
-        .shift(-4)
     )
 
-    df["forward_rv_21d"] = (
-        df["rv_1d"]
-        .rolling(
-            21,
-            min_periods=21,
+    
+    # --------------------------------------------------------
+    # Forward realized variance
+    # Targets use the NEXT h squared returns.
+    # --------------------------------------------------------
+
+    for horizon in (1, 5, 21):
+        df[f"forward_rv_{horizon}d"] = (
+            squared_return
+            .shift(-1)
+            .rolling(
+                window=horizon,
+                min_periods=horizon,
+            )
+            .sum()
+            .shift(-(horizon - 1))
         )
-        .mean()
-        .shift(-20)
-    )
 
-    df["forward_vol_1d"] = (
-        np.sqrt(
-            df["forward_rv_1d"]
+    # --------------------------------------------------------
+    # Annualized realized volatility
+    # --------------------------------------------------------
+
+    for horizon in (1, 5, 21):
+        df[f"realized_vol_{horizon}d"] = np.sqrt(
+            df[f"rv_{horizon}d"]
             * ANNUALIZATION
+            / horizon
         )
-    )
 
-    df["forward_vol_5d"] = (
-        np.sqrt(
-            df["forward_rv_5d"]
-            * ANNUALIZATION
-        )
-    )
+    # --------------------------------------------------------
+    # Forward annualized volatility
+    # --------------------------------------------------------
 
-    df["forward_vol_21d"] = (
-        np.sqrt(
-            df["forward_rv_21d"]
+    for horizon in (1, 5, 21):
+        df[f"forward_vol_{horizon}d"] = np.sqrt(
+            df[f"forward_rv_{horizon}d"]
             * ANNUALIZATION
+            / horizon
         )
-    )
+
 
     # --------------------------------------------------------
     # Preserve original market columns and required order.
