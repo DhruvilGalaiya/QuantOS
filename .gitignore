@@ -1,0 +1,18 @@
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+
+# Local MLOps tracking and generated outputs
+mlflow.db
+mlflow.db-shm
+mlflow.db-wal
+mlruns/
+mlops/artifacts/
+
+# Python cache files
+__pycache__/
+*.py[cod]

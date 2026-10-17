@@ -1,0 +1,40 @@
+
+name: QuantOS MLOps CI
+
+on:
+  push:
+    paths:
+      - "mlops/**"
+      - "src/quantos_hmm_v10.py"
+      - "requirements-mlops.txt"
+      - ".github/workflows/mlops-ci.yml"
+  pull_request:
+    paths:
+      - "mlops/**"
+      - "src/quantos_hmm_v10.py"
+      - "requirements-mlops.txt"
+      - ".github/workflows/mlops-ci.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-mlops.txt
+
+      - name: Install MLOps dependencies
+        run: python -m pip install -r requirements-mlops.txt
+
+      - name: Compile experiment code
+        run: python -m py_compile mlops/experiments/run_hmm_experiment.py
+
+      - name: Run input validation tests
+        run: python -m unittest discover -s mlops/tests -p 'test_*.py' -v
