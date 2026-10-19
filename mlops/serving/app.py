@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
+import os
 import sys
 
 import pandas as pd
@@ -14,8 +15,19 @@ sys.path.insert(0, str(ROOT / "src"))
 FEATURE_FILE = ROOT / "data/regime/features/nifty_50.parquet"
 TEMPERATURE = 1.85
 MODEL_VERSION = "HMM_V10"
+FRESHNESS_MAX_DAYS = int(os.getenv("FRESHNESS_MAX_DAYS", "3"))
 
 _snapshot: dict | None = None
+
+
+def data_age_days(snapshot: dict) -> int:
+    data_date = date.fromisoformat(str(snapshot["data_through"])[:10])
+    return (date.today() - data_date).days
+
+
+def is_data_fresh(snapshot: dict) -> bool:
+    age = data_age_days(snapshot)
+    return 0 <= age <= FRESHNESS_MAX_DAYS
 
 
 def build_snapshot() -> dict:
@@ -74,17 +86,30 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="QuantOS HMM Inference API",
-    version="1.0.0",
-    description="Serves a validated QuantOS HMM V10 regime snapshot.",
+    version="1.1.0",
+    description="Serves a validated QuantOS HMM V10 regime snapshot with freshness monitoring.",
     lifespan=lifespan,
 )
 
 
 @app.get("/health")
 def health():
+    if _snapshot is None:
+        return {
+            "status": "not_ready",
+            "model_version": MODEL_VERSION,
+        }
+
+    age = data_age_days(_snapshot)
+    fresh = is_data_fresh(_snapshot)
+
     return {
-        "status": "ok" if _snapshot is not None else "not_ready",
+        "status": "ok" if fresh else "degraded",
         "model_version": MODEL_VERSION,
+        "data_through": _snapshot["data_through"],
+        "data_age_days": age,
+        "freshness_max_days": FRESHNESS_MAX_DAYS,
+        "data_fresh": fresh,
     }
 
 
@@ -92,4 +117,16 @@ def health():
 def get_regime():
     if _snapshot is None:
         raise HTTPException(status_code=503, detail="HMM snapshot is not ready")
+
+    if not is_data_fresh(_snapshot):
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "error": "stale_market_data",
+                "data_through": _snapshot["data_through"],
+                "data_age_days": data_age_days(_snapshot),
+                "freshness_max_days": FRESHNESS_MAX_DAYS,
+            },
+        )
+
     return _snapshot
