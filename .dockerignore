@@ -1,0 +1,12 @@
+.git
+.github
+.venv
+venv
+__pycache__
+*.py[cod]
+.env
+**/.env
+mlflow.db
+mlruns
+mlops/artifacts
+.DS_Store

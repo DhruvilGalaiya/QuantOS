@@ -38,3 +38,6 @@ jobs:
 
       - name: Run all MLOps tests
         run: python -m unittest discover -s mlops/tests -p 'test_*.py' -v
+
+      - name: Build Docker image
+        run: docker build -t quantos-hmm-api:ci .
