@@ -11,7 +11,9 @@ ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = ROOT / "data" / "regime" / "portfolio_fx"
 
 START_DATE = "2016-01-01"
-END_DATE = "2026-09-05"
+END_DATE = (
+    pd.Timestamp.now().normalize() + pd.Timedelta(days=1)
+).strftime("%Y-%m-%d")
 
 SYMBOL = "USDINR=X"
 

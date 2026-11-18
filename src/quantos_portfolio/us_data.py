@@ -24,7 +24,9 @@ US_ASSETS = [
 ]
 
 START_DATE = "2016-01-01"
-END_DATE = "2026-09-05"
+# Yahoo Finance uses an exclusive end date. Include tomorrow so the
+# latest completed trading session is eligible to be returned.
+END_DATE = (pd.Timestamp.now().normalize() + pd.Timedelta(days=1)).strftime("%Y-%m-%d")
 
 
 def download_us_asset(symbol: str) -> pd.DataFrame:
@@ -158,3 +160,14 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# ============================================================
+# INCREMENTAL UPDATE: moved to quantos_platform.data.us_equities (re-exported here)
+# ============================================================
+
+import sys as _sys  # noqa: E402
+from pathlib import Path as _Path  # noqa: E402
+
+if str(_Path(__file__).resolve().parents[2]) not in _sys.path:
+    _sys.path.insert(0, str(_Path(__file__).resolve().parents[2]))
+from quantos_platform.data.us_equities import load_us_asset, update_us_asset  # noqa: E402,F401

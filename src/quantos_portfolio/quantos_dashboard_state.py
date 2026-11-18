@@ -750,7 +750,7 @@ def main():
 
     print(
         f"ATM IV           : "
-        f"{float(atm_iv):.2%}"
+        f"{float(atm_iv):.2%}" if atm_iv is not None else "N/A"
     )
 
     print(

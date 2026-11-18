@@ -303,150 +303,113 @@ def calculate_term_structure(
     )
 
 
+
 def find_sabr_atm_values(
     sabr_surface,
     expiry,
     atm_strike,
 ):
     """
-    Extract SABR IV and parameters near ATM.
+    Extract SABR IV and calibration parameters for an expiry.
 
-    The SABR JSON may contain surface rows rather than a separate
-    parameter object, so this function handles both common layouts.
+    Prefer the expiry-specific calibration object. Fall back to
+    the closest matching surface row when necessary.
     """
 
-    if not isinstance(
-        sabr_surface,
-        dict
+    result = {
+        "sabr_iv": np.nan,
+        "sabr_alpha": np.nan,
+        "sabr_beta": np.nan,
+        "sabr_rho": np.nan,
+        "sabr_nu": np.nan,
+    }
+
+    if not isinstance(sabr_surface, dict):
+        return result
+
+    def expiry_matches(obj):
+        if not isinstance(obj, dict):
+            return False
+
+        value = obj.get("expiry")
+        return value is not None and str(value)[:10] == str(expiry)[:10]
+
+    def extract_parameters(obj):
+        if not isinstance(obj, dict):
+            return {}
+
+        lower = {str(k).lower(): v for k, v in obj.items()}
+        found = {}
+
+        for key in ("alpha", "beta", "rho", "nu"):
+            if key in lower:
+                value = safe_float(lower[key])
+                if np.isfinite(value):
+                    found[f"sabr_{key}"] = value
+
+        return found
+
+    # First: look for an expiry-specific calibration.
+    calibrations = sabr_surface.get("calibrations", [])
+    if isinstance(calibrations, dict):
+        calibrations = [calibrations]
+
+    if isinstance(calibrations, list):
+        matching = [
+            item for item in calibrations
+            if expiry_matches(item)
+        ]
+
+        if matching:
+            result.update(extract_parameters(matching[0]))
+
+    # Also support alternative nested calibration layouts.
+    if not all(
+        np.isfinite(result[k])
+        for k in ("sabr_alpha", "sabr_beta", "sabr_rho", "sabr_nu")
     ):
-        return {
-            "sabr_iv": np.nan,
-            "sabr_alpha": np.nan,
-            "sabr_beta": np.nan,
-            "sabr_rho": np.nan,
-            "sabr_nu": np.nan,
-        }
+        for key in ("parameters", "sabr_parameters", "calibration"):
+            container = sabr_surface.get(key)
+            candidates = container if isinstance(container, list) else [container]
 
-    # ------------------------------------------------------------
-    # Case 1: explicit SABR parameter objects
-    # ------------------------------------------------------------
+            for item in candidates:
+                if not isinstance(item, dict):
+                    continue
+                if expiry_matches(item):
+                    result.update(extract_parameters(item))
+                    break
 
-    parameter_containers = []
+    # Finally, look for the closest surface row for the requested expiry.
+    rows = sabr_surface.get("surface", [])
+    if isinstance(rows, list):
+        matching_rows = [
+            row for row in rows
+            if expiry_matches(row)
+        ]
 
-    for key in [
-        "parameters",
-        "sabr_parameters",
-        "calibration",
-        "calibrations",
-        "surfaces",
-    ]:
-
-        value = sabr_surface.get(
-            key
-        )
-
-        if value is not None:
-            parameter_containers.append(
-                value
-            )
-
-    # ------------------------------------------------------------
-    # Case 2: surface rows
-    # ------------------------------------------------------------
-
-    rows = []
-
-    for key in [
-        "surface",
-        "data",
-        "rows",
-    ]:
-
-        value = sabr_surface.get(
-            key
-        )
-
-        if isinstance(
-            value,
-            list
-        ):
-
-            rows.extend(
-                value
-            )
-
-    matching_rows = [
-        row
-        for row in rows
-        if isinstance(row, dict)
-        and row.get("expiry") == expiry
-    ]
-
-    if matching_rows:
-
-        closest = None
-        closest_distance = np.inf
-
+        candidates = []
         for row in matching_rows:
+            strike = safe_float(row.get("strike"))
+            if np.isfinite(strike):
+                candidates.append((abs(strike - atm_strike), row))
 
-            strike = safe_float(
-                row.get("strike")
-            )
+        if candidates:
+            _, closest = min(candidates, key=lambda item: item[0])
 
-            if not np.isfinite(
-                strike
-            ):
-                continue
+            for key in ("sabr_iv", "implied_volatility"):
+                value = safe_float(closest.get(key))
+                if np.isfinite(value):
+                    result["sabr_iv"] = value
+                    break
 
-            distance = abs(
-                strike
-                -
-                atm_strike
-            )
+            # Surface-row parameters are a fallback only.
+            row_parameters = extract_parameters(closest)
+            for key, value in row_parameters.items():
+                if not np.isfinite(result[key]):
+                    result[key] = value
 
-            if distance < closest_distance:
+    return result
 
-                closest_distance = distance
-                closest = row
-
-        if closest is not None:
-
-            return {
-                "sabr_iv":
-                    safe_float(
-                        closest.get(
-                            "sabr_iv"
-                        )
-                    ),
-
-                "sabr_alpha":
-                    safe_float(
-                        closest.get(
-                            "alpha"
-                        )
-                    ),
-
-                "sabr_beta":
-                    safe_float(
-                        closest.get(
-                            "beta"
-                        )
-                    ),
-
-                "sabr_rho":
-                    safe_float(
-                        closest.get(
-                            "rho"
-                        )
-                    ),
-
-                "sabr_nu":
-                    safe_float(
-                        closest.get(
-                            "nu"
-                        )
-                    ),
-            }
 
     # ------------------------------------------------------------
     # Search nested parameter dictionaries.
@@ -745,6 +708,40 @@ def main():
         )
     )
 
+        # Reject stale or missing IV surfaces.
+    surface_timestamp = pd.to_datetime(
+        options_generated_at,
+        errors="coerce"
+    )
+
+    now_ist = pd.Timestamp.now(tz="Asia/Kolkata")
+
+    if pd.isna(surface_timestamp):
+        surface_is_fresh = False
+    else:
+        if surface_timestamp.tzinfo is None:
+            surface_timestamp = surface_timestamp.tz_localize(
+                "Asia/Kolkata"
+            )
+        else:
+            surface_timestamp = surface_timestamp.tz_convert(
+                "Asia/Kolkata"
+            )
+
+        surface_age_hours = (
+            now_ist - surface_timestamp
+        ).total_seconds() / 3600
+
+        surface_is_fresh = (
+            0 <= surface_age_hours <= 24
+        )
+
+    if not surface_is_fresh:
+        print(
+            "WARNING: IV surface is stale or has an invalid "
+            "timestamp. IV metrics will be unavailable."
+        )
+
     options_spot = safe_float(
         iv_data.get(
             "spot"
@@ -757,30 +754,40 @@ def main():
         )
     )
 
+    
     expiries = iv_data.get(
         "expiries",
         []
     )
 
-    surface = iv_data.get(
-        "surface",
-        []
-    )
+    surface = (
+    iv_data.get("surface", [])
+    if surface_is_fresh
+    else []
+)
 
-    if not expiries:
-        raise ValueError(
-            "No option expiries found."
-        )
+    # Exclude expired contracts from current options metrics.
+    today = pd.Timestamp.now().date()
+
+    valid_expiries = sorted({
+        str(expiry)[:10]
+        for expiry in expiries
+        if pd.notna(pd.to_datetime(expiry, errors="coerce"))
+        and pd.to_datetime(expiry).date() >= today
+    })
 
     nearest_expiry = (
-        expiries[0]
+        valid_expiries[0]
+        if valid_expiries
+        else None
     )
 
     next_expiry = (
-        expiries[1]
-        if len(expiries) > 1
+        valid_expiries[1]
+        if len(valid_expiries) > 1
         else None
     )
+
 
     atm_iv_nearest = find_atm_iv(
         surface,
@@ -806,13 +813,15 @@ def main():
         )
     )
 
-    term_structure = (
-        calculate_term_structure(
+    
+    if next_expiry is not None:
+        term_structure = calculate_term_structure(
             surface,
-            expiries,
-            atm_strike
+            [nearest_expiry, next_expiry],
+            atm_strike,
         )
-    )
+    else:
+        term_structure = np.nan
 
     # ============================================================
     # IV / REALIZED VOL COMPARISON

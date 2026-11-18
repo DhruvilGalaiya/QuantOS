@@ -1,0 +1,21 @@
+{
+ "symbol": "NIFTY_50",
+ "as_of": "2026-11-18 19:32",
+ "date": "2026-11-18",
+ "session": "2026-11-18",
+ "expiry": "2026-11-23",
+ "tdte": 3,
+ "active": false,
+ "phase": "after",
+ "next_window": "2026-11-19",
+ "p_up": 0.6442614667861236,
+ "drift": 0.6103247293921732,
+ "view": 1,
+ "side": "PE",
+ "strike": 24950.0,
+ "spot": 25220.9,
+ "instrument_key": "NSE_FO|64438",
+ "trading_symbol": "NIFTY 24950 PE 23 NOV 26",
+ "lot_size": 65,
+ "premium": 61.85
+}

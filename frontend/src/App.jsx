@@ -1061,16 +1061,25 @@ function App() {
             <BarChart3 size={21} />
           </div>
 
+          
+          <div className="options-notice">
+            <strong>Historical Options Snapshot</strong>
+            <span>
+              Last database snapshot: 10 Oct 2026, 01:13 IST.
+              These values are historical, not live market quotes.
+            </span>
+          </div>
+
           <div className="options-grid">
             <MetricCard
-              label="Spot"
+              label="Spot (snapshot)"
               value={`₹${formatNumber(options?.spot)}`}
               subtext={`ATM strike ₹${formatNumber(options?.atm_strike)}`}
               icon={Activity}
             />
 
             <MetricCard
-              label="ATM IV"
+              label="ATM IV (historical)"
               value={formatPct(options?.atm_iv_nearest)}
               subtext={`Expiry ${options?.nearest_expiry || "—"}`}
               icon={Gauge}
@@ -1078,18 +1087,23 @@ function App() {
 
             <MetricCard
               label="Next Expiry IV"
-              value={formatPct(options?.atm_iv_next)}
-              subtext={options?.next_expiry || "—"}
+              value={
+                options?.next_expiry
+                  ? formatPct(options?.atm_iv_next)
+                  : "Unavailable"
+              }
+              subtext={options?.next_expiry || "No second unexpired expiry"}
               icon={TrendingUp}
             />
 
             <MetricCard
-              label="IV / Realized"
+              label="IV / Realized (historical)"
               value={formatNumber(options?.iv_realized_ratio, 2)}
-              subtext="Market-implied / realized"
+              subtext="Based on stored options snapshot"
               icon={BarChart3}
             />
           </div>
+
         </section>
 
         <section className="panel monte-carlo-panel">

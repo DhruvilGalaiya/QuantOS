@@ -884,931 +884,574 @@ def load_stock_prices(symbol):
 
 
 def stock_snapshot(symbol):
-    """Small first-stage stock view. No stock prediction is implied."""
+    """Calculate historical price statistics for a stock with local price data."""
     df = load_stock_prices(symbol)
     if df.empty:
         return None
 
-    prices = df.set_index("timestamp")["close"].astype(float).sort_index()
-    returns = prices.pct_change().dropna()
+    prices = (
+        df.set_index("timestamp")["close"]
+        .astype(float)
+        .sort_index()
+    )
+    prices = prices[~prices.index.duplicated(keep="last")].dropna()
 
+    if prices.empty:
+        return None
+
+    returns = prices.pct_change().dropna()
     latest = float(prices.iloc[-1])
+    latest_date = prices.index[-1]
 
     def trailing_return(days):
-        cutoff = prices.index[-1] - pd.Timedelta(days=days)
+        cutoff = latest_date - pd.Timedelta(days=days)
         prior = prices[prices.index <= cutoff]
-        if prior.empty:
+        if prior.empty or float(prior.iloc[-1]) == 0:
             return np.nan
         return latest / float(prior.iloc[-1]) - 1.0
 
-    vol20 = returns.tail(20).std() * np.sqrt(252) if len(returns) >= 20 else np.nan
+    vol20 = (
+        float(returns.tail(20).std() * np.sqrt(252))
+        if len(returns) >= 20
+        else np.nan
+    )
+
+    trailing_year = prices[
+        prices.index >= latest_date - pd.Timedelta(days=365)
+    ]
+    high_52w = float(trailing_year.max()) if not trailing_year.empty else np.nan
+    low_52w = float(trailing_year.min()) if not trailing_year.empty else np.nan
+
+    running_peak = prices.cummax()
+    drawdown = prices / running_peak - 1.0
+    max_drawdown = (
+        float(drawdown.tail(252).min())
+        if not drawdown.empty
+        else np.nan
+    )
 
     return {
         "prices": prices,
         "latest": latest,
-        "latest_date": prices.index[-1],
+        "latest_date": latest_date,
         "return_1d": float(returns.iloc[-1]) if len(returns) else np.nan,
         "return_1m": trailing_return(30),
+        "return_3m": trailing_return(90),
+        "return_6m": trailing_return(180),
         "return_1y": trailing_return(365),
         "vol20": vol20,
+        "high_52w": high_52w,
+        "low_52w": low_52w,
+        "max_drawdown": max_drawdown,
     }
 
 
 # ============================================================
-# HEADER
+# QUANTOS DASHBOARD UI
 # ============================================================
 
-st.markdown(
-    "# ◈ QuantOS Market Regime Intelligence"
+st.set_page_config(
+    page_title="QuantOS | Regime Intelligence",
+    page_icon="◈",
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
 
-st.caption(
-    "Live V10 HMM · causal regime inference · "
-    "next-trading-day forecast · persistence intelligence"
-)
+st.markdown("""
+<style>
+    .stApp { background: #f5f7fb; }
+    [data-testid="stSidebar"] {
+        background: #101c32;
+        border-right: 1px solid #263651;
+    }
+    [data-testid="stSidebar"] {
+        color: #f1f5fb;
+    }
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+    [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {
+        color: #e6edf7 !important;
+    }
+    [data-testid="stSidebar"] [data-baseweb="select"] > div {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+    }
+    [data-testid="stSidebar"] [data-baseweb="select"] *,
+    [data-testid="stSidebar"] input {
+        color: #14233b !important;
+        -webkit-text-fill-color: #14233b !important;
+    }
+    [data-testid="stSidebar"] input {
+        background: #ffffff !important;
+        border-radius: 8px !important;
+    }
+    [data-testid="stSidebar"] input::placeholder {
+        color: #64748b !important;
+        -webkit-text-fill-color: #64748b !important;
+        opacity: 1 !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stButton"] button {
+        background: #1769e0 !important;
+        border: 1px solid #1769e0 !important;
+        border-radius: 8px !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stButton"] button * {
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
+    }
+    .q-stock-panel {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 14px;
+    }
+    .q-stock-symbol {
+        color: #14233b;
+        font-size: 1.9rem;
+        font-weight: 750;
+        margin-bottom: 0;
+    }
+    .q-stock-company {
+        color: #64748b;
+        font-size: 1rem;
+    }
+    .block-container {
+        max-width: 1500px;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+    .q-title {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.7px;
+        color: #14233b;
+        margin-bottom: 0.1rem;
+    }
+    .q-subtitle {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 1.6rem;
+    }
+    div[data-testid="stMetric"] {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px 18px;
+    }
+    div[data-testid="stMetricLabel"] { color: #64748b; }
+    div[data-testid="stMetricValue"] { color: #17243b; }
+    div[data-testid="stPlotlyChart"] {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 8px;
+    }
+    h2, h3 { color: #17243b; }
+    hr { border-color: #e2e8f0; }
+</style>
+""", unsafe_allow_html=True)
 
-
-# ============================================================
-# SIDEBAR
-# ============================================================
+PAGES = [
+    "Overview",
+    "Market Regime",
+    "Cross-Market Analysis",
+    "Stock Intelligence",
+    "Prediction History",
+    "Methodology",
+]
 
 with st.sidebar:
-    st.header("Controls")
+    st.markdown("## ◈ QuantOS")
+    st.caption("MARKET INTELLIGENCE")
+    page = st.radio("NAVIGATION", PAGES, label_visibility="visible")
+    st.divider()
 
     selected_symbol = st.selectbox(
-        "Index / Market Instrument",
+        "Market instrument",
         SYMBOLS,
         format_func=lambda x: DISPLAY_NAMES[x],
         key="market_instrument",
     )
-
-    selected_stock = st.selectbox(
-        "Stock",
+    selected_stock_option = st.selectbox(
+        "Stock universe",
         STOCK_SYMBOLS,
         format_func=lambda x: f"{x} · {STOCK_DISPLAY_NAMES[x]}",
         key="stock_instrument",
     )
+    custom_stock = st.text_input(
+        "Or enter another ticker",
+        placeholder="e.g. JPM, ORCL, INTC",
+        help="Uses local historical data if a matching stock dataset exists.",
+    ).strip().upper()
+    selected_stock = custom_stock if custom_stock else selected_stock_option
 
-    if st.button(
-        "Refresh prediction artifact",
-        use_container_width=True,
-    ):
+    if st.button("Refresh prediction data", use_container_width=True):
         load_predictions.clear()
         load_hmm_prediction_history.clear()
         st.rerun()
 
-    st.caption(
-        "Reads the latest artifact produced by "
-        "`src/run_live_hmm.py`. It does not retrain the model."
-    )
-
-
-# ============================================================
-# LOAD SELECTED
-# ============================================================
+    st.caption("Uses existing prediction artifacts. This dashboard does not retrain the HMM.")
 
 try:
     all_data = load_predictions()
 except Exception as exc:
-    st.error(str(exc))
+    st.error(f"Unable to load prediction data: {exc}")
     st.stop()
 
 if selected_symbol not in all_data:
     st.error(
-        f"{selected_symbol} is missing from "
-        "latest_predictions.json. Run the live HMM runner first."
+        f"{selected_symbol} is missing from latest_predictions.json. "
+        "Run the live HMM pipeline to generate the artifact."
     )
     st.stop()
 
 selected = all_data[selected_symbol]
 
+current_raw = str(first_value(
+    selected, ["current_regime", "current_state", "regime"], "N/A"
+)).upper()
+next_raw = str(first_value(
+    selected, ["next_regime", "next_state", "forecast_regime"], "N/A"
+)).upper()
 
-# ============================================================
-# SELECTED VALUES
-# ============================================================
-
-current_raw = str(
-    first_value(
-        selected,
-        [
-            "current_regime",
-            "current_state",
-            "regime",
-        ],
-        "N/A",
-    )
-).upper()
-
-next_raw = str(
-    first_value(
-        selected,
-        [
-            "next_regime",
-            "next_state",
-            "forecast_regime",
-        ],
-        "N/A",
-    )
-).upper()
-
-current = display_regime(
-    selected_symbol,
-    current_raw,
-)
-
-next_regime = display_regime(
-    selected_symbol,
-    next_raw,
-)
-
-probabilities = get_probabilities(
-    selected
-)
+current = display_regime(selected_symbol, current_raw)
+next_regime = display_regime(selected_symbol, next_raw)
+probabilities = get_probabilities(selected)
 
 if selected_symbol == "INDIA_VIX":
-    probabilities = remap_vix_probs(
-        probabilities
+    probabilities = remap_vix_probs(probabilities)
+
+states = display_states(selected_symbol)
+matrix = get_transition_matrix(selected)
+stationary = get_stationary(selected)
+stickiness = get_stickiness(selected)
+streak = get_streak(selected)
+latest_date = first_value(selected, ["latest_date", "date"], "Unavailable")
+latest_close = as_float(first_value(selected, ["latest_close", "close"]))
+
+def heading(title, subtitle):
+    st.markdown(f'<div class="q-title">{title}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="q-subtitle">{subtitle}</div>', unsafe_allow_html=True)
+
+def probability_frame(values):
+    if not values:
+        return pd.DataFrame(columns=["Regime", "Probability"])
+    return pd.DataFrame([
+        {"Regime": str(k), "Probability": float(v) * 100}
+        for k, v in values.items()
+    ]).sort_values("Probability", ascending=False)
+
+def probability_chart(values, title):
+    frame = probability_frame(values)
+    if frame.empty:
+        st.info("Probability data is not available in the current artifact.")
+        return
+    fig = px.bar(
+        frame, x="Regime", y="Probability", text_auto=".1f",
+        title=title, color="Regime",
+        color_discrete_sequence=["#233f68", "#6286b5", "#a7b9d1", "#d1dbea"],
     )
-
-states = display_states(
-    selected_symbol
-)
-
-next_probability = as_float(
-    first_value(
-        selected,
-        [
-            "next_day_probability",
-            "next_probability",
-        ],
-    )
-)
-
-if (
-    not np.isfinite(next_probability)
-    and probabilities
-):
-    next_probability = max(
-        probabilities.values()
-    )
-
-stickiness = get_stickiness(
-    selected
-)
-
-stickiness_level = get_stickiness_level(
-    selected,
-    stickiness,
-)
-
-streak = get_streak(
-    selected
-)
-
-latest_date = str(
-    first_value(
-        selected,
-        [
-            "latest_date",
-            "date",
-        ],
-        "N/A",
-    )
-)
-
-latest_close = as_float(
-    first_value(
-        selected,
-        [
-            "latest_close",
-            "close",
-        ],
-    )
-)
-
-
-# ============================================================
-# TOP METRICS
-# ============================================================
-
-c1, c2, c3, c4 = st.columns(4)
-
-with c1:
-    st.metric(
-        "Current Regime",
-        current,
-    )
-
-with c2:
-    st.metric(
-        "Next Trading Day",
-        next_regime,
-    )
-
-with c3:
-    st.metric(
-        "Next-State Probability",
-        (
-            f"{next_probability:.1%}"
-            if np.isfinite(next_probability)
-            else "N/A"
-        ),
-    )
-
-with c4:
-    st.metric(
-        "Stickiness",
-        (
-            f"{stickiness:.1f}/100"
-            if np.isfinite(stickiness)
-            else "N/A"
-        ),
-        delta=stickiness_level,
-    )
-
-close_text = (
-    f"{latest_close:,.2f}"
-    if np.isfinite(latest_close)
-    else "N/A"
-)
-
-st.caption(
-    f"{DISPLAY_NAMES[selected_symbol]} · "
-    f"Latest observation: {latest_date[:10]} · "
-    f"Latest close: {close_text} · "
-    f"Current streak: {streak} trading days"
-)
-
-if selected_symbol == "INDIA_VIX":
-    st.info(
-        "India VIX is displayed as LOW / MID / HIGH. "
-        "Underlying V10 labels are mapped BEAR → LOW, "
-        "SIDE → MID and BULL → HIGH."
-    )
-
-
-# ============================================================
-# PROBABILITIES + STICKINESS
-# ============================================================
-
-left, right = st.columns(
-    [1.45, 1]
-)
-
-with left:
-    st.subheader(
-        "Next-Trading-Day Regime Probabilities"
-    )
-
-    prob_df = pd.DataFrame(
-        [
-            {
-                "Regime": regime,
-                "Probability": probabilities.get(
-                    regime,
-                    0.0,
-                ),
-            }
-            for regime in states
-        ]
-    )
-
-    fig = go.Figure(
-        go.Bar(
-            x=prob_df["Regime"],
-            y=prob_df["Probability"] * 100,
-            text=[
-                f"{x:.1f}%"
-                for x in (
-                    prob_df["Probability"] * 100
-                )
-            ],
-            textposition="auto",
-        )
-    )
-
     fig.update_layout(
-        height=350,
-        yaxis_title="Probability (%)",
-        yaxis_range=[0, 100],
-        xaxis_title="",
-        margin=dict(
-            l=20,
-            r=20,
-            t=25,
-            b=20,
-        ),
+        template="plotly_white", showlegend=False,
+        yaxis_title="Probability (%)", xaxis_title="",
+        margin=dict(l=20, r=20, t=65, b=20),
+        height=360,
     )
+    fig.update_traces(textposition="outside", cliponaxis=False)
+    st.plotly_chart(fig, use_container_width=True)
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True,
-    )
-
-with right:
-    st.subheader(
-        "Persistence / Stickiness"
-    )
-
-    gauge_value = (
-        0
-        if not np.isfinite(stickiness)
-        else max(
-            0,
-            min(
-                100,
-                stickiness,
-            ),
-        )
-    )
-
-    gauge = go.Figure(
-        go.Indicator(
-            mode="gauge+number",
-            value=gauge_value,
-            number={"suffix": "/100"},
-            gauge={
-                "axis": {
-                    "range": [0, 100]
-                },
-                "threshold": {
-                    "line": {
-                        "width": 4
-                    },
-                    "thickness": 0.75,
-                    "value": gauge_value,
-                },
-            },
-            title={
-                "text": stickiness_level
-            },
-        )
-    )
-
-    gauge.update_layout(
-        height=260,
-        margin=dict(
-            l=25,
-            r=25,
-            t=55,
-            b=15,
-        ),
-    )
-
-    st.plotly_chart(
-        gauge,
-        use_container_width=True,
-    )
-
-    s1, s2 = st.columns(2)
-
-    with s1:
-        st.metric(
-            "Current Streak",
-            f"{streak} days",
-        )
-
-    with s2:
-        st.metric(
-            "Forecast",
-            next_regime,
-        )
-
-    st.caption(
-        "Stickiness is a persistence score, not a "
-        "probability of a positive return."
-    )
-
-
-# ============================================================
-# MATRIX + LONG RUN
-# ============================================================
-
-matrix = get_transition_matrix(
-    selected
-)
-
-stationary = get_stationary(
-    selected
-)
-
-if selected_symbol == "INDIA_VIX":
-    matrix = remap_vix_matrix(
-        matrix
-    )
-
-    stationary = remap_vix_probs(
-        stationary
-    )
-
-left, right = st.columns(
-    [1.35, 1]
-)
-
-with left:
-    st.subheader(
-        "3 × 3 Transition Matrix"
-    )
-
-    st.caption(
-        "Rows = current regime. "
-        "Columns = next trading-day regime."
-    )
-
-    if matrix is not None:
-        matrix = matrix.reindex(
-            index=states,
-            columns=states,
-        )
-
-        fig_matrix = px.imshow(
-            matrix.values,
-            x=matrix.columns,
-            y=matrix.index,
-            text_auto=".1%",
-            aspect="auto",
-        )
-
-        fig_matrix.update_layout(
-            height=420,
-            xaxis_title="Next Regime",
-            yaxis_title="Current Regime",
-            margin=dict(
-                l=20,
-                r=20,
-                t=25,
-                b=20,
-            ),
-        )
-
-        st.plotly_chart(
-            fig_matrix,
-            use_container_width=True,
-        )
-
-        display_matrix = matrix.map(
-            lambda x: (
-                f"{x:.1%}"
-                if pd.notna(x)
-                else "—"
+def show_transition_matrix():
+    if isinstance(matrix, pd.DataFrame) and not matrix.empty:
+        display_matrix = matrix.copy()
+        numeric = display_matrix.apply(pd.to_numeric, errors="coerce")
+        if numeric.notna().any().any() and numeric.max().max() <= 1.0:
+            display_matrix = numeric * 100
+            st.dataframe(
+                display_matrix.style.format("{:.1f}%"),
+                use_container_width=True,
             )
-        )
-
-        st.dataframe(
-            display_matrix,
-            use_container_width=True,
-            height=170,
-        )
-
+        else:
+            st.dataframe(display_matrix, use_container_width=True)
     else:
-        st.error(
-            "Transition matrix is missing from the artifact. "
-            "Run the final live HMM runner once."
-        )
+        st.info("Transition matrix is not available in this prediction artifact.")
 
-with right:
-    st.subheader(
-        "Long-Run Regime Mix"
-    )
+def show_market_metrics():
+    a, b, c, d = st.columns(4)
+    a.metric("Current regime", str(current))
+    b.metric("Next forecast", str(next_regime))
+    c.metric("Regime duration", f"{streak} days")
+    d.metric("Stickiness score", f"{stickiness:.2f}" if np.isfinite(stickiness) else "N/A")
 
-    st.caption(
-        "Stationary distribution implied by the "
-        "reference transition process."
-    )
+if page == "Overview":
+    heading("Market Regime Intelligence", "A compact view of the current HMM state and its next-session forecast.")
+    st.caption(f"Instrument: {DISPLAY_NAMES[selected_symbol]}  ·  Artifact date: {latest_date}")
 
-    if stationary:
-        stationary_df = pd.DataFrame(
-            [
-                {
-                    "Regime": regime,
-                    "Share": stationary.get(
-                        regime,
-                        0.0,
-                    ),
-                }
-                for regime in states
-            ]
-        )
+    show_market_metrics()
+    st.divider()
 
-        fig_stationary = go.Figure(
-            go.Bar(
-                x=stationary_df["Regime"],
-                y=stationary_df["Share"] * 100,
-                text=[
-                    f"{x:.1f}%"
-                    for x in (
-                        stationary_df["Share"]
-                        * 100
-                    )
-                ],
-                textposition="auto",
-            )
-        )
+    left, right = st.columns([1.35, 1])
+    with left:
+        probability_chart(probabilities, "Next-session regime probabilities")
+    with right:
+        st.subheader("Market snapshot")
+        st.metric("Latest recorded close", f"{latest_close:,.2f}" if np.isfinite(latest_close) else "N/A")
+        st.metric("Current regime", str(current))
+        st.metric("Forecast regime", str(next_regime))
+        st.caption("Values reflect the loaded artifact, not the computer's current date.")
 
-        fig_stationary.update_layout(
-            height=300,
-            yaxis_title="Long-Run Share (%)",
-            yaxis_range=[0, 100],
-            margin=dict(
-                l=20,
-                r=20,
-                t=25,
-                b=20,
-            ),
-        )
-
-        st.plotly_chart(
-            fig_stationary,
-            use_container_width=True,
-        )
-
+    st.subheader("Cross-market snapshot")
+    cross = build_cross_index(all_data)
+    if isinstance(cross, pd.DataFrame) and not cross.empty:
+        st.dataframe(cross, use_container_width=True, hide_index=True)
     else:
-        st.error(
-            "Long-run distribution is missing from the artifact."
-        )
+        st.info("Cross-market comparison is unavailable.")
 
+elif page == "Market Regime":
+    heading("Market Regime", "Current state, forecast probabilities, and regime persistence.")
+    st.caption(f"{DISPLAY_NAMES[selected_symbol]}  ·  Data date: {latest_date}")
+    show_market_metrics()
 
-# ============================================================
-# CURRENT VS NEXT
-# ============================================================
+    left, right = st.columns(2)
+    with left:
+        probability_chart(probabilities, "Forecast probability by regime")
+    with right:
+        st.subheader("Regime persistence")
+        if np.isfinite(stickiness):
+            gauge = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=float(stickiness),
+                title={"text": "Stickiness score"},
+                gauge={"axis": {"range": [0, 1]},
+                       "bar": {"color": "#233f68"},
+                       "steps": [
+                           {"range": [0, 0.33], "color": "#edf2f7"},
+                           {"range": [0.33, 0.66], "color": "#dbe5f1"},
+                           {"range": [0.66, 1], "color": "#b8cbe2"},
+                       ]},
+            ))
+            gauge.update_layout(template="plotly_white", height=330, margin=dict(l=25, r=25, t=55, b=20))
+            st.plotly_chart(gauge, use_container_width=True)
+        else:
+            st.info("Stickiness score is unavailable.")
 
-st.subheader(
-    "Current State vs Next-Day Distribution"
-)
+    st.subheader("Transition matrix")
+    show_transition_matrix()
 
-current_probabilities = first_value(
-    selected,
-    [
-        "current_probabilities",
-        "current_probs",
-        "filtered_probabilities",
-    ],
-    {},
-)
+    if isinstance(stationary, dict) and stationary:
+        st.subheader("Stationary distribution")
+        probability_chart(stationary, "Long-run state distribution")
 
-if not isinstance(
-    current_probabilities,
-    dict,
-):
-    current_probabilities = {}
+elif page == "Cross-Market Analysis":
+    heading("Cross-Market Analysis", "Compare the regime outputs available in the current prediction artifact.")
+    cross = build_cross_index(all_data)
+    if isinstance(cross, pd.DataFrame) and not cross.empty:
+        st.dataframe(cross, use_container_width=True, hide_index=True)
+        st.caption("This view reports model outputs. It does not imply that every instrument has the same model calibration.")
+    else:
+        st.info("Cross-market comparison is unavailable in the current artifact.")
 
-current_probabilities = {
-    str(k).upper(): as_float(v, 0.0)
-    for k, v in current_probabilities.items()
-}
-
-if selected_symbol == "INDIA_VIX":
-    current_probabilities = remap_vix_probs(
-        current_probabilities
+elif page == "Stock Intelligence":
+    heading(
+        "Stock Intelligence",
+        "Historical price analysis and key statistics for the selected stock."
     )
 
-comparison = pd.DataFrame(
-    [
-        {
-            "Regime": regime,
-            "Current": current_probabilities.get(
-                regime,
-                np.nan,
-            ),
-            "Next Day": probabilities.get(
-                regime,
-                np.nan,
-            ),
+    snapshot = stock_snapshot(selected_stock)
+
+    if snapshot is None:
+        st.warning(f"No local historical price data was found for {selected_stock}.")
+        st.caption(
+            "Select a ticker with available local price history. Custom ticker entry "
+            "does not automatically download market data."
+        )
+    else:
+        prices = snapshot["prices"].sort_index()
+        last_date = pd.Timestamp(snapshot["latest_date"]).strftime("%d %b %Y")
+
+        company_names = {
+            "NVDA": "NVIDIA", "AAPL": "Apple Inc.", "MSFT": "Microsoft",
+            "GOOGL": "Alphabet", "AMZN": "Amazon", "META": "Meta Platforms",
+            "AVGO": "Broadcom", "TSLA": "Tesla", "NFLX": "Netflix",
         }
-        for regime in states
-    ]
-)
+        company = company_names.get(selected_stock, selected_stock)
 
-fig_compare = go.Figure()
-
-if comparison["Current"].notna().any():
-    fig_compare.add_trace(
-        go.Bar(
-            x=comparison["Regime"],
-            y=comparison["Current"] * 100,
-            name="Current filtered probability",
+        st.markdown(
+            f"""
+            <div class="q-stock-panel">
+                <div class="q-stock-symbol">{selected_stock}</div>
+                <div class="q-stock-company">{company} · Historical price analysis</div>
+                <div style="margin-top:10px;color:#64748b">
+                    Last price date: <strong style="color:#14233b">{last_date}</strong>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
-    )
 
-fig_compare.add_trace(
-    go.Bar(
-        x=comparison["Regime"],
-        y=comparison["Next Day"] * 100,
-        name="Next-day forecast",
-    )
-)
+        def fmt_pct(value):
+            return f"{value:+.2%}" if np.isfinite(value) else "N/A"
 
-fig_compare.update_layout(
-    barmode="group",
-    height=330,
-    yaxis_title="Probability (%)",
-    yaxis_range=[0, 100],
-    margin=dict(
-        l=20,
-        r=20,
-        t=25,
-        b=20,
-    ),
-)
+        # Only three headline metrics
+        a, b, c = st.columns(3)
+        a.metric("Latest close", f'{snapshot["latest"]:,.2f}')
+        b.metric(
+            "1-day return",
+            fmt_pct(snapshot["return_1d"]),
+            delta=fmt_pct(snapshot["return_1d"])
+            if np.isfinite(snapshot["return_1d"]) else None,
+        )
+        c.metric(
+            "20-day volatility (ann.)",
+            f'{snapshot["vol20"]:.2%}'
+            if np.isfinite(snapshot["vol20"]) else "N/A",
+        )
 
-st.plotly_chart(
-    fig_compare,
-    use_container_width=True,
-)
+        st.divider()
 
+        # Full-width historical chart
+        st.subheader("Historical Price Chart")
+        chart_range = st.radio(
+            "Chart range",
+            ["1Y", "2Y", "3Y", "5Y", "ALL"],
+            index=4,
+            horizontal=True,
+            key=f"stock_range_{selected_stock}",
+        )
 
-# ============================================================
-# CROSS INDEX
-# ============================================================
+        if chart_range == "ALL":
+            chart_prices = prices
+        else:
+            years = int(chart_range[:-1])
+            cutoff = prices.index[-1] - pd.Timedelta(days=365 * years)
+            chart_prices = prices[prices.index >= cutoff]
 
-st.subheader(
-    "Cross-Index Regime Matrix"
-)
+        price_frame = chart_prices.rename("Close").reset_index()
+        price_frame.columns = ["Date", "Close"]
 
-cross_df = build_cross_index(
-    all_data
-)
+        fig = px.line(
+            price_frame,
+            x="Date",
+            y="Close",
+            title=f"{selected_stock} historical close",
+        )
+        fig.update_traces(line=dict(color="#1769e0", width=2))
+        fig.update_layout(
+            template="plotly_white",
+            height=470,
+            margin=dict(l=15, r=15, t=55, b=20),
+            xaxis_title="Date",
+            yaxis_title="Close price",
+            showlegend=False,
+            hovermode="x unified",
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
-if not cross_df.empty:
-    st.dataframe(
-        cross_df,
-        use_container_width=True,
-        hide_index=True,
-        column_config={
-            "Next Probability": st.column_config.ProgressColumn(
-                "Next Probability",
-                format="%.1%",
-                min_value=0,
-                max_value=1,
+        # Detailed statistics live below the full-width chart
+        st.subheader("Key Statistics")
+
+        stat_rows = [
+            ("Latest close", f'{snapshot["latest"]:,.2f}', "neutral"),
+            ("1-day return", fmt_pct(snapshot["return_1d"]), "return_1d"),
+            ("1-month return", fmt_pct(snapshot["return_1m"]), "return_1m"),
+            ("3-month return", fmt_pct(snapshot["return_3m"]), "return_3m"),
+            ("6-month return", fmt_pct(snapshot["return_6m"]), "return_6m"),
+            ("1-year return", fmt_pct(snapshot["return_1y"]), "return_1y"),
+            (
+                "20-day volatility (annualized)",
+                f'{snapshot["vol20"]:.2%}' if np.isfinite(snapshot["vol20"]) else "N/A",
+                "neutral",
             ),
-            "Stickiness": st.column_config.ProgressColumn(
-                "Stickiness",
-                format="%.1f",
-                min_value=0,
-                max_value=100,
+            (
+                "52-week high",
+                f'{snapshot["high_52w"]:,.2f}' if np.isfinite(snapshot["high_52w"]) else "N/A",
+                "neutral",
             ),
-        },
+            (
+                "52-week low",
+                f'{snapshot["low_52w"]:,.2f}' if np.isfinite(snapshot["low_52w"]) else "N/A",
+                "neutral",
+            ),
+            ("252-day maximum drawdown", fmt_pct(snapshot["max_drawdown"]), "max_drawdown"),
+            ("Last price date", last_date, "neutral"),
+        ]
+
+        stats_df = pd.DataFrame(
+            [{"Metric": label, "Value": value, "_kind": kind}
+             for label, value, kind in stat_rows]
+        )
+
+        def colour_stat_row(row):
+            kind = row["_kind"]
+            if kind == "neutral":
+                colour = "#14233b"
+            else:
+                raw = snapshot.get(kind, np.nan)
+                colour = (
+                    "#07804b" if np.isfinite(raw) and raw > 0
+                    else "#dc2626" if np.isfinite(raw) and raw < 0
+                    else "#14233b"
+                )
+            return [
+                "color: #14233b; font-weight: 500",
+                f"color: {colour}; font-weight: 600",
+                "display: none",
+            ]
+
+        styled_stats = (
+            stats_df.style
+            .apply(colour_stat_row, axis=1)
+            .hide(axis="columns", subset=["_kind"])
+        )
+        st.dataframe(
+            styled_stats,
+            use_container_width=True,
+            hide_index=True,
+        )
+
+        st.caption(
+            "Green indicates positive returns; red indicates negative returns or drawdowns. "
+            "Statistics are calculated from available local price history and are not forecasts."
+        )
+
+elif page == "Prediction History":
+    heading("Prediction History", "Review saved HMM prediction history for the selected instrument.")
+    try:
+        history = load_hmm_prediction_history(selected_symbol)
+        if isinstance(history, pd.DataFrame) and not history.empty:
+            st.dataframe(history, use_container_width=True, hide_index=True)
+        elif isinstance(history, list) and history:
+            st.dataframe(pd.DataFrame(history), use_container_width=True, hide_index=True)
+        else:
+            st.info("No prediction history was returned for this instrument.")
+    except Exception as exc:
+        st.warning(f"Prediction history could not be loaded: {exc}")
+
+elif page == "Methodology":
+    heading("Methodology & Data Notes", "What this dashboard displays and what it does not claim.")
+    st.subheader("Regime inference")
+    st.write(
+        "The dashboard reads the saved live HMM prediction artifact. "
+        "It does not train the model or independently generate forecasts."
     )
-
-
-# ============================================================
-# STOCK INTELLIGENCE
-# ============================================================
+    st.subheader("Probability interpretation")
+    st.write(
+        "Forecast probabilities describe the model's next-session state distribution. "
+        "They are estimates, not guarantees of market direction or investment returns."
+    )
+    st.subheader("Data freshness")
+    st.write(
+        f"The selected instrument's artifact reports the date: {latest_date}. "
+        "This is the artifact date, not today's system date. A newer date requires "
+        "successful ingestion and execution of the upstream pipeline."
+    )
+    st.subheader("Scope")
+    st.write(
+        "This dashboard covers HMM regime intelligence, cross-market comparisons, "
+        "and historical stock statistics where local price data exists. "
+        "It does not fabricate options surfaces, portfolio backtests, or Monte Carlo outputs."
+    )
 
 st.divider()
-st.subheader(
-    f"Stock Intelligence · {STOCK_DISPLAY_NAMES[selected_stock]} ({selected_stock})"
-)
-st.caption(
-    "Stock selector is independent of the market-index HMM. "
-    "This first stock layer shows the selected stock's own price history "
-    "and basic quantitative state; it does not label the stock with the NIFTY 50 regime."
-)
-
-stock = stock_snapshot(selected_stock)
-
-if stock is None:
-    st.warning(
-        f"No historical price file was found for {selected_stock}. "
-        "The market-index dashboard remains fully available."
-    )
-else:
-    k1, k2, k3, k4, k5 = st.columns(5)
-
-    with k1:
-        st.metric(
-            "Latest Price",
-            f"{stock['latest']:,.2f}",
-        )
-
-    with k2:
-        value = stock["return_1d"]
-        st.metric(
-            "1D Return",
-            f"{value:.2%}" if pd.notna(value) else "N/A",
-        )
-
-    with k3:
-        value = stock["return_1m"]
-        st.metric(
-            "1M Return",
-            f"{value:.2%}" if pd.notna(value) else "N/A",
-        )
-
-    with k4:
-        value = stock["return_1y"]
-        st.metric(
-            "1Y Return",
-            f"{value:.2%}" if pd.notna(value) else "N/A",
-        )
-
-    with k5:
-        value = stock["vol20"]
-        st.metric(
-            "20D Annualized Vol",
-            f"{value:.2%}" if pd.notna(value) else "N/A",
-        )
-
-    st.caption(
-        f"Latest stock observation: {stock['latest_date'].strftime('%Y-%m-%d')}"
-    )
-
-    fig_stock = go.Figure()
-    fig_stock.add_trace(
-        go.Scatter(
-            x=stock["prices"].index,
-            y=stock["prices"].values,
-            mode="lines",
-            name=selected_stock,
-        )
-    )
-    fig_stock.update_layout(
-        height=380,
-        title=f"{STOCK_DISPLAY_NAMES[selected_stock]} Price History",
-        xaxis_title="Date",
-        yaxis_title="Price",
-        margin=dict(l=20, r=20, t=55, b=20),
-    )
-    st.plotly_chart(
-        fig_stock,
-        use_container_width=True,
-    )
-
-# ============================================================
-# HISTORICAL PREDICTION LOG
-# ============================================================
-
-prediction_history = load_hmm_prediction_history(
-    selected_symbol
-)
-
-history_file = history_file_for_symbol(
-    selected_symbol
-)
-
-if history_file is not None and not prediction_history.empty:
-
-    history = prediction_history.copy()
-
-    probability_columns = [
-        "bull_probability",
-        "side_probability",
-        "bear_probability",
-    ]
-
-    for col in probability_columns:
-        if col in history.columns:
-            history[col] = pd.to_numeric(
-                history[col],
-                errors="coerce",
-            )
-
-    if "agreement" in history.columns:
-        history["agreement"] = history[
-            "agreement"
-        ].astype("boolean")
-
-    st.divider()
-
-    st.subheader(
-        f"Historical Prediction Log · "
-        f"{DISPLAY_NAMES[selected_symbol]}"
-    )
-
-    st.caption(
-        f"Instrument: {DISPLAY_NAMES[selected_symbol]} · "
-        f"Source: {history_file.name} · "
-        "Historical next-trading-day regime distributions "
-        "produced by the causal HMM."
-    )
-
-    detailed = history[
-        [
-            "prediction_date",
-            "target_trading_date",
-            "current_regime",
-            "next_regime",
-            "bull_probability",
-            "side_probability",
-            "bear_probability",
-            "actual_next_regime",
-            "agreement",
-        ]
-    ].copy()
-
-    detailed = detailed.sort_values(
-        "prediction_date",
-        ascending=False,
-    )
-
-    detailed[
-        "prediction_date"
-    ] = detailed[
-        "prediction_date"
-    ].dt.strftime("%Y-%m-%d")
-
-    detailed[
-        "target_trading_date"
-    ] = detailed[
-        "target_trading_date"
-    ].dt.strftime("%Y-%m-%d")
-
-    for col in [
-        "bull_probability",
-        "side_probability",
-        "bear_probability",
-    ]:
-        detailed[col] = detailed[col].map(
-            lambda x: (
-                f"{x:.2%}"
-                if pd.notna(x)
-                else "N/A"
-            )
-        )
-
-    detailed.columns = [
-        "Prediction Date",
-        "Target Date",
-        "Current Regime",
-        "Predicted Regime",
-        "P(BULL)",
-        "P(SIDE)",
-        "P(BEAR)",
-        "Actual Regime",
-        "Agreement",
-    ]
-
-    st.dataframe(
-        detailed,
-        use_container_width=True,
-        hide_index=True,
-        height=500,
-    )
-
-else:
-
-    st.divider()
-
-    st.subheader(
-        f"Historical Prediction Log · "
-        f"{DISPLAY_NAMES[selected_symbol]}"
-    )
-
-    st.info(
-        f"No instrument-specific historical prediction file "
-        f"is available for {DISPLAY_NAMES[selected_symbol]}. "
-        "The dashboard will not substitute NIFTY 50 history here, "
-        "because that would make the displayed history incorrect."
-    )
-
-    st.caption(
-        "NIFTY 50 history is available in the current research "
-        "artifact if you need a verified historical example."
-    )
-
-
-# METHODOLOGY
-# ============================================================
-
-with st.expander(
-    "What QuantOS is calculating"
-):
-    st.markdown(
-        """
-        **HMM regime layer**
-
-        Each instrument is modelled independently with three latent states:
-        BULL, SIDE and BEAR.
-
-        **Current regime**
-
-        The current state is inferred causally using observations available
-        through the latest trading session.
-
-        **Next trading day**
-
-        The displayed probability is the calibrated one-step-ahead probability
-        of the latent regime. It is NOT a probability that the asset's return
-        will be positive or negative.
-
-        **Transition matrix**
-
-        Rows represent today's regime and columns represent the next
-        trading-day regime. Each row is a conditional probability distribution.
-
-        **Stickiness**
-
-        Stickiness combines persistence evidence, recent consistency and the
-        current regime streak. It is an explanatory persistence score.
-
-        **India VIX**
-
-        India VIX is presented as LOW / MID / HIGH rather than BULL / SIDE /
-        BEAR because it is a volatility index.
-        """
-    )
-
-st.caption(
-    "QuantOS · V10 regime layer · live artifact view"
-)
-
+st.caption("QuantOS · Research dashboard · Model outputs are informational, not investment advice.")

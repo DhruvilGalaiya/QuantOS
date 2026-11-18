@@ -843,3 +843,28 @@
     border-bottom: 1px solid var(--border);
   }
 }
+
+
+/* Historical options data warning */
+.options-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 16px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(217, 145, 47, 0.4);
+  border-radius: 10px;
+  background: rgba(217, 145, 47, 0.08);
+  color: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.options-notice strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.options-notice span {
+  opacity: 0.8;
+}

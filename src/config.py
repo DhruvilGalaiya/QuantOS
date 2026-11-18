@@ -1,17 +1,15 @@
-# QuantOS Market Data Instrument Configuration
+"""Moved to `quantos_platform.core.instruments` (production package). This file keeps old imports and commands working."""
 
-REGIME_INSTRUMENTS = {
-    "NIFTY_50": "NSE_INDEX|Nifty 50",
-    "NIFTY_BANK": "NSE_INDEX|Nifty Bank",
-    "NIFTY_IT": "NSE_INDEX|Nifty IT",
-    "NIFTY_PHARMA": "NSE_INDEX|Nifty Pharma",
-    "NIFTY_AUTO": "NSE_INDEX|Nifty Auto",
-    "NIFTY_FIN_SERVICE": "NSE_INDEX|Nifty Fin Service",
-    "INDIA_VIX": "NSE_INDEX|India VIX",
-    "NIFTY_MIDCAP_100": "NSE_INDEX|NIFTY MIDCAP 100",
-"NIFTY_NEXT_50": "NSE_INDEX|Nifty Next 50",
-}
+import importlib
+import runpy  # noqa: F401
+import sys
+from pathlib import Path
 
-VALIDATION_INSTRUMENTS = {
-    "SENSEX": "BSE_INDEX|SENSEX",
-}
+_ROOT = str(Path(__file__).resolve().parents[1])
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
+
+if __name__ == "__main__":
+    runpy.run_module("quantos_platform.core.instruments", run_name="__main__", alter_sys=True)
+else:
+    sys.modules[__name__] = importlib.import_module("quantos_platform.core.instruments")

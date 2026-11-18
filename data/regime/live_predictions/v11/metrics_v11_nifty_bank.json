@@ -1,0 +1,47 @@
+{
+  "target": "NIFTY_BANK",
+  "band_pct": 0.25,
+  "validation": {
+    "start": "2016-01-01",
+    "end": "2024-10-31",
+    "n": 2189,
+    "direction_accuracy": 0.5829145728643216,
+    "direction_calls": 2189,
+    "three_class_accuracy": 0.4728186386477844,
+    "always_up_accuracy": 0.5395157606212883
+  },
+  "test": {
+    "start": "2024-11-01",
+    "end": "2026-11-18",
+    "n": 506,
+    "direction_accuracy": 0.5434782608695652,
+    "direction_calls": 506,
+    "three_class_accuracy": 0.4150197628458498,
+    "always_up_accuracy": 0.5197628458498024
+  },
+  "v10_same_rows": {
+    "n": 496,
+    "direction_accuracy": 0.46996466431095407,
+    "direction_calls": 283,
+    "three_class_accuracy": 0.3185483870967742,
+    "always_up_accuracy": 0.5201612903225806
+  },
+  "v11_same_rows": {
+    "n": 496,
+    "direction_accuracy": 0.5463709677419355,
+    "direction_calls": 496,
+    "three_class_accuracy": 0.41935483870967744,
+    "always_up_accuracy": 0.5201612903225806
+  },
+  "generated_at": "2026-11-18T20:39:29.072831+05:30",
+  "latest": {
+    "prediction_date": "2026-11-18",
+    "target_trading_date": "2026-11-19",
+    "next_regime": "BULL",
+    "next_day_probability": 0.4506737375433612,
+    "bull_probability": 0.4506737375433612,
+    "side_probability": 0.17797567509926882,
+    "bear_probability": 0.3713505873573699,
+    "status": "PROVISIONAL"
+  }
+}

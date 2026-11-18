@@ -16,3 +16,17 @@ mlops/artifacts/
 # Python cache files
 __pycache__/
 *.py[cod]
+
+# macOS / tooling
+.DS_Store
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# QuantOS runtime state (job status, logs, locks, caches) and temp writes
+data/system/
+*.tmp
+data/regime/volatility_surface/.refresh.lock
+data/derivatives/playbook/.cache_*

@@ -1,0 +1,21 @@
+{
+ "symbol": "NIFTY_BANK",
+ "as_of": "2026-11-18 19:33",
+ "date": "2026-11-18",
+ "session": "2026-11-18",
+ "expiry": "2026-11-23",
+ "tdte": 3,
+ "active": false,
+ "phase": "after",
+ "next_window": "2026-11-19",
+ "p_up": 0.5728314149059256,
+ "drift": 0.5770191507077436,
+ "view": -1,
+ "side": "CE",
+ "strike": 62600.0,
+ "spot": 61940.9,
+ "instrument_key": "NSE_FO|62489",
+ "trading_symbol": "BANKNIFTY 62600 CE 23 NOV 26",
+ "lot_size": 30,
+ "premium": 206.9
+}

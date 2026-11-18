@@ -1,41 +1,15 @@
-import os
-import requests
-from dotenv import load_dotenv
+"""Moved to `quantos_platform.core.upstox` (production package). This file keeps old imports and commands working."""
 
-load_dotenv()
+import importlib
+import runpy  # noqa: F401
+import sys
+from pathlib import Path
 
-UPSTOX_TOKEN = os.getenv("UPSTOX_ANALYTICS_TOKEN")
+_ROOT = str(Path(__file__).resolve().parents[1])
+if _ROOT not in sys.path:
+    sys.path.insert(0, _ROOT)
 
-BASE_URL = "https://api.upstox.com"
-
-HEADERS = {
-    "Authorization": f"Bearer {UPSTOX_TOKEN}",
-    "Accept": "application/json",
-}
-
-
-def get(endpoint, params=None):
-    """
-    Send an authenticated GET request to the Upstox API.
-    """
-
-    if not UPSTOX_TOKEN:
-        raise RuntimeError(
-            "UPSTOX_ANALYTICS_TOKEN not found in .env"
-        )
-
-    url = BASE_URL + endpoint
-
-    response = requests.get(
-        url,
-        headers=HEADERS,
-        params=params,
-        timeout=30,
-    )
-
-    if response.status_code != 200:
-        print("Status:", response.status_code)
-        print("Response:", response.text)
-        response.raise_for_status()
-
-    return response.json()
+if __name__ == "__main__":
+    runpy.run_module("quantos_platform.core.upstox", run_name="__main__", alter_sys=True)
+else:
+    sys.modules[__name__] = importlib.import_module("quantos_platform.core.upstox")

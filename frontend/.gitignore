@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local MLOps tracking and generated outputs
+mlflow.db
+mlflow.db-shm
+mlflow.db-wal
+mlruns/
+mlops/artifacts/

@@ -138,66 +138,60 @@ def get_realized_vol(
 
 def load_atm_iv_from_surface() -> Optional[float]:
     """
-    Load the nearest-expiry ATM IV from the validated
-    NIFTY 50 IV surface.
-
-    The IV surface engine explicitly identifies ATM rows,
-    so this is preferred over taking a generic median of
-    option IV observations from SQLite.
+    Load ATM IV only from a recent surface with a valid
+    future expiry. Return None when data is stale or invalid.
     """
-
     if not IV_SURFACE_PATH.exists():
         return None
 
     try:
-
         with open(IV_SURFACE_PATH, "r") as f:
             data = json.load(f)
 
+        # Reject surfaces older than 24 hours.
+        generated_at = pd.to_datetime(
+            data.get("generated_at"), utc=True, errors="coerce"
+        )
+        now = pd.Timestamp.now(tz="UTC")
+
+        if pd.isna(generated_at):
+            print("WARNING: IV surface has no valid timestamp.")
+            return None
+
+        age_hours = (now - generated_at).total_seconds() / 3600
+        if age_hours < 0 or age_hours > 24:
+            print(f"WARNING: IV surface is stale ({age_hours:.1f} hours old).")
+            return None
+
         surface = data.get("surface", [])
+        today = now.date().isoformat()
 
         atm_rows = [
-            row
-            for row in surface
+            row for row in surface
             if row.get("is_atm") is True
+            and row.get("expiry", "") >= today
+            and row.get("implied_volatility") is not None
         ]
 
         if not atm_rows:
+            print("WARNING: No valid future-expiry ATM IV rows.")
             return None
 
-        atm_rows.sort(
-            key=lambda row: (
-                int(
-                    row.get(
-                        "days_to_expiry",
-                        10**9,
-                    )
-                ),
-                str(
-                    row.get(
-                        "expiry",
-                        "",
-                    )
-                ),
-            )
-        )
+        atm_rows.sort(key=lambda row: (
+            row["expiry"],
+            abs(float(row.get("moneyness", 0.0))),
+        ))
 
-        atm_iv = atm_rows[0].get(
-            "implied_volatility"
-        )
-
-        if atm_iv is None:
+        iv = float(atm_rows[0]["implied_volatility"])
+        if not 0 < iv < 5:
+            print("WARNING: ATM IV outside valid range.")
             return None
 
-        atm_iv = float(atm_iv)
+        return iv
 
-        if 0 < atm_iv < 5:
-            return atm_iv
-
-    except Exception:
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        print(f"WARNING: Could not load validated ATM IV: {exc}")
         return None
-
-    return None
 
 
 def main():
