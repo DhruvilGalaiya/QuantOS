@@ -43,3 +43,11 @@ python -m pytest -q && ruff check quantos_platform tests backend/app/ui.py   # t
 Deployment plan / change log: docs/Deployment_Plan.pdf
 python -m streamlit run src/quantos_volatility/volatility_surface_dashboard.pygit add . && git commit -m "Update project changes" && git push
 python -m src.quantos_portfolio.us_datastreamlit run backend/app/regime_dashboard.py --server.port 8501
+
+## IMPORTANT: Sound Notification
+
+After finishing responding to my request or running a command, run this command to notify me by sound:
+
+```bash
+afplay /System/Library/Sounds/Funk.aiff
+```
