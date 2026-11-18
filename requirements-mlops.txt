@@ -7,4 +7,5 @@ pyarrow==25.0.1
 python-dotenv==1.2.3
 psycopg2-binary==2.9.11
 fastapi
-uvicorn[standard]httpx
+uvicorn[standard]
+httpx
