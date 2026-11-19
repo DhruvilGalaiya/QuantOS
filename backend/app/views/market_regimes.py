@@ -27,6 +27,7 @@ import streamlit as st
 APP_DIR = Path(__file__).resolve().parent          # backend/app/views
 PROJECT_ROOT = APP_DIR.parents[2]                   # project root
 
+import theme  # noqa: E402  (backend/app/theme.py)
 import ui  # noqa: E402  (backend/app/ui.py)
 from quantos_platform.data import daily as live_data  # noqa: E402
 
@@ -182,9 +183,9 @@ NEXT_DAY_CLOSE_SYMBOLS = {
 
 
 @st.cache_data(ttl=300, show_spinner=False)
-def load_daily_close_changes(symbol: str) -> pd.Series:
+def load_daily_closes(symbol: str) -> pd.Series:
     """
-    Close-to-close % change per session, indexed by IST calendar date.
+    Daily closes indexed by IST calendar date.
 
     Source: the Upstox daily candles in data/regime/daily, which the
     scheduled `india` job (quantos_platform.jobs) keeps current.
@@ -205,8 +206,13 @@ def load_daily_close_changes(symbol: str) -> pd.Series:
         .dropna()
         .sort_index()
     )
-    closes = closes[~closes.index.duplicated(keep="last")]
-    return closes.pct_change() * 100
+    return closes[~closes.index.duplicated(keep="last")]
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def load_daily_close_changes(symbol: str) -> pd.Series:
+    """Close-to-close % change per session, indexed by IST calendar date."""
+    return load_daily_closes(symbol).pct_change() * 100
 
 
 V11_DIR = PROJECT_ROOT / "data" / "regime" / "live_predictions" / "v11"
@@ -719,29 +725,17 @@ def build_market_overview(data):
             nxt = display_regime(symbol, str(first_value(payload, ["next_regime", "next_state"], "N/A")).upper())
             model = "V10"
         rows.append({
+            "Symbol": symbol,
             "Instrument": DISPLAY_NAMES[symbol],
             "Last close": as_float(first_value(payload, ["latest_close", "close"])),
             "1D change": float(moves.iloc[-1]) if len(moves) else np.nan,
             "Regime": display_regime(symbol, current_regime),
             "Streak": get_streak(payload),
             "Persistence": get_stickiness(payload),
-            "Next session": f"{nxt} ({model})",
+            "Next session": nxt,
+            "Model": model,
         })
     return pd.DataFrame(rows)
-
-
-# ============================================================
-# HEADER
-# ============================================================
-
-st.markdown(
-    "# ◈ QuantOS Market Regime Intelligence"
-)
-
-st.caption(
-    "Indian index regimes · V11 next-session forecast · "
-    "persistence · walk-forward prediction log"
-)
 
 
 # ============================================================
@@ -761,6 +755,7 @@ def load_live_quotes(symbols: tuple[str, ...]):
 def _clear_artifact_caches():
     load_predictions.clear()
     load_hmm_prediction_history.clear()
+    load_daily_closes.clear()
     load_daily_close_changes.clear()
     load_v11_history.clear()
     load_v11_metrics.clear()
@@ -779,10 +774,10 @@ ui.job_health("india", "india_daily")
 # ============================================================
 
 with st.sidebar:
-    st.header("Market")
+    st.subheader("Market")
 
     selected_symbol = st.selectbox(
-        "Index / Market Instrument",
+        "Instrument",
         SYMBOLS,
         format_func=lambda x: DISPLAY_NAMES[x],
         key="market_instrument",
@@ -796,8 +791,8 @@ with st.sidebar:
     st.caption(ui.freshness_caption("india_daily", "Daily data"))
     st.caption(ui.freshness_caption("v11", "V11 forecast for"))
     st.caption(
-        "Data is updated by scheduled jobs (`python -m quantos_platform.jobs india`)"
-        + ("." if ui.PUBLIC else "; in local mode stale data is also refreshed when this page opens.")
+        "Scheduled jobs keep this data current (`python -m quantos_platform.jobs india`)"
+        + ("." if ui.PUBLIC else ". In local mode, stale data is also refreshed when the page opens.")
     )
 
 
@@ -813,206 +808,174 @@ except Exception as exc:
 
 if selected_symbol not in all_data:
     st.error(
-        f"{selected_symbol} is missing from "
-        "latest_predictions.json. Run the live HMM runner first."
+        f"{selected_symbol} is missing from latest_predictions.json. "
+        "Run the india job to rebuild the predictions."
     )
     st.stop()
 
 selected = all_data[selected_symbol]
-
-
-# ============================================================
-# SELECTED VALUES
-# ============================================================
-
-current_raw = str(
-    first_value(
-        selected,
-        [
-            "current_regime",
-            "current_state",
-            "regime",
-        ],
-        "N/A",
-    )
-).upper()
-
-next_raw = str(
-    first_value(
-        selected,
-        [
-            "next_regime",
-            "next_state",
-            "forecast_regime",
-        ],
-        "N/A",
-    )
-).upper()
+IS_VIX = selected_symbol == "INDIA_VIX"
+NAME = DISPLAY_NAMES[selected_symbol]
 
 current = display_regime(
     selected_symbol,
-    current_raw,
+    str(first_value(selected, ["current_regime", "current_state", "regime"], "N/A")).upper(),
 )
-
 next_regime = display_regime(
     selected_symbol,
-    next_raw,
+    str(first_value(selected, ["next_regime", "next_state", "forecast_regime"], "N/A")).upper(),
 )
 
-probabilities = get_probabilities(
-    selected
-)
+probabilities = get_probabilities(selected)
+if IS_VIX:
+    probabilities = remap_vix_probs(probabilities)
 
-if selected_symbol == "INDIA_VIX":
-    probabilities = remap_vix_probs(
-        probabilities
-    )
+states = display_states(selected_symbol)
 
-states = display_states(
-    selected_symbol
-)
+next_probability = as_float(first_value(selected, ["next_day_probability", "next_probability"]))
+if not np.isfinite(next_probability) and probabilities:
+    next_probability = max(probabilities.values())
 
-next_probability = as_float(
-    first_value(
-        selected,
-        [
-            "next_day_probability",
-            "next_probability",
-        ],
-    )
-)
+stickiness = get_stickiness(selected)
+stickiness_level = get_stickiness_level(selected, stickiness)
+streak = get_streak(selected)
+latest_date = str(first_value(selected, ["latest_date", "date"], "N/A"))
+latest_close = as_float(first_value(selected, ["latest_close", "close"]))
+close_text = f"{latest_close:,.2f}" if np.isfinite(latest_close) else "N/A"
 
-if (
-    not np.isfinite(next_probability)
-    and probabilities
-):
-    next_probability = max(
-        probabilities.values()
-    )
 
-stickiness = get_stickiness(
-    selected
-)
-
-stickiness_level = get_stickiness_level(
-    selected,
-    stickiness,
-)
-
-streak = get_streak(
-    selected
-)
-
-latest_date = str(
-    first_value(
-        selected,
-        [
-            "latest_date",
-            "date",
-        ],
-        "N/A",
-    )
-)
-
-latest_close = as_float(
-    first_value(
-        selected,
-        [
-            "latest_close",
-            "close",
-        ],
-    )
-)
+def nice_day(value) -> str:
+    try:
+        return pd.Timestamp(value).strftime("%a %d %b")
+    except (TypeError, ValueError):
+        return str(value)
 
 
 # ============================================================
-# HEADLINE: price · regime · next-session forecast
+# HERO: regime, price, next-session forecast
 # ============================================================
 # Intraday quote is display only; models use completed daily sessions.
 
 quotes = load_live_quotes((selected_symbol,))
 q = quotes.get(selected_symbol) if "_error" not in quotes else None
-v11_latest = (
-    load_v11_metrics(selected_symbol).get("latest")
-    if selected_symbol in V11_SYMBOLS
-    else None
+v11_latest = load_v11_metrics(selected_symbol).get("latest") if selected_symbol in V11_SYMBOLS else None
+moves = load_daily_close_changes(selected_symbol)
+
+if q is not None:
+    price_label, price_text, live = "Live", f"{q['ltp']:,.2f}", True
+    day_move = (q["ltp"] / q["prev_close"] - 1) * 100 if q.get("prev_close") else np.nan
+else:
+    price_label = f"Close, {nice_day(latest_date[:10])}" if latest_date != "N/A" else "Last close"
+    price_text, live = close_text, False
+    day_move = float(moves.iloc[-1]) if len(moves) else np.nan
+change_html = (
+    theme.signed_html(day_move, invert=IS_VIX) + ' <span class="t-muted">on the day</span>'
+    if np.isfinite(day_move) else ""
 )
 
-close_text = f"{latest_close:,.2f}" if np.isfinite(latest_close) else "N/A"
-
-st.markdown(f"### {DISPLAY_NAMES[selected_symbol]}")
-
-h1, h2, h3, h4 = st.columns(4)
-
-with h1:
-    if q is not None:
-        st.metric(
-            "Live price",
-            f"{q['ltp']:,.2f}",
-            delta=(
-                f"{q['ltp'] / q['prev_close'] - 1:+.2%}"
-                if q.get("prev_close")
-                else None
-            ),
-            delta_color="inverse" if selected_symbol == "INDIA_VIX" else "normal",
-        )
-    else:
-        st.metric("Last close", close_text)
-
-with h2:
-    st.metric(
-        "Current regime",
-        current,
-        delta=f"{streak} session{"s" if streak != 1 else ""}",
-        delta_color="off",
-        help="V10 trend regime (Gaussian HMM, causal filtering). "
-             "The delta shows how many sessions it has lasted.",
-    )
-
-with h3:
-    if v11_latest:
-        st.metric(
-            f"Next session · {v11_latest['target_trading_date']}",
-            v11_latest["next_regime"],
-            delta=v11_latest["status"],
-            delta_color="off",
-            help="V11 pre-open forecast of the next close-to-close move: "
-                 "BULL > +0.25%, BEAR < −0.25%, otherwise SIDE. FINAL once the "
-                 "US session has closed (~02:30 IST).",
-        )
-    else:
-        st.metric(
-            "Next session",
-            next_regime,
-            help="V10 trend model's one-step-ahead regime.",
-        )
-
-with h4:
-    confidence = v11_latest["next_day_probability"] if v11_latest else next_probability
-    st.metric(
-        "Forecast confidence",
-        f"{confidence:.1%}" if np.isfinite(confidence) else "N/A",
-        help="Probability the model assigns to the forecast regime.",
-    )
+meta_html = f"Trend regime for <b>{streak} session{'s' if streak != 1 else ''}</b>"
+if np.isfinite(stickiness):
+    meta_html += f", persistence <b>{stickiness:.0f}/100</b>"
 
 if v11_latest:
-    st.caption(
-        f"Last close {close_text} on {latest_date[:10]} · "
-        f"P(BULL) {v11_latest['bull_probability']:.0%} · "
-        f"P(SIDE) {v11_latest['side_probability']:.0%} · "
-        f"P(BEAR) {v11_latest['bear_probability']:.0%} · "
-        "V11 model (US overnight session + India end-of-day + HMM regime)"
-    )
+    fc_probs = {
+        "BULL": v11_latest["bull_probability"],
+        "SIDE": v11_latest["side_probability"],
+        "BEAR": v11_latest["bear_probability"],
+    }
+    fc_pick, fc_conf = v11_latest["next_regime"], v11_latest["next_day_probability"]
+    fc_when = f"Next session, {nice_day(v11_latest['target_trading_date'])}"
+    fc_model = f"V11 forecast, {str(v11_latest['status']).lower()}"
 else:
-    st.caption(
-        f"Last close {close_text} on {latest_date[:10]} · V10 trend model"
+    fc_probs = {s: probabilities.get(s, 0.0) for s in states} if probabilities else None
+    fc_pick, fc_conf = next_regime, next_probability
+    fc_when, fc_model = "Next session", "V10 trend model"
+
+ribbon_head = (
+    f'<span>{theme.esc(fc_when)}: <b class="t-{theme.tone_of(fc_pick)}">{theme.esc(theme.word_of(fc_pick))}</b></span>'
+    + (f"<span><b>{fc_conf:.0%}</b> confidence, {theme.esc(fc_model)}</span>" if np.isfinite(fc_conf) else "")
+)
+
+theme.regime_hero(
+    instrument=NAME,
+    regime=current,
+    meta_html=meta_html,
+    price_label=price_label,
+    price=price_text,
+    change_html=change_html,
+    live=live,
+    ribbon_head=ribbon_head,
+    probs=fc_probs,
+    pick=fc_pick,
+)
+
+if v11_latest:
+    theme.note(
+        "V11 forecasts the next close-to-close move from the overnight US session, India's end-of-day "
+        "state and the HMM regime: Bull above +0.25%, Bear below −0.25%, otherwise Sideways. "
+        "It becomes final once the US session has closed, around 02:30 IST."
+    )
+if IS_VIX:
+    theme.note(
+        "India VIX regimes read as volatility levels: the model's Bear, Sideways and Bull states "
+        "are shown as Low, Mid and High vol."
     )
 
-if selected_symbol == "INDIA_VIX":
-    st.info(
-        "India VIX regimes are shown as LOW / MID / HIGH volatility "
-        "(underlying V10 labels BEAR → LOW, SIDE → MID, BULL → HIGH)."
+
+# ============================================================
+# REGIME TIMELINE
+# ============================================================
+
+hist10 = load_hmm_prediction_history(selected_symbol)
+closes = load_daily_closes(selected_symbol)
+if not hist10.empty and len(closes) and "current_regime" in hist10:
+    theme.section(
+        "Regime timeline",
+        "Daily close over the last two years. The strip along the bottom shows the trend regime the model "
+        "assigned each day.",
     )
+    reg = (
+        hist10.assign(day=hist10["prediction_date"].dt.normalize())
+        .drop_duplicates("day", keep="last")
+        .set_index("day")["current_regime"]
+        .map(lambda r: display_regime(selected_symbol, str(r).upper()))
+    )
+    px_ = closes[closes.index >= reg.index.min()]
+    reg_px = reg.reindex(px_.index, method="ffill")
+
+    timeline = go.Figure()
+    runs = (reg_px != reg_px.shift()).cumsum()
+    dates = list(px_.index)
+    for _, seg in reg_px.groupby(runs):
+        r = seg.iloc[0]
+        if pd.isna(r):
+            continue
+        end_pos = dates.index(seg.index[-1])
+        x1 = dates[end_pos + 1] if end_pos + 1 < len(dates) else seg.index[-1]
+        timeline.add_vrect(
+            x0=seg.index[0], x1=x1, y0=-0.07, y1=-0.025, line_width=0, layer="above",
+            fillcolor=theme.TONES[theme.tone_of(r)], opacity=0.9,
+        )
+    timeline.add_scatter(
+        x=px_.index, y=px_.values, mode="lines", name="Close", showlegend=False,
+        line=dict(color=theme.ACCENT, width=1.6),
+        customdata=reg_px.map(lambda r: theme.word_of(r) if isinstance(r, str) else "—").to_numpy(),
+        hovertemplate="%{x|%a %d %b %Y}<br><b>%{y:,.2f}</b><br>%{customdata} regime<extra></extra>",
+    )
+    for s in states:
+        timeline.add_scatter(
+            x=[None], y=[None], mode="markers", name=theme.word_of(s), hoverinfo="skip",
+            marker=dict(size=11, symbol="square", color=theme.TONES[theme.tone_of(s)]),
+        )
+    timeline.update_layout(
+        height=380, hovermode="closest",
+        legend=dict(orientation="h", x=0, y=1.0, yanchor="bottom", itemclick=False, itemdoubleclick=False),
+        margin=dict(l=8, r=64, t=34, b=36),
+        xaxis=dict(showgrid=False, automargin=True, ticklabelstandoff=22),
+        yaxis=dict(side="right", tickformat=",.0f", automargin=True),
+    )
+    with theme.card("timeline"):
+        theme.chart(timeline)
 
 
 # ============================================================
@@ -1021,139 +984,111 @@ if selected_symbol == "INDIA_VIX":
 
 matrix = get_transition_matrix(selected)
 stationary = get_stationary(selected)
-
-if selected_symbol == "INDIA_VIX":
+if IS_VIX:
     matrix = remap_vix_matrix(matrix)
     stationary = remap_vix_probs(stationary)
 
-st.divider()
-
-left, right = st.columns([1, 1.5], gap="large")
+left, right = st.columns([1, 1.75], gap="large")
 
 with left:
-    st.subheader("Persistence")
-
-    gauge_value = 0 if not np.isfinite(stickiness) else max(0, min(100, stickiness))
-    gauge = go.Figure(
-        go.Indicator(
-            mode="gauge+number",
-            value=gauge_value,
-            number={"suffix": "/100"},
-            gauge={
-                "axis": {"range": [0, 100]},
-                "bar": {"thickness": 0.3},
-                "steps": [
-                    {"range": [0, 50], "color": "rgba(148,163,184,0.15)"},
-                    {"range": [50, 75], "color": "rgba(148,163,184,0.28)"},
-                    {"range": [75, 100], "color": "rgba(148,163,184,0.42)"},
-                ],
-            },
-            title={"text": stickiness_level},
-        )
-    )
-    gauge.update_layout(height=230, margin=dict(l=25, r=25, t=50, b=5))
-    st.plotly_chart(gauge, width="stretch")
-
+    theme.section("Persistence", "How entrenched the current regime is. It says nothing about direction.")
+    theme.meter(stickiness, stickiness_level)
     stay = as_float(first_value(selected, ["stay_probability"]))
     consistency = as_float(first_value(selected, ["recent_consistency"]))
-    m1, m2, m3 = st.columns(3)
-    with m1:
-        st.metric("Stay probability", f"{stay:.0%}" if np.isfinite(stay) else "N/A")
-    with m2:
-        st.metric("10-day consistency", f"{consistency:.0%}" if np.isfinite(consistency) else "N/A")
-    with m3:
-        st.metric("Streak", f"{streak} d")
-    st.caption(
-        "Score = 60% stay probability + 25% 10-day consistency + "
-        "15% streak (capped at 10 sessions). Measures how entrenched the "
-        "current regime is, not where price goes next."
+    theme.stats([
+        theme.stat("Stay probability", f"{stay:.0%}" if np.isfinite(stay) else "N/A"),
+        theme.stat("10-day consistency", f"{consistency:.0%}" if np.isfinite(consistency) else "N/A"),
+        theme.stat("Streak", f"{streak} d"),
+    ], enter=False, cols=3)
+    theme.note(
+        "Score = 60% stay probability + 25% ten-session consistency + 15% streak (capped at 10 sessions)."
     )
 
 with right:
-    st.subheader("Regime dynamics")
-    st.caption(
-        "How each regime behaves, from the trailing ~3-year transition "
-        "process. The current regime is marked ●."
-    )
-
+    theme.section("Regime dynamics", "How each regime behaves, from the trailing three-year transition process.")
     if matrix is not None:
         matrix = matrix.reindex(index=states, columns=states)
-        rows = []
-        for regime in states:
+        rows, current_row = [], None
+        for i, regime in enumerate(states):
+            tone = theme.tone_of(regime)
             stay_p = float(matrix.loc[regime, regime])
             exits = matrix.loc[regime].drop(regime)
-            exit_to = exits.idxmax() if exits.sum() > 0 else "—"
-            rows.append({
-                "Regime": f"● {regime}" if regime == current else regime,
-                "Continues next session": stay_p,
-                "Typical duration": 1 / max(1 - stay_p, 1e-6),
-                "When it ends, usually →": (
-                    f"{exit_to} ({exits.max() / exits.sum():.0%})"
-                    if exits.sum() > 0 else "—"
-                ),
-                "Long-run share": stationary.get(regime, np.nan) if stationary else np.nan,
-            })
-        st.dataframe(
-            pd.DataFrame(rows),
-            hide_index=True,
-            width="stretch",
-            column_config={
-                "Continues next session": st.column_config.ProgressColumn(
-                    format="percent", min_value=0, max_value=1),
-                "Typical duration": st.column_config.NumberColumn(format="%.1f sessions"),
-                "Long-run share": st.column_config.ProgressColumn(
-                    format="percent", min_value=0, max_value=1),
-            },
+            if regime == current:
+                current_row = i
+            share = stationary.get(regime, np.nan) if stationary else np.nan
+            rows.append([
+                theme.chip(regime) + (' <span class="dim">now</span>' if regime == current else ""),
+                theme.mini_bar(stay_p, f"{stay_p:.0%}", tone),
+                f"{1 / max(1 - stay_p, 1e-6):.1f} d",
+                (theme.chip(exits.idxmax()) + f' <span class="dim">{exits.max() / exits.sum():.0%}</span>')
+                if exits.sum() > 0 else '<span class="dim">—</span>',
+                f"{share:.0%}" if np.isfinite(share) else "—",
+            ])
+        theme.table(
+            [("Regime", ""), ("Continues", ""), ("Lasts", "num"), ("Usually ends in", ""), ("Long-run", "num")],
+            rows,
+            current=current_row,
         )
-        st.caption(
-            "Typical duration = 1 / (1 − continuation probability). "
-            "Long-run share = stationary distribution of the full-history process."
+        theme.note(
+            "Continues = chance the regime holds into the next session. Lasts = typical duration in sessions, "
+            "1 / (1 − continues). Long-run = share of time spent in the regime over the full history."
         )
     else:
-        st.info("Transition data is not available for this instrument yet.")
+        theme.note("Transition data is not available for this instrument yet.")
 
 
 # ============================================================
 # MARKET OVERVIEW (all instruments)
 # ============================================================
 
-st.divider()
-st.subheader("Market overview")
-
 overview = build_market_overview(all_data)
 if not overview.empty:
-    st.dataframe(
-        overview,
-        hide_index=True,
-        width="stretch",
-        column_config={
-            "Last close": st.column_config.NumberColumn(format="%.2f"),
-            "1D change": st.column_config.NumberColumn(format="%+.2f%%"),
-            "Streak": st.column_config.NumberColumn(format="%d sessions"),
-            "Persistence": st.column_config.ProgressColumn(
-                format="%.0f", min_value=0, max_value=100),
-        },
+    theme.section("Market overview", "Every tracked index at a glance. The highlighted row is the one selected.")
+    rows, current_row = [], None
+    for i, r in enumerate(overview.to_dict("records")):
+        if r["Symbol"] == selected_symbol:
+            current_row = i
+        persistence = r["Persistence"] if np.isfinite(r["Persistence"]) else np.nan
+        rows.append([
+            f'<span class="strong">{theme.esc(r["Instrument"])}</span>',
+            f"{r['Last close']:,.2f}" if np.isfinite(r["Last close"]) else "—",
+            theme.signed_html(r["1D change"], invert=r["Symbol"] == "INDIA_VIX"),
+            theme.chip(r["Regime"]),
+            f"{r['Streak']} sessions",
+            theme.mini_bar(persistence / 100, f"{persistence:.0f}" if np.isfinite(persistence) else "—"),
+            theme.chip(r["Next session"]) + f' <span class="dim">{r["Model"]}</span>',
+        ])
+    theme.table(
+        [("Instrument", ""), ("Last close", "num"), ("1D change", "num"), ("Regime", ""),
+         ("Streak", "num"), ("Persistence", ""), ("Next session", "")],
+        rows,
+        current=current_row,
     )
-    st.caption(
-        "Regime = V10 trend regime. Next session = V11 forecast for NIFTY 50 "
-        "and NIFTY BANK; other instruments show the V10 trend model."
+    theme.note(
+        "Regime is the V10 trend regime. Next session uses the V11 forecast for NIFTY 50 and NIFTY BANK "
+        "and the V10 trend model for the others."
     )
 
 
 # ============================================================
-# HISTORICAL PREDICTION LOG
+# PREDICTION LOG
 # ============================================================
+
+theme.section(
+    "Prediction log",
+    f"Every logged next-session forecast for {NAME} over the last two years, scored against the close that followed.",
+)
 
 log_model = "V10"
 if selected_symbol in V11_SYMBOLS and not load_v11_history(selected_symbol).empty:
-    st.divider()
-    log_model = st.radio(
-        "Prediction log model",
+    log_model = st.segmented_control(
+        "Model",
         ["V11", "V10"],
-        horizontal=True,
+        default="V11",
         key="log_model",
-        help="V11 = new pre-open next-session forecaster. V10 = original trend-regime HMM.",
-    )
+        label_visibility="collapsed",
+        help="V11 is the pre-open next-session forecaster. V10 is the original trend-regime HMM.",
+    ) or "V11"
 
 if log_model == "V11":
     prediction_history = load_v11_history(selected_symbol)
@@ -1163,191 +1098,112 @@ else:
     history_file = history_file_for_symbol(selected_symbol)
 
 if history_file is not None and not prediction_history.empty:
-
     history = prediction_history.copy()
-
-    probability_columns = [
-        "bull_probability",
-        "side_probability",
-        "bear_probability",
-    ]
-
-    for col in probability_columns:
+    for col in ["bull_probability", "side_probability", "bear_probability"]:
         if col in history.columns:
-            history[col] = pd.to_numeric(
-                history[col],
-                errors="coerce",
-            )
-
-    if log_model == "V10":
-        st.divider()
-
-    st.subheader(
-        f"Historical Prediction Log · "
-        f"{DISPLAY_NAMES[selected_symbol]} · {log_model}"
-    )
+            history[col] = pd.to_numeric(history[col], errors="coerce")
 
     # Scorecard: predicted regime vs the actual next-session close.
-    own_moves = load_daily_close_changes(selected_symbol)
     scored = prediction_history.assign(
-        move=prediction_history["target_trading_date"].dt.normalize().map(own_moves)
+        move=prediction_history["target_trading_date"].dt.normalize().map(moves)
     ).dropna(subset=["move"])
-    if not scored.empty and selected_symbol != "INDIA_VIX":
+    if not scored.empty and not IS_VIX:
         calls = scored[scored["next_regime"].isin(["BULL", "BEAR"])]
         hits = ((calls["next_regime"] == "BULL") & (calls["move"] > 0)) | (
             (calls["next_regime"] == "BEAR") & (calls["move"] < 0)
         )
-        actual3 = np.where(
-            scored["move"] > 0.25, "BULL",
-            np.where(scored["move"] < -0.25, "BEAR", "SIDE"),
-        )
-        a1, a2, a3, a4 = st.columns(4)
-        with a1:
-            st.metric(
+        actual3 = np.where(scored["move"] > 0.25, "BULL", np.where(scored["move"] < -0.25, "BEAR", "SIDE"))
+        base_up = (scored["move"] > 0).mean()
+        direction = hits.mean() if len(calls) else np.nan
+        theme.stats([
+            theme.stat(
                 "Direction accuracy",
-                f"{hits.mean():.1%}" if len(calls) else "N/A",
-                help="BULL call → next close up; BEAR call → next close down. "
-                     "SIDE calls are excluded.",
-            )
-        with a2:
-            st.metric(
+                f"{direction:.1%}" if np.isfinite(direction) else "N/A",
+                sub=(f"{(direction - base_up) * 100:+.1f} pts vs always-up" if np.isfinite(direction) else None),
+                tone=("bull" if np.isfinite(direction) and direction > base_up else None),
+                help="Bull call and the next close is up, or Bear call and it is down. Sideways calls are excluded.",
+            ),
+            theme.stat(
                 "3-class accuracy",
                 f"{(scored['next_regime'].values == actual3).mean():.1%}",
-                help="Actual: BULL > +0.25%, BEAR < −0.25%, otherwise SIDE.",
-            )
-        with a3:
-            st.metric("Always-UP baseline", f"{(scored['move'] > 0).mean():.1%}")
-        with a4:
-            st.metric("Scored sessions", f"{len(scored):,}", delta=f"{len(calls):,} BULL/BEAR calls",
-                      delta_color="off")
-        st.caption(
-            f"Scored against {DISPLAY_NAMES[selected_symbol]}'s own next-session "
-            "close for the rows shown below. V11 rows are walk-forward: each was "
-            "predicted by a model trained only on earlier data."
-        )
-
-    st.caption(
-        f"Instrument: {DISPLAY_NAMES[selected_symbol]} · "
-        f"Source: {history_file.name} · "
-        "Historical next-trading-day regime distributions. "
-        "Next Day Closing = close-to-close % move of NIFTY 50 and "
-        "BANK NIFTY on the Target Date (Upstox daily closes, refreshed "
-        "on every launch). Pending = target session not closed yet."
-    )
+                help="Actual: Bull above +0.25%, Bear below −0.25%, otherwise Sideways.",
+            ),
+            theme.stat("Always-up baseline", f"{base_up:.1%}", help="Share of sessions that closed higher."),
+            theme.stat("Scored sessions", f"{len(scored):,}", sub=f"{len(calls):,} Bull or Bear calls"),
+        ])
 
     detailed = history[
-        [
-            "prediction_date",
-            "target_trading_date",
-            "current_regime",
-            "next_regime",
-            "bull_probability",
-            "side_probability",
-            "bear_probability",
-        ]
+        ["prediction_date", "target_trading_date", "current_regime", "next_regime",
+         "bull_probability", "side_probability", "bear_probability"]
     ].copy()
 
     target_dates = detailed["target_trading_date"].dt.normalize()
     close_columns = []
     for sym, label in NEXT_DAY_CLOSE_SYMBOLS.items():
-        column = f"Next Day Closing · {label}"
+        column = f"Next close · {label}"
         detailed[column] = target_dates.map(load_daily_close_changes(sym))
         close_columns.append(column)
 
-    detailed = detailed.sort_values(
-        "prediction_date",
-        ascending=False,
-    )
+    detailed = detailed.sort_values("prediction_date", ascending=False)
+    detailed["prediction_date"] = detailed["prediction_date"].dt.strftime("%Y-%m-%d")
+    detailed["target_trading_date"] = detailed["target_trading_date"].dt.strftime("%Y-%m-%d")
+    for col in ["current_regime", "next_regime"]:
+        detailed[col] = detailed[col].map(lambda r: display_regime(selected_symbol, str(r).upper()))
+    detailed = detailed.rename(columns={
+        "prediction_date": "Predicted on",
+        "target_trading_date": "For session",
+        "current_regime": "Regime then",
+        "next_regime": "Forecast",
+        "bull_probability": "P(Bull)",
+        "side_probability": "P(Side)",
+        "bear_probability": "P(Bear)",
+    })
 
-    detailed[
-        "prediction_date"
-    ] = detailed[
-        "prediction_date"
-    ].dt.strftime("%Y-%m-%d")
+    tone_css = {k: f"color: {theme.TONES[v]}" for k, v in theme.REGIME_TONE.items()}
 
-    detailed[
-        "target_trading_date"
-    ] = detailed[
-        "target_trading_date"
-    ].dt.strftime("%Y-%m-%d")
-
-    for col in [
-        "bull_probability",
-        "side_probability",
-        "bear_probability",
-    ]:
-        detailed[col] = detailed[col].map(
-            lambda x: (
-                f"{x:.2%}"
-                if pd.notna(x)
-                else "N/A"
-            )
-        )
-
-    detailed = detailed.rename(
-        columns={
-            "prediction_date": "Prediction Date",
-            "target_trading_date": "Target Date",
-            "current_regime": "Current Regime",
-            "next_regime": "Predicted Regime",
-            "bull_probability": "P(BULL)",
-            "side_probability": "P(SIDE)",
-            "bear_probability": "P(BEAR)",
-        }
-    )
+    for column in close_columns:   # text, so pending sessions read "Pending" rather than an empty cell
+        detailed[column] = detailed[column].map(lambda v: "Pending" if pd.isna(v) else f"{v:+.2f}%")
 
     def _move_colour(value):
-        if pd.isna(value) or value == 0:
-            return ""
-        return "color: #16a34a" if value > 0 else "color: #dc2626"
+        if value.startswith("+") and value != "+0.00%":
+            return f"color: {theme.BULL}"
+        if value.startswith("-"):
+            return f"color: {theme.BEAR}"
+        return f"color: {theme.FAINT}"
 
     styled = (
         detailed.style
-        .format("{:+.2f}%", subset=close_columns, na_rep="Pending")
+        .format("{:.1%}", subset=["P(Bull)", "P(Side)", "P(Bear)"], na_rep="—")
         .map(_move_colour, subset=close_columns)
+        .map(lambda r: tone_css.get(r, ""), subset=["Regime then", "Forecast"])
     )
-
-    st.dataframe(
-        styled,
-        width="stretch",
-        hide_index=True,
-        height=500,
+    st.dataframe(styled, width="stretch", hide_index=True, height=460)
+    theme.note(
+        f"Source: {history_file.name}. Next close is the close-to-close move of NIFTY 50 and BANK NIFTY on "
+        "the forecast session (Upstox daily closes). Pending means that session has not closed yet. "
+        "V11 rows are walk-forward: each was predicted by a model trained only on earlier data."
     )
-
 else:
-
-    st.divider()
-
-    st.subheader(
-        f"Historical Prediction Log · "
-        f"{DISPLAY_NAMES[selected_symbol]}"
-    )
-
-    st.info(
-        f"No instrument-specific historical prediction file "
-        f"is available for {DISPLAY_NAMES[selected_symbol]}. "
-        "The dashboard will not substitute NIFTY 50 history here, "
-        "because that would make the displayed history incorrect."
-    )
-
-    st.caption(
-        "NIFTY 50 history is available in the current research "
-        "artifact if you need a verified historical example."
+    theme.note(
+        f"There is no prediction log for {NAME} yet. NIFTY 50 history is not substituted here, "
+        "because that would show the wrong instrument's record."
     )
 
 
+# ============================================================
 # METHODOLOGY
 # ============================================================
 
+st.space("medium")
 with st.expander("Methodology"):
     st.markdown(
         """
         **Trend regime (V10).** Each index is modelled with a three-state
-        Gaussian HMM (BULL / SIDE / BEAR) using causal filtering, so today's
+        Gaussian HMM (Bull / Sideways / Bear) using causal filtering, so today's
         regime only uses information available through today's close.
 
         **Next-session forecast (V11, NIFTY 50 and NIFTY BANK).** Forecasts the
-        next close-to-close move (BULL > +0.25%, BEAR < −0.25%, otherwise SIDE)
+        next close-to-close move (Bull > +0.25%, Bear < −0.25%, otherwise Sideways)
         from the US session that trades after India's close, India's
         end-of-day state and a causal HMM regime. Trained walk-forward; every
         logged prediction was made by a model fit only on earlier data.
@@ -1359,8 +1215,6 @@ with st.expander("Methodology"):
         **Regime dynamics.** Continuation probabilities come from the trailing
         transition process; typical duration is 1 / (1 − continuation).
 
-        **India VIX** regimes are shown as LOW / MID / HIGH volatility.
+        **India VIX** regimes are shown as Low / Mid / High volatility.
         """
     )
-
-st.caption("QuantOS · Market Regimes")

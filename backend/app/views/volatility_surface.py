@@ -18,17 +18,17 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+import theme  # noqa: E402  (backend/app/theme.py)
 import ui  # noqa: E402  (backend/app/ui.py)
 from quantos_platform.vol import snapshot as vol_pipeline  # noqa: E402
 from quantos_platform.vol import surface as surface_engine  # noqa: E402
 
 SYMBOLS = surface_engine.SYMBOLS
-# categorical order (validated palette), assigned to expiries in fixed order
-SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]
-SEQ_BLUE = [[0.0, "#dbe9fa"], [0.5, "#2a78d6"], [1.0, "#0d2d57"]]
-MUTED = "rgba(148,163,184,0.85)"
-GRID = "rgba(148,163,184,0.18)"
-PLOT_CFG = {"displaylogo": False}
+# categorical order (theme palette), assigned to expiries in fixed order
+SERIES = theme.SERIES
+SEQ_BLUE = theme.SEQ
+MUTED = theme.FAINT
+QUOTE = theme.SERIES[1]   # market quotes on the surface
 
 
 # ============================================================
@@ -50,9 +50,9 @@ ui.job_health("vol")
 # ============================================================
 
 with st.sidebar:
-    st.header("Volatility")
+    st.subheader("Volatility")
     symbol = st.selectbox("Underlying", list(SYMBOLS), format_func=SYMBOLS.get)
-    surface_view = st.radio("3D surface", ["Smoothed (SVI)", "SABR fit", "Market quotes only"])
+    surface_view = st.radio("Surface shows", ["Smoothed (SVI)", "SABR fit", "Market quotes only"])
     show_sabr = st.toggle("Show SABR on smile charts", value=True)
     if ui.refresh_button("vol", "Pull latest option data"):
         load_surface.clear()
@@ -60,7 +60,7 @@ with st.sidebar:
     snap = _ts.isoformat() if _ts is not None else None
     snap_text = _ts.strftime("%d %b %Y, %H:%M IST") if _ts is not None else "unknown"
     st.caption(f"Option data as of **{snap_text}**")
-    st.caption("Source: Upstox option chain (scheduled `vol` job)")
+    st.caption("Source: Upstox option chain, refreshed by the scheduled `vol` job.")
     if refresh.get("errors"):
         with st.expander("Refresh warnings"):
             for k, v in refresh["errors"].items():
@@ -92,43 +92,60 @@ def pct(x, d=1, signed=False):
 # HEADER
 # ============================================================
 
-st.title(f"{data['display_name']} volatility surface")
 market_open = vol_pipeline.market_open_now()
-st.caption(
-    f"{len(exp)} expiries · {int(exp['n_points'].sum())} option quotes fitted · snapshot {snap_text}"
-    + ("" if market_open else " · market closed: these are end-of-day quotes")
+n_bad = int((~exp["butterfly_ok"].astype(bool)).sum()) + sum(not c["ok"] for c in data.get("calendar", []))
+pills = [
+    f"<b>{len(exp)}</b> expiries",
+    f"<b>{int(exp['n_points'].sum())}</b> quotes fitted",
+    f"Snapshot <b>{theme.esc(snap_text)}</b>",
+]
+if not market_open:
+    pills.append("Market closed, end-of-day quotes")
+theme.hero(
+    f"{data['display_name']} volatility surface",
+    "Implied volatility across strikes and expiries, fitted with SVI and SABR, "
+    "with the skew and term structure that come out of it.",
+    pills,
+    eyebrow="Options analytics",
 )
 
-c1, c2, c3, c4, c5, c6 = st.columns(6)
-c1.metric("Spot", f"{data['spot']:,.2f}",
-          delta=f"forward {ref['forward']:,.0f} ({pd.Timestamp(ref['expiry']):%d %b})", delta_color="off",
-          help="Forward = the price the market implies for expiry, from put-call parity (F = K + (C − P)/DF).")
-c2.metric(f"ATM IV · {pd.Timestamp(ref['expiry']):%d %b}", pct(ref.get("atm_iv")),
-          help="Implied volatility at the forward (log-moneyness 0), read off the fitted SVI smile.")
-c3.metric("Realized vol (20d)", pct(rv),
-          delta=f"IV − RV {pct((ref.get('atm_iv') or np.nan) - (rv or np.nan), 1, True)} pts", delta_color="off",
-          help="Volatility the index actually showed over the last 20 sessions. IV above RV means options "
-               "are priced richer than recent movement (the volatility risk premium).")
-c4.metric("25Δ risk reversal", f"{pct(ref.get('rr25'), 2, True)} pts",
-          help="IV of the 25-delta call minus IV of the 25-delta put. Negative = puts cost more than calls "
-               "(downside protection in demand, normal for indices).")
-c5.metric("25Δ butterfly", f"{pct(ref.get('bf25'), 2, True)} pts",
-          help="Average of the 25-delta call and put IVs minus ATM IV: how curved (convex) the smile is, "
-               "i.e. how much extra the market charges for big moves either way.")
-n_bad = int((~exp["butterfly_ok"].astype(bool)).sum()) + sum(not c["ok"] for c in data.get("calendar", []))
-c6.metric("Arbitrage checks", "All pass" if n_bad == 0 else f"{n_bad} warning(s)",
-          help="Butterfly: the fitted smile implies a non-negative probability density. "
-               "Calendar: total variance never falls for a later expiry.")
+ref_day = f"{pd.Timestamp(ref['expiry']):%d %b}"
+iv_rv = (ref.get("atm_iv") or np.nan) - (rv or np.nan)
+theme.stats([
+    theme.stat("Spot", f"{data['spot']:,.2f}", sub=f"Forward {ref['forward']:,.0f} for {ref_day}",
+               help="Forward = the price the market implies for expiry, from put-call parity (F = K + (C − P)/DF)."),
+    theme.stat(f"ATM IV, {ref_day}", pct(ref.get("atm_iv")), tone="accent",
+               help="Implied volatility at the forward (log-moneyness 0), read off the fitted SVI smile."),
+    theme.stat("Realized vol, 20d", pct(rv), sub=f"IV − RV {pct(iv_rv, 1, True)} pts",
+               help="Volatility the index actually showed over the last 20 sessions. IV above RV means options "
+                    "are priced richer than recent movement (the volatility risk premium)."),
+    theme.stat("25Δ risk reversal", f"{pct(ref.get('rr25'), 2, True)} pts",
+               tone="bear" if (ref.get("rr25") or 0) < 0 else "bull",
+               help="IV of the 25-delta call minus IV of the 25-delta put. Negative = puts cost more than calls "
+                    "(downside protection in demand, normal for indices)."),
+    theme.stat("25Δ butterfly", f"{pct(ref.get('bf25'), 2, True)} pts",
+               help="Average of the 25-delta call and put IVs minus ATM IV: how curved (convex) the smile is, "
+                    "i.e. how much extra the market charges for big moves either way."),
+    theme.stat("Arbitrage checks", "All pass" if n_bad == 0 else f"{n_bad} warning(s)",
+               tone="bull" if n_bad == 0 else "side",
+               help="Butterfly: the fitted smile implies a non-negative probability density. "
+                    "Calendar: total variance never falls for a later expiry."),
+])
 
 
 # ============================================================
 # 3D SURFACE
 # ============================================================
 
-st.subheader("Volatility surface")
+theme.section(
+    "Surface",
+    "Strike as a percentage of the forward (100 = at the money), days to expiry, and implied volatility. "
+    "Drag to rotate.",
+)
 fit_pts = pts[pts["used_in_fit"].astype(bool)]
 grid = data.get("grid") or {}
 fig = go.Figure()
+colorbar = dict(title=dict(text="IV %", side="top"), thickness=10, len=0.55, x=0.98, outlinewidth=0)
 if surface_view != "Market quotes only" and grid:
     z = grid["svi_iv"] if surface_view == "Smoothed (SVI)" else grid.get("sabr_iv")
     if z:
@@ -145,10 +162,10 @@ if surface_view != "Market quotes only" and grid:
             # plotly indexes Surface customdata as [x][y] (z is [y][x]), hence the transpose
             customdata=np.dstack([strikes, nearest,
                                   np.exp(fwd_T)[:, None].repeat(strikes.shape[1], 1)]).transpose(1, 0, 2),
-            colorscale=SEQ_BLUE, opacity=0.92, showscale=True,
-            colorbar=dict(title="IV %", thickness=12, len=0.6),
+            colorscale=SEQ_BLUE, opacity=0.95, showscale=True, colorbar=colorbar,
+            lighting=dict(ambient=0.75, diffuse=0.6, specular=0.15, roughness=0.6),
             hovertemplate="<b>Strike ≈ %{customdata[0]:,.0f}</b> (nearest listed %{customdata[1]:,.0f})"
-                          "<br>K/F %{x:.1f}% · forward %{customdata[2]:,.0f}"
+                          "<br>K/F %{x:.1f}%, forward %{customdata[2]:,.0f}"
                           "<br>%{y:.1f} days to expiry<br>IV %{z:.2f}%<extra>"
                           + ("SVI" if surface_view == "Smoothed (SVI)" else "SABR") + "</extra>",
             contours=dict(z=dict(show=True, usecolormap=True, project_z=False, width=1)),
@@ -157,7 +174,7 @@ if surface_view != "Market quotes only" and grid:
     in_range = fit_pts[(fit_pts["k"] >= kmin) & (fit_pts["k"] <= kmax)]
     fig.add_trace(go.Scatter3d(
         x=in_range["moneyness_fwd"] * 100, y=in_range["days"], z=in_range["iv"] * 100, mode="markers",
-        marker=dict(size=2.5, color="#eb6834"), name="Market (mid) IV",
+        marker=dict(size=2.6, color=QUOTE), name="Market (mid) IV",
         customdata=in_range[["strike"]].to_numpy(),
         hovertemplate="<b>Strike %{customdata[0]:,.0f}</b> (market quote)<br>K/F %{x:.1f}%<br>"
                       "%{y:.1f} days to expiry<br>market IV %{z:.2f}%<extra></extra>",
@@ -165,25 +182,24 @@ if surface_view != "Market quotes only" and grid:
 else:
     fig.add_trace(go.Scatter3d(
         x=fit_pts["moneyness_fwd"] * 100, y=fit_pts["days"], z=fit_pts["iv"] * 100, mode="markers",
-        marker=dict(size=3, color=fit_pts["iv"] * 100, colorscale=SEQ_BLUE, showscale=True,
-                    colorbar=dict(title="IV %", thickness=12, len=0.6)),
+        marker=dict(size=3.2, color=fit_pts["iv"] * 100, colorscale=SEQ_BLUE, showscale=True, colorbar=colorbar),
         customdata=fit_pts[["strike"]].to_numpy(),
         hovertemplate="<b>Strike %{customdata[0]:,.0f}</b><br>K/F %{x:.1f}%<br>"
                       "%{y:.1f} days to expiry<br>IV %{z:.2f}%<extra></extra>",
     ))
 fig.update_layout(
-    height=640, margin=dict(l=0, r=0, t=0, b=0), showlegend=False,
-    scene=dict(xaxis=dict(title="Moneyness K/F (%)", ticksuffix=""),
-               yaxis=dict(title="Days to expiry"),
-               zaxis=dict(title="Implied vol (%)", nticks=6),
+    height=620, margin=dict(l=0, r=0, t=0, b=0), showlegend=False,
+    scene=dict(xaxis=dict(title=dict(text="Moneyness K/F (%)")),
+               yaxis=dict(title=dict(text="Days to expiry")),
+               zaxis=dict(title=dict(text="Implied vol (%)"), nticks=6),
                camera=dict(eye=dict(x=1.4, y=-1.6, z=0.75), center=dict(x=0, y=0, z=-0.15)),
                aspectmode="manual", aspectratio=dict(x=1.5, y=1.15, z=0.7)),
 )
-st.plotly_chart(fig, width="stretch", config={**PLOT_CFG, "scrollZoom": False})
-st.caption(
-    "x = strike as % of the forward (100 = at the money), y = days to expiry, z = implied volatility. "
+with theme.card("surface"):
+    theme.chart(fig, config={"scrollZoom": False})
+theme.note(
     "The smooth sheet joins the per-expiry SVI fits by interpolating total variance (σ²·T) in time, "
-    "over the strike range every expiry has quotes for; dots are market mid-price IVs."
+    "over the strike range every expiry has quotes for. Orange dots are market mid-price IVs."
 )
 
 
@@ -191,10 +207,13 @@ st.caption(
 # SMILES
 # ============================================================
 
-st.subheader("Smile by expiry")
+theme.section("Smile by expiry", "Market quotes with their bid–ask range, against the SVI and SABR fits.")
 default = list(exp["expiry"][: min(3, len(exp))])
-chosen = st.multiselect("Expiries", list(exp["expiry"]), default=default, format_func=label.get)
-x_axis = st.radio("X axis", ["Moneyness K/F (%)", "Strike"], horizontal=True, label_visibility="collapsed")
+pick_col, axis_col = st.columns([3, 1.2], vertical_alignment="bottom")
+chosen = pick_col.multiselect("Expiries", list(exp["expiry"]), default=default, format_func=label.get)
+x_axis = axis_col.segmented_control(
+    "X axis", ["Moneyness K/F (%)", "Strike"], default="Moneyness K/F (%)", label_visibility="collapsed",
+) or "Moneyness K/F (%)"
 
 smile = go.Figure()
 for e in chosen:
@@ -206,18 +225,18 @@ for e in chosen:
     err_lo = ((used["iv"] - used["iv_bid"]) * 100).clip(lower=0).fillna(0)
     smile.add_trace(go.Scatter(
         x=xs(used), y=used["iv"] * 100, mode="markers", name=f"{label[e]} market", legendgroup=e,
-        marker=dict(size=8, color=col, line=dict(width=1, color="rgba(255,255,255,0.9)")),
+        marker=dict(size=7, color=col, line=dict(width=1.5, color=theme.PANEL)),
         error_y=dict(type="data", symmetric=False, array=err_hi, arrayminus=err_lo, thickness=1, width=0,
                      color=col),
         customdata=np.c_[used["strike"], used["type"], used["iv_bid"] * 100, used["iv_ask"] * 100],
         hovertemplate="%{customdata[0]:,.0f} %{customdata[1]}<br>mid IV %{y:.2f}%<br>"
-                      "bid %{customdata[2]:.2f}% · ask %{customdata[3]:.2f}%<extra>" + label[e] + "</extra>",
+                      "bid %{customdata[2]:.2f}%, ask %{customdata[3]:.2f}%<extra>" + label[e] + "</extra>",
     ))
     if len(unused):
         smile.add_trace(go.Scatter(
             x=xs(unused), y=unused["iv"] * 100, mode="markers", name=f"{label[e]} not fitted",
             legendgroup=e, showlegend=False,
-            marker=dict(size=7, symbol="circle-open", color=MUTED),
+            marker=dict(size=6, symbol="circle-open", color=MUTED),
             customdata=np.c_[unused["strike"], unused["src"]],
             hovertemplate="%{customdata[0]:,.0f}<br>IV %{y:.2f}%<br>not fitted (%{customdata[1]} "
                           "quote or far wing)<extra></extra>",
@@ -227,23 +246,25 @@ for e in chosen:
     if "svi_iv" in p:
         smile.add_trace(go.Scatter(
             x=xs(p), y=p["svi_iv"] * 100, mode="lines", name=f"{label[e]} SVI", legendgroup=e,
-            line=dict(color=col, width=2), hovertemplate="SVI %{y:.2f}%<extra></extra>"))
+            line=dict(color=col, width=2.2, shape="spline"), hovertemplate="SVI %{y:.2f}%<extra></extra>"))
     if show_sabr and "sabr_iv" in p:
         smile.add_trace(go.Scatter(
             x=xs(p), y=p["sabr_iv"] * 100, mode="lines", name=f"{label[e]} SABR", legendgroup=e,
-            line=dict(color=col, width=1.5, dash="dot"), hovertemplate="SABR %{y:.2f}%<extra></extra>"))
+            line=dict(color=col, width=1.4, dash="dot"), hovertemplate="SABR %{y:.2f}%<extra></extra>"))
 if x_axis.startswith("Moneyness"):
-    smile.add_vline(x=100, line=dict(color=MUTED, width=1, dash="dash"))
+    smile.add_vline(x=100, line=dict(color=MUTED, width=1, dash="dash"),
+                    annotation_text="Forward", annotation_position="top", annotation_font_color=theme.FAINT)
 smile.update_layout(
-    height=460, margin=dict(l=10, r=10, t=10, b=10), hovermode="closest",
-    xaxis=dict(title=x_axis, gridcolor=GRID), yaxis=dict(title="Implied volatility (%)", gridcolor=GRID),
+    height=460, margin=dict(l=8, r=8, t=40, b=8), hovermode="closest",
+    xaxis=dict(title=dict(text=x_axis)), yaxis=dict(title=dict(text="Implied volatility (%)")),
     legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
 )
-st.plotly_chart(smile, width="stretch", config=PLOT_CFG)
-st.caption(
-    "Dots: IV from the mid price of the out-of-the-money option (puts left of the forward, calls right), "
-    "with the bid–ask range as error bars. Solid line: SVI fit, dotted: SABR. "
-    "Hollow grey dots are stale last-trade prices or far wings priced in paise: shown, not fitted."
+with theme.card("smile"):
+    theme.chart(smile)
+theme.note(
+    "Dots are IVs from the mid price of the out-of-the-money option (puts left of the forward, calls right), "
+    "with the bid–ask range as error bars. Solid line: SVI fit. Dotted: SABR. Hollow grey dots are stale "
+    "last-trade prices or far wings priced in paise: shown, not fitted."
 )
 
 
@@ -253,42 +274,48 @@ st.caption(
 
 left, right = st.columns(2, gap="large")
 with left:
-    st.subheader("ATM term structure")
+    theme.section("ATM term structure", "When the market expects uncertainty.")
     ts = go.Figure()
     ts.add_trace(go.Scatter(
         x=exp["days"], y=exp["atm_iv"] * 100, mode="lines+markers", name="ATM IV",
-        line=dict(color=SERIES[0], width=2), marker=dict(size=9),
+        line=dict(color=SERIES[0], width=2.2, shape="spline", smoothing=0.6),
+        marker=dict(size=8, color=SERIES[0], line=dict(width=2, color=theme.PANEL)),
+        fill="tozeroy", fillcolor=theme.alpha(SERIES[0], 0.07),
         customdata=exp[["expiry"]].to_numpy(),
         hovertemplate="%{customdata[0]}<br>%{x:.1f} days<br>ATM IV %{y:.2f}%<extra></extra>"))
     if rv and np.isfinite(rv):
-        ts.add_hline(y=rv * 100, line=dict(color=MUTED, width=1.5, dash="dash"),
-                     annotation_text=f"20d realized {rv * 100:.1f}%", annotation_position="bottom right")
+        ts.add_hline(y=rv * 100, line=dict(color=theme.SIDE, width=1.2, dash="dash"),
+                     annotation_text=f"20d realized {rv * 100:.1f}%", annotation_position="bottom right",
+                     annotation_font_color=theme.SIDE)
     # at least a 3-vol-point window so a flat curve doesn't look dramatic
     vals = list(exp["atm_iv"].dropna() * 100) + ([rv * 100] if rv and np.isfinite(rv) else [])
     mid, half = (max(vals) + min(vals)) / 2, max((max(vals) - min(vals)) / 2 + 0.4, 1.5)
-    ts.update_layout(height=340, margin=dict(l=10, r=10, t=10, b=10), showlegend=False,
-                     xaxis=dict(title="Days to expiry", gridcolor=GRID),
-                     yaxis=dict(title="ATM implied vol (%)", gridcolor=GRID, range=[mid - half, mid + half]))
-    st.plotly_chart(ts, width="stretch", config=PLOT_CFG)
-    st.caption("Upward sloping = calm now, more uncertainty priced later (normal). "
-               "Downward/inverted = stress or an event priced for the near term.")
+    ts.update_layout(height=320, showlegend=False,
+                     xaxis=dict(title=dict(text="Days to expiry")),
+                     yaxis=dict(title=dict(text="ATM implied vol (%)"), range=[mid - half, mid + half]))
+    with theme.card("term"):
+        theme.chart(ts)
+    theme.note("Upward sloping = calm now, more uncertainty priced later (normal). "
+               "Inverted = stress or an event priced for the near term.")
 
 with right:
-    st.subheader("Skew term structure")
+    theme.section("Skew term structure", "How lopsided and how curved the smile is at each expiry.")
     sk = go.Figure()
     for name, col, c in (("25Δ risk reversal", "rr25", SERIES[1]), ("25Δ butterfly", "bf25", SERIES[2])):
         if col in exp:
             sk.add_trace(go.Scatter(
                 x=exp["days"], y=exp[col] * 100, mode="lines+markers", name=name,
-                line=dict(color=c, width=2), marker=dict(size=9),
+                line=dict(color=c, width=2.2, shape="spline", smoothing=0.6),
+                marker=dict(size=8, color=c, line=dict(width=2, color=theme.PANEL)),
                 hovertemplate=name + " %{y:+.2f} pts<br>%{x:.1f} days<extra></extra>"))
     sk.add_hline(y=0, line=dict(color=MUTED, width=1))
-    sk.update_layout(height=340, margin=dict(l=10, r=10, t=10, b=10),
-                     xaxis=dict(title="Days to expiry", gridcolor=GRID),
-                     yaxis=dict(title="Vol points", gridcolor=GRID),
+    sk.update_layout(height=320, margin=dict(l=8, r=8, t=34, b=8),
+                     xaxis=dict(title=dict(text="Days to expiry")),
+                     yaxis=dict(title=dict(text="Vol points")),
                      legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0))
-    st.plotly_chart(sk, width="stretch", config=PLOT_CFG)
-    st.caption("Risk reversal below zero = puts richer than calls (crash protection bid). "
+    with theme.card("skew"):
+        theme.chart(sk)
+    theme.note("Risk reversal below zero = puts richer than calls (crash protection bid). "
                "Butterfly = smile curvature, the premium for large moves either way.")
 
 
@@ -296,7 +323,7 @@ with right:
 # CALIBRATION + ARBITRAGE
 # ============================================================
 
-st.subheader("Calibration by expiry")
+theme.section("Calibration by expiry", "Fit quality and no-arbitrage checks for each expiry.")
 table = pd.DataFrame({
     "Expiry": [label[e] for e in exp["expiry"]],
     "Forward": exp["forward"],
@@ -320,6 +347,22 @@ st.dataframe(table, hide_index=True, width="stretch", column_config={
     "SABR error": st.column_config.NumberColumn(format="%.2f", help="RMSE in vol points vs market mid IVs."),
 })
 
+cal = data.get("calendar", [])
+bad_fly = exp[~exp["butterfly_ok"].astype(bool)]
+bad_cal = [c for c in cal if not c["ok"]]
+if bad_fly.empty and not bad_cal:
+    theme.status(f"No-arbitrage checks passed: butterfly on all {len(exp)} expiries, "
+                 f"calendar on all {len(cal)} neighbouring pairs.", "bull")
+else:
+    for r in bad_fly.itertuples():
+        theme.status(f"Butterfly arbitrage in the {label[r.expiry]} fit (min g = {r.butterfly_min_g:.4f}).", "side")
+    for c in bad_cal:
+        theme.status(f"Calendar arbitrage: total variance falls from {c['near']} to {c['far']}.", "side")
+if data.get("skipped"):
+    theme.note("Skipped expiries: " + "; ".join(
+        f"{pd.Timestamp(s['expiry']):%d %b %Y} ({s['reason']})" for s in data["skipped"]))
+
+st.space("small")
 with st.expander("Model parameters"):
     rows = []
     for r in exp.itertuples():
@@ -335,26 +378,10 @@ with st.expander("Model parameters"):
     st.caption("SVI: w(k) = a + b·(ρ·(k − m) + √((k − m)² + σ²)), w = σ_imp²·T, k = ln(K/F). "
                "SABR: Hagan lognormal approximation with β = 1.")
 
-cal = data.get("calendar", [])
-bad_fly = exp[~exp["butterfly_ok"].astype(bool)]
-bad_cal = [c for c in cal if not c["ok"]]
-if bad_fly.empty and not bad_cal:
-    st.success(f"No-arbitrage checks passed: butterfly on all {len(exp)} expiries, "
-               f"calendar on all {len(cal)} neighbouring pairs.", icon=":material/check_circle:")
-else:
-    for r in bad_fly.itertuples():
-        st.warning(f"Butterfly arbitrage in the {label[r.expiry]} fit (min g = {r.butterfly_min_g:.4f}).")
-    for c in bad_cal:
-        st.warning(f"Calendar arbitrage: total variance falls from {c['near']} to {c['far']}.")
-if data.get("skipped"):
-    st.caption("Skipped expiries: " + "; ".join(
-        f"{pd.Timestamp(s['expiry']):%d %b %Y} ({s['reason']})" for s in data["skipped"]))
-
 
 # ============================================================
 # LEARN
 # ============================================================
-
 with st.expander("How this surface is built (and why)"):
     st.markdown(
         """

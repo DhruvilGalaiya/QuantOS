@@ -22,11 +22,14 @@ _ROOT = str(Path(__file__).resolve().parents[2])
 if _ROOT not in sys.path:   # fallback when the package isn't pip-installed
     sys.path.insert(0, _ROOT)
 
+import theme  # noqa: E402  (backend/app/theme.py)
+
 st.set_page_config(
     page_title="QuantOS",
-    page_icon="◈",
+    page_icon=str(theme.ASSETS / "mark.svg"),
     layout="wide",
 )
+theme.apply()
 
 navigation = st.navigation(
     [
@@ -51,6 +54,7 @@ navigation = st.navigation(
             title="US Stocks",
             icon=":material/public:",
         ),
-    ]
+    ],
+    position="top",
 )
 navigation.run()

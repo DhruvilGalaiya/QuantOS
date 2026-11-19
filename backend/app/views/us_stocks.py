@@ -19,6 +19,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+import theme  # noqa: E402  (backend/app/theme.py)
 import ui  # noqa: E402  (backend/app/ui.py)
 from quantos_platform.data.us_equities import load_us_asset, update_us_asset  # noqa: E402
 from quantos_platform.data.us_fundamentals import (  # noqa: E402
@@ -46,7 +47,7 @@ FUNDAMENTALS_TTL_SECONDS = 15 * 60
 ABOUT_PREVIEW_CHARS = 300
 CHART_RANGES = {"1M": 1, "6M": 6, "1Yr": 12, "3Yr": 36, "5Yr": 60, "10Yr": 120, "Max": None}
 DEFAULT_RANGE = "5Yr"
-ACCENT = "#6366f1"
+ACCENT = theme.ACCENT
 CURRENCY_SYMBOLS = {"USD": "$", "EUR": "€", "GBP": "£", "JPY": "¥", "INR": "₹"}
 
 PANEL_CSS = """
@@ -54,29 +55,31 @@ PANEL_CSS = """
 .qs-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
 .qs-logo { position: relative; width: 48px; height: 48px; flex: none; overflow: hidden;
   display: flex; align-items: center; justify-content: center; border-radius: 10px;
-  background: #6366f1; color: #fff; font-size: 22px; font-weight: 700; }
+  background: var(--q-text); color: #fff; font-size: 22px; font-weight: 700; }
 .qs-logo img { position: absolute; inset: 0; width: 100%; height: 100%; padding: 6px;
   box-sizing: border-box; object-fit: contain; background: #fff; }
 .qs-logo img[hidden] { display: none; }
-.qs-name { font-size: 2.2rem; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; }
+.qs-head { animation: q-rise .6s var(--q-ease) both; }
+.qs-name { font-family: var(--q-serif); font-size: clamp(2.2rem, 1.5rem + 2vw, 3.1rem); font-weight: 400; line-height: 1.05; letter-spacing: -0.015em; }
 .qs-sep { opacity: .35; }
-.qs-price { font-size: 1.2rem; font-weight: 600; }
+.qs-price { font-size: 1.25rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 .qs-change { margin-left: 6px; font-size: .9rem; font-weight: 600; }
-.qs-up { color: #1f9d55; }
-.qs-down { color: #e5484d; }
+.qs-up { color: var(--q-bull); }
+.qs-down { color: var(--q-bear); }
 .qs-muted { opacity: .62; font-weight: 400; }
 .qs-time { font-size: .8rem; opacity: .62; }
-.qs-links { display: flex; flex-wrap: wrap; gap: 6px 26px; margin-top: 10px; font-size: .95rem; }
-.qs-links a { color: inherit; opacity: .78; text-decoration: none; }
-.qs-links a:hover { opacity: 1; text-decoration: underline; }
-.qs-links a.qs-site { color: #6366f1; opacity: 1; font-weight: 600; }
+.qs-links { display: flex; flex-wrap: wrap; gap: 6px 26px; margin: 12px 0 10px; font-size: .92rem; }
+.qs-links a { color: var(--q-muted); text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: color .16s ease, background-size .25s var(--q-ease); }
+.qs-links a:hover { color: var(--q-text); background-size: 100% 1px; }
+.qs-links a.qs-site { color: var(--q-accent); font-weight: 600; }
 .qs-ratios { container-type: inline-size; }
 .qs-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 20px; }
 .qs-cell { display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
   padding: 11px 12px; border-radius: 8px; }
 .qs-cell:nth-child(6n+4), .qs-cell:nth-child(6n+5), .qs-cell:nth-child(6n+6) {
-  background: color-mix(in srgb, currentColor 7%, transparent); }
-.qs-label { opacity: .72; }
+  background: color-mix(in srgb, currentColor 4.5%, transparent); }
+.qs-label { color: var(--q-muted); font-size: .9rem; }
 .qs-value { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
 @container (max-width: 760px) {
   .qs-grid { gap: 6px 10px; }
@@ -89,25 +92,31 @@ PANEL_CSS = """
   .qs-cell { flex-direction: row; justify-content: space-between; }
   .qs-value { text-align: right; }
   .qs-cell:nth-child(n) { background: none; }
-  .qs-cell:nth-child(even) { background: color-mix(in srgb, currentColor 7%, transparent); }
+  .qs-cell:nth-child(even) { background: color-mix(in srgb, currentColor 4.5%, transparent); }
 }
 .qs-return { display: flex; align-items: baseline; gap: 10px; padding-top: 6px; font-weight: 600; }
-.qs-return small { font-size: .72rem; letter-spacing: .06em; opacity: .62; }
-.qs-title { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; }
+.qs-return small { font-size: .78rem; color: var(--q-muted); font-weight: 500; }
+.qs-title { font-family: var(--q-serif); font-size: 1.6rem; font-weight: 400; letter-spacing: -0.01em; }
 .qs-sub { margin: 2px 0 12px; font-size: .9rem; opacity: .62; }
 .qs-scroll { overflow-x: auto; }
 .qs-table { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
 .qs-table th, .qs-table td { padding: 8px 12px; text-align: right; white-space: nowrap; border: 0; }
-.qs-table th { font-weight: 500; opacity: .72; border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent); }
+.qs-table th { font-weight: 500; color: var(--q-muted); font-size: .8rem; border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent); }
 .qs-table th:first-child, .qs-table td:first-child { text-align: left; }
-.qs-table tbody tr:nth-child(odd) { background: color-mix(in srgb, currentColor 5%, transparent); }
+.qs-table tbody tr:nth-child(odd) { background: color-mix(in srgb, currentColor 3.5%, transparent); }
+.qs-table tbody tr { transition: background-color .15s ease; }
+.qs-table tbody tr:hover { background: var(--q-raised); }
 .qs-table tr.qs-strong td { font-weight: 600; border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent); }
-.qs-side h4 { margin: 0 0 8px; padding: 0; font-size: .85rem; font-weight: 700; letter-spacing: .12em; }
+.qs-side h4 { margin: 0 0 8px; padding: 0; font-family: var(--q-serif); font-size: 1.35rem; font-weight: 400; letter-spacing: -0.005em; }
 .qs-side h4:not(:first-child) { margin-top: 22px; }
-.qs-side p { margin: 0 0 8px; line-height: 1.55; opacity: .82; }
+.qs-side p { margin: 0 0 8px; line-height: 1.6; color: var(--q-muted); max-width: 62ch; }
+.qs-side b { color: var(--q-text); }
 .qs-side b { font-weight: 600; }
-.qs-side summary { cursor: pointer; color: #6366f1; font-size: .8rem;
-  font-weight: 600; letter-spacing: .08em; }
+.qs-side summary { cursor: pointer; color: var(--q-accent); font-size: .85rem; font-weight: 600;
+  list-style: none; transition: color .16s ease; }
+.qs-side summary::-webkit-details-marker { display: none; }
+.qs-side summary:hover { color: var(--q-text); }
+.qs-side details[open] > :not(summary) { animation: q-rise .35s var(--q-ease) both; }
 .qs-side details[open] summary { margin-top: 4px; }
 </style>
 """
@@ -373,7 +382,7 @@ def render_table(table: dict) -> str:
 def statement_section(title: str, subtitle: str, table: dict) -> None:
     if not table["rows"]:
         return
-    with st.container(border=True):
+    with theme.card("stmt_" + re.sub(r"\W+", "_", title).lower()):
         st.html(f'<div class="qs-title">{html.escape(title)}</div>'
                 f'<div class="qs-sub">{html.escape(subtitle)}</div>{render_table(table)}')
 
@@ -408,13 +417,13 @@ def volume_bars(volume: pd.Series) -> tuple[pd.Series, str]:
 
 def base_layout(fig: go.Figure, y_title: str) -> None:
     fig.update_layout(
-        height=480,
-        margin=dict(l=10, r=10, t=10, b=10),
+        height=460,
+        margin=dict(l=8, r=8, t=8, b=8),
         hovermode="x unified",
         showlegend=False,
         bargap=0.1,
         xaxis=dict(type="date", showgrid=False),
-        yaxis=dict(title=y_title, side="right"),
+        yaxis=dict(title=dict(text=y_title), side="right"),
     )
 
 
@@ -428,19 +437,22 @@ def price_figure(history: pd.DataFrame, months: int | None, show: dict) -> go.Fi
     if show["volume"] and frame["volume"].fillna(0).gt(0).any():
         bars, label = volume_bars(frame["volume"])
         fig.add_bar(x=bars.index, y=bars.values, name=label, yaxis="y2",
-                    marker=dict(color="rgba(99,102,241,.28)", line=dict(width=0)))
+                    marker=dict(color=theme.alpha(theme.FAINT, 0.28), line=dict(width=0)))
         # Headroom keeps the bars in the lower part of the chart, under the price line.
-        fig.update_layout(yaxis2=dict(title="Volume", overlaying="y", side="left", showgrid=False,
-                                      range=[0, float(bars.max()) * 1.8], tickformat=".2s"))
+        fig.update_layout(yaxis2=dict(overlaying="y", side="left", showgrid=False, showticklabels=False,
+                                      range=[0, float(bars.max()) * 3.2], tickformat=".2s"))
     if show["price"]:
         fig.add_scatter(x=frame.index, y=frame["close"], mode="lines", name="Price",
-                        line=dict(color=ACCENT, width=2))
+                        line=dict(color=ACCENT, width=2), fill="tozeroy", fillcolor="rgba(51,70,211,0.07)")
+        lo, hi = float(frame["close"].min()), float(frame["close"].max())
+        pad = (hi - lo) * 0.08 or hi * 0.02
+        fig.update_layout(yaxis=dict(range=[lo - pad, hi + pad]))
     if show["dma50"]:
         fig.add_scatter(x=frame.index, y=frame["dma50"], mode="lines", name="50 DMA",
-                        line=dict(color="#f59e0b", width=1.4))
+                        line=dict(color=theme.SIDE, width=1.4))
     if show["dma200"]:
         fig.add_scatter(x=frame.index, y=frame["dma200"], mode="lines", name="200 DMA",
-                        line=dict(color="#14b8a6", width=1.4))
+                        line=dict(color=theme.SERIES[4], width=1.4))
     base_layout(fig, "Price")
     return fig
 
@@ -450,8 +462,9 @@ def pe_figure(pe: pd.Series, months: int | None) -> go.Figure:
     fig = go.Figure()
     fig.add_scatter(x=shown.index, y=shown.values, mode="lines", name="P/E",
                     line=dict(color=ACCENT, width=2))
-    fig.add_hline(y=float(shown.median()), line=dict(color="#f59e0b", width=1.2, dash="dash"),
-                  annotation_text=f"Median {shown.median():.1f}", annotation_position="top left")
+    fig.add_hline(y=float(shown.median()), line=dict(color=theme.SIDE, width=1.2, dash="dash"),
+                  annotation_text=f"Median {shown.median():.1f}", annotation_position="top left",
+                  annotation_font_color=theme.SIDE)
     base_layout(fig, "P/E")
     return fig
 
@@ -509,18 +522,18 @@ def split_summary(text: str) -> tuple[str, str]:
 
 
 def read_more(body: str) -> str:
-    return f"<details><summary>READ MORE ›</summary>{body}</details>" if body else ""
+    return f"<details><summary>Read more</summary>{body}</details>" if body else ""
 
 
 def render_side(data: dict, points: list[tuple[str, str]]) -> str:
     parts = []
     if data.get("summary"):
         head, rest = split_summary(data["summary"])
-        parts.append(f"<h4>ABOUT</h4><p>{html.escape(head)}</p>")
+        parts.append(f"<h4>About</h4><p>{html.escape(head)}</p>")
         parts.append(read_more(f"<p>{html.escape(rest)}</p>" if rest else ""))
     if points:
         rendered = [f"<p><b>{html.escape(t)}:</b> {html.escape(b)}</p>" for t, b in points]
-        parts.append(f"<h4>KEY POINTS</h4>{rendered[0]}")
+        parts.append(f"<h4>Key points</h4>{rendered[0]}")
         parts.append(read_more("".join(rendered[1:])))
     return f'<div class="qs-side">{"".join(parts)}</div>'
 
@@ -529,13 +542,11 @@ def render_side(data: dict, points: list[tuple[str, str]]) -> str:
 # PAGE
 # ============================================================
 
-st.markdown("# ◈ US Stocks")
-st.caption("Daily adjusted closes · Yahoo Finance · updated to the latest completed US session")
 
 universe = get_universe()
 
 with st.sidebar:
-    st.header("US Stocks")
+    st.subheader("US Stocks")
     lists = {
         "All": universe,
         "Nasdaq-100 · top 50": universe[universe["nasdaq_rank"].notna()].sort_values("nasdaq_rank"),
@@ -621,7 +632,7 @@ export_col.download_button(
 )
 
 ratio_col, side_col = st.columns([2.1, 1], gap="large")
-with ratio_col.container(border=True):
+with theme.card("ratios", ratio_col):
     st.html(render_ratio_grid({**core_ratios, **extra_ratios}))
     if fundamentals.get("quote_type") == "EQUITY" and not present(fundamentals.get("roce")):
         st.caption("ROCE is not shown: Yahoo Finance reports no EBIT for this company, which is typical of banks.")
@@ -640,7 +651,7 @@ try:
 except Exception:
     pass  # the P/E view is simply not offered
 
-with st.container(border=True):
+with theme.card("price"):
     range_col, return_col, metric_col = st.columns([3.2, 1.6, 1.6], vertical_alignment="center")
     range_name = range_col.segmented_control(
         "Range", list(CHART_RANGES), default=DEFAULT_RANGE, key="us_chart_range",
@@ -656,7 +667,7 @@ with st.container(border=True):
 
     if metric == "PE Ratio":
         return_col.html(render_return(window(pe_series, months)))
-        st.plotly_chart(pe_figure(pe_series, months), width="stretch")
+        theme.chart(pe_figure(pe_series, months))
         st.caption("P/E uses the last four reported quarterly EPS figures from earnings releases.")
     else:
         return_col.html(render_return(window(history["close"], months)))
@@ -668,7 +679,8 @@ with st.container(border=True):
             "dma200": toggles.checkbox("200 DMA", key="us_show_dma200"),
             "volume": toggles.checkbox("Volume", value=True, key="us_show_volume"),
         }
-        chart_slot.plotly_chart(price_figure(history, months, show), width="stretch")
+        with chart_slot:
+            theme.chart(price_figure(history, months, show))
 
 if fundamentals.get("quote_type") == "EQUITY":
     try:
@@ -690,8 +702,10 @@ if fundamentals.get("quote_type") == "EQUITY":
 # LIST OVERVIEW
 # ============================================================
 
-st.divider()
-st.subheader(f"{list_name}{'' if sector == 'All sectors' else ' · ' + sector}")
+theme.section(
+    f"{list_name}{'' if sector == 'All sectors' else ', ' + sector}",
+    "Daily adjusted closes from Yahoo Finance, updated to the latest completed US session.",
+)
 table = overview_table(tuple(shown["ticker"]))
 if not table.empty:
     meta = shown.set_index("ticker")[["name", "market_cap", "sector"]]

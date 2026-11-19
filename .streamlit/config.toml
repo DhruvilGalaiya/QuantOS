@@ -1,0 +1,37 @@
+# QuantOS dashboard theme ("Research desk": light, editorial). Tokens mirror backend/app/theme.py.
+[theme]
+base = "light"
+primaryColor = "#3346D3"
+backgroundColor = "#F5F3EE"
+secondaryBackgroundColor = "#EFECE5"
+textColor = "#191B22"
+borderColor = "#E4E0D6"
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "0.7rem"
+buttonRadius = "999px"
+baseFontSize = 15
+font = "Manrope:https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap"
+headingFont = "'Instrument Serif':https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400..600&display=swap"
+headingFontWeights = [400, 400, 400, 400, 400, 400]
+metricValueFontWeight = 650
+linkColor = "#3346D3"
+linkUnderline = false
+codeBackgroundColor = "#EEF0FB"
+codeTextColor = "#2A3AB0"
+greenColor = "#13875A"
+redColor = "#CF404D"
+yellowColor = "#B7791F"
+orangeColor = "#D9653B"
+blueColor = "#3346D3"
+violetColor = "#7A55C9"
+grayColor = "#5C6270"
+dataframeBorderColor = "#EEEBE4"
+dataframeHeaderBackgroundColor = "#FAF8F4"
+chartCategoricalColors = ["#3346D3", "#E07A3C", "#13875A", "#C2417E", "#1F92B8", "#B8962E", "#7A55C9", "#CF404D"]
+
+[theme.sidebar]
+backgroundColor = "#FBFAF7"
+secondaryBackgroundColor = "#F2EFE9"
+borderColor = "#E4E0D6"

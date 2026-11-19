@@ -16,11 +16,12 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
+import theme  # noqa: E402  (backend/app/theme.py)
 import ui  # noqa: E402  (backend/app/ui.py)
 from quantos_platform import jobs  # noqa: E402
 from quantos_platform.strategies import expiry_playbook as pb  # noqa: E402
 
-UP, DOWN = "#1f9d55", "#e5484d"
+UP, DOWN = theme.BULL, theme.BEAR
 NAMES = {"NIFTY_50": "NIFTY 50", "NIFTY_BANK": "BANK NIFTY"}
 EXITS = {"x1515": "Hold to 15:15 next day", "x0930": "Exit 09:30 next day"}
 STRATS = {
@@ -55,7 +56,7 @@ def nice_date(s: str | None) -> str:
 # ============================================================
 
 with st.sidebar:
-    st.header("Playbook")
+    st.subheader("Playbook")
     symbol = st.selectbox("Index", list(NAMES), format_func=NAMES.get)
     ui.refresh_button("playbook", "Refresh signal")
     st.caption(
@@ -79,14 +80,16 @@ backtest = get_backtest(symbol)
 # TONIGHT
 # ============================================================
 
-st.title("Expiry Playbook")
-st.caption(
-    f"{NAMES[symbol]} · Experimental. Paper-tracked from "
-    f"{pb.TRACK_START:%d %b %Y}. Not investment advice."
+theme.hero(
+    "Expiry playbook",
+    "On the last two sessions before an expiry, sell the roughly 1% out-of-the-money option on the side "
+    "the 15:15 model favours and buy it back at 15:15 the next session.",
+    [f"<b>{NAMES[symbol]}</b>", f"Paper-tracked since <b>{pb.TRACK_START:%d %b %Y}</b>", "Experimental, not advice"],
+    eyebrow="Derivatives strategy",
 )
 
 if sig_error:
-    st.warning(f"Could not compute tonight's signal ({sig_error}). Showing stored results.")
+    theme.status(f"Could not compute tonight's signal ({sig_error}). Showing stored results.", "side")
 
 if sig:
     phase, active = sig.get("phase"), sig.get("active")
@@ -94,50 +97,44 @@ if sig:
         f"{sig.get('strike', 0):.0f} {sig.get('side', '')}" if sig.get("side") else "—")
     lot = sig.get("lot_size")
     prem = sig.get("premium")
+    c = theme.esc(contract)
 
     if phase == "closed":
-        st.info(f"Market closed today. Next signal night: **{nice_date(sig.get('next_window') or sig.get('session'))}**.")
+        theme.signal("Market closed today",
+                     f"Next signal night: <b>{nice_date(sig.get('next_window') or sig.get('session'))}</b>.", "muted")
     elif not active:
-        st.info(
-            f"**No trade tonight.** {sig['tdte']} sessions to the {nice_date(sig['expiry'])} expiry. "
-            f"Next signal night: **{nice_date(sig.get('next_window'))}**."
-        )
+        theme.signal("No trade tonight",
+                     f"{sig['tdte']} sessions to the {nice_date(sig['expiry'])} expiry. "
+                     f"Next signal night: <b>{nice_date(sig.get('next_window'))}</b>.", "muted")
     elif phase in ("preview", "pre-open"):
-        st.warning(
-            f"**Signal night, preview.** Current lean: sell **{contract}**. "
-            "The final call is made at 15:10–15:29."
-        )
+        theme.signal("Signal night, preview",
+                     f"Current lean: sell <b>{c}</b>. The final call is made between 15:10 and 15:29.", "side")
     elif phase == "final":
-        st.success(
-            f"**Signal night. SELL 1 lot {contract}** at about ₹{prem:,.2f}. "
-            "Buy it back at 15:15 tomorrow." if prem else
-            f"**Signal night. SELL 1 lot {contract}.** Buy it back at 15:15 tomorrow."
-        )
+        theme.signal(f"Sell 1 lot {contract}",
+                     (f"At about <b>₹{prem:,.2f}</b>. " if prem else "")
+                     + "Buy it back at 15:15 tomorrow.", "bull")
     else:  # after the window
-        st.info(f"Today was a signal night: **sell {contract}** at 15:15 (logged below once scored).")
+        theme.signal("Today was a signal night",
+                     f"Sold <b>{c}</b> at 15:15. It is logged below once scored.", "accent")
 
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Sessions to expiry", sig.get("tdte", "—"),
-              help=f"Expiry {nice_date(sig.get('expiry'))}. Signal nights are the last "
-                   f"{pb.MAX_TDTE} sessions before expiry.")
     if "view" in sig:
-        c2.metric("Model view", "Bullish" if sig["view"] > 0 else "Bearish",
-                  delta=f"P(gap up) {sig['p_up']:.0%} vs base {sig['drift']:.0%}", delta_color="off",
-                  help="Probability the next open is above the 15:15 price, vs the usual up-rate. "
-                       "Bullish → sell the put, bearish → sell the call.")
-        c3.metric("Option to sell" if active else "Would sell (not tonight)", f"{sig['strike']:,.0f} {sig['side']}",
-                  delta=f"spot {sig['spot']:,.0f} · ~1% OTM", delta_color="off")
-        c4.metric("Premium per lot",
-                  rs(prem * lot, signed=False) if prem and lot else "—",
-                  delta=f"₹{prem:,.2f} × {lot}" if prem and lot else None, delta_color="off",
-                  help="Last traded price × lot size: the most you can keep if it expires worthless.")
-    else:
-        c2.metric("Model view", "—")
-        c3.metric("Option to sell", "—")
-        c4.metric("Premium per lot", "—")
+        bullish = sig["view"] > 0
+        theme.stats([
+            theme.stat("Sessions to expiry", str(sig.get("tdte", "—")), sub=f"Expiry {nice_date(sig.get('expiry'))}",
+                       help=f"Signal nights are the last {pb.MAX_TDTE} sessions before expiry."),
+            theme.stat("Model view", "Bullish" if bullish else "Bearish", tone="bull" if bullish else "bear",
+                       sub=f"P(gap up) {sig['p_up']:.0%} vs base {sig['drift']:.0%}",
+                       help="Probability the next open is above the 15:15 price, vs the usual up-rate. "
+                            "Bullish → sell the put, bearish → sell the call."),
+            theme.stat("Option to sell" if active else "Would sell (not tonight)",
+                       f"{sig['strike']:,.0f} {sig['side']}", sub=f"Spot {sig['spot']:,.0f}, about 1% OTM"),
+            theme.stat("Premium per lot", rs(prem * lot, signed=False) if prem and lot else "—",
+                       sub=f"₹{prem:,.2f} × {lot}" if prem and lot else None,
+                       help="Last traded price × lot size: the most you can keep if it expires worthless."),
+        ])
+    theme.note(f"As of {sig.get('as_of', '—')} IST, session {sig.get('session', '—')}.")
 
-    st.caption(f"As of {sig.get('as_of', '—')} IST · session {sig.get('session', '—')}")
-
+st.space("small")
 with st.expander("The rule and its risks"):
     st.markdown(
         f"""
@@ -159,21 +156,23 @@ with st.expander("The rule and its risks"):
 # PAPER LOG
 # ============================================================
 
-st.divider()
-st.subheader("Paper-trade log")
+theme.section("Paper-trade log", "Every signal night since tracking began, scored against real option prices.")
 
 scored = log.dropna(subset=["pnl_1515_rs"]) if len(log) else log
 if len(log) == 0:
-    st.caption(
+    theme.note(
         f"No signal nights since {pb.TRACK_START:%d %b %Y} yet. Each signal night is logged from "
         "the 15:15 snapshot and scored against real option prices after the exit."
     )
 else:
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Signal nights", len(log))
-    m2.metric("Scored", len(scored))
-    m3.metric("Win rate (hold)", f"{(scored['pnl_1515_rs'] > 0).mean():.0%}" if len(scored) else "—")
-    m4.metric("Total per lot (hold)", rs(scored["pnl_1515_rs"].sum()) if len(scored) else "—")
+    total = scored["pnl_1515_rs"].sum() if len(scored) else np.nan
+    theme.stats([
+        theme.stat("Signal nights", f"{len(log)}"),
+        theme.stat("Scored", f"{len(scored)}"),
+        theme.stat("Win rate, hold", f"{(scored['pnl_1515_rs'] > 0).mean():.0%}" if len(scored) else "—"),
+        theme.stat("Total per lot, hold", rs(total) if len(scored) else "—",
+                   tone=("bull" if total > 0 else "bear") if len(scored) and total != 0 else None),
+    ], enter=False)
     show = log.sort_values("date", ascending=False).assign(
         Night=lambda d: d["date"].dt.strftime("%a %d %b %Y"),
         Exit=lambda d: d["next_session"].dt.strftime("%a %d %b"),
@@ -194,20 +193,21 @@ else:
             "Exit": "Exit session",
         },
     )
-    st.caption("P&L is after brokerage, STT, exchange fees, GST and slippage. One lot.")
+    theme.note("P&L is after brokerage, STT, exchange fees, GST and slippage, for one lot.")
 
 
 # ============================================================
 # BACKTEST
 # ============================================================
 
-st.divider()
-st.subheader("Backtest: signal nights only")
+theme.section("Backtest", "Signal nights only, with the playbook compared against simpler short-option rules.")
 
 if backtest.empty:
-    st.info("Backtest not built yet. Run `python src/quantos_expiry_playbook.py --backtest`.")
+    theme.note("Backtest not built yet. Run `python -m quantos_platform.strategies.expiry_playbook --backtest`.")
 else:
-    exit_col = st.radio("Exit", list(EXITS), format_func=EXITS.get, horizontal=True)
+    exit_col = st.segmented_control(
+        "Exit", list(EXITS), format_func=EXITS.get, default="x1515", label_visibility="collapsed",
+    ) or "x1515"
     near = backtest[backtest["tdte"] <= pb.MAX_TDTE]
 
     rows = []
@@ -240,29 +240,30 @@ else:
     recent = pl[pl.index >= start]
     monthly = recent.groupby(recent.index.to_period("M")).agg(["sum", "count", lambda s: (s > 0).mean()])
     monthly.columns = ["pnl", "nights", "win"]
-    labels = [p.strftime("%b %Y") for p in monthly.index]
+    labels = [p.strftime("%b %y") for p in monthly.index]
 
+    theme.section("Playbook P&L by month", f"Last 12 months, {EXITS[exit_col].lower()}, ₹ per lot.")
     fig = go.Figure(go.Bar(
         x=labels, y=monthly["pnl"],
         marker=dict(color=[UP if v >= 0 else DOWN for v in monthly["pnl"]], line=dict(width=0),
-                    cornerradius=4),
+                    cornerradius=5, opacity=0.92),
         customdata=np.c_[monthly["nights"], monthly["win"] * 100],
-        hovertemplate="%{x}<br>₹%{y:+,.0f} per lot<br>%{customdata[0]:.0f} nights · "
+        hovertemplate="%{x}<br>₹%{y:+,.0f} per lot<br>%{customdata[0]:.0f} nights, "
                       "%{customdata[1]:.0f}% won<extra></extra>",
         text=[rs(v) for v in monthly["pnl"]], textposition="outside", cliponaxis=False,
+        textfont=dict(color=theme.MUTED, size=11),
     ))
-    fig.add_hline(y=0, line=dict(color="rgba(148,163,184,.6)", width=1))
+    fig.add_hline(y=0, line=dict(color=theme.FAINT, width=1))
     fig.update_layout(
-        title=dict(text=f"Playbook P&L by month, last 12 months · {EXITS[exit_col].lower()} · ₹ per lot",
-                   font=dict(size=14)),
-        height=340, margin=dict(l=10, r=10, t=50, b=10), showlegend=False, bargap=0.35,
-        yaxis=dict(tickprefix="₹", tickformat=",.0f", gridcolor="rgba(148,163,184,.15)", zeroline=False),
+        height=340, margin=dict(l=8, r=8, t=24, b=8), showlegend=False, bargap=0.38,
+        yaxis=dict(tickprefix="₹", tickformat=",.0f", zeroline=False),
         xaxis=dict(showgrid=False),
     )
-    st.plotly_chart(fig, width="stretch")
-    st.caption(
+    with theme.card("pnl"):
+        theme.chart(fig)
+    theme.note(
         f"Total {rs(recent.sum())} per lot over {len(recent)} nights "
-        f"({(recent > 0).mean():.0%} won). Backtest uses real Upstox option candles "
+        f"({(recent > 0).mean():.0%} won). The backtest uses real Upstox option candles "
         f"from {near.index.min():%b %Y} to {near.index.max():%d %b %Y}, a walk-forward model "
         "(trained only on data before each night) and full trading costs."
     )

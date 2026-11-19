@@ -1,1 +1,2 @@
 date,next_session,expiry,tdte,p_up,drift,view,side,strike,spot_1515,instrument_key,trading_symbol,lot_size,source,entry,exit_0930,exit_1515,pnl_0930_rs,pnl_1515_rs
+2026-11-19 00:00:00,2026-11-20 00:00:00,2026-11-23 00:00:00,2,0.7500040654841081,0.6098169717138103,1,PE,25250.0,25503.7,NSE_FO|64455,NIFTY 25250 PE 23 NOV 26,65,15:15 snapshot,,,,,
