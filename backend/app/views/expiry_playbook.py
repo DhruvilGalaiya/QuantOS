@@ -64,7 +64,8 @@ with st.sidebar:
         "it's a preview based on the session so far."
     )
 
-    st.caption(ui.freshness_caption("playbook", "Signal computed"))
+    st.caption(ui.freshness_caption("playbook", "Signal computed",
+                                    fallback=(jobs.load_tonight(symbol) or {}).get("as_of")))
 
 with st.spinner("Checking the 15:15 signal…"):
     ui.refresh_on_launch("playbook")

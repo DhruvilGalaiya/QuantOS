@@ -586,8 +586,8 @@ with st.sidebar:
     if UNIVERSE_FILE.exists():
         st.caption(
             "Lists ranked by market cap · built "
-            f"{pd.Timestamp(UNIVERSE_FILE.stat().st_mtime, unit='s').date()}. "
-            "Rebuild: `python -m quantos_platform.data.us_universe`"
+            f"{pd.Timestamp(UNIVERSE_FILE.stat().st_mtime, unit='s').date()}"
+            + ("." if ui.PUBLIC else ". Rebuild: `python -m quantos_platform.data.us_universe`")
         )
 
 symbol = custom or choice

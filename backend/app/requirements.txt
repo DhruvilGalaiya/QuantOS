@@ -1,0 +1,15 @@
+# Dependencies for the Streamlit dashboard (backend/app/regime_dashboard_v10.py).
+# Streamlit Community Cloud reads this file because it sits next to the entrypoint.
+# The quantos_platform package is imported from the repo root (the router adds it to sys.path).
+streamlit==1.64.0
+plotly==7.1.0
+numpy==2.5.2
+pandas==3.0.5
+pyarrow==25.0.1
+scipy==1.18.0
+scikit-learn==1.9.0
+hmmlearn==0.3.3
+requests==2.34.2
+python-dotenv==1.2.3
+yfinance==1.6.0
+lxml==6.1.2

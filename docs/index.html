@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuantOS · Market regimes, volatility surfaces and options research</title>
+<meta name="description" content="QuantOS is a quantitative analytics platform for Indian indices: Gaussian HMM market regimes, next-session forecasts, SVI/SABR implied volatility surfaces and an expiry-week options playbook. Built by Dhruvil Galaiya.">
+<link rel="canonical" href="https://dhruvilgalaiya.github.io/QuantOS/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="QuantOS · Quantitative analytics for Indian indices">
+<meta property="og:description" content="Market regimes (HMM), next-session forecasts, SVI/SABR volatility surfaces and options strategy research. Live dashboard.">
+<meta property="og:url" content="https://dhruvilgalaiya.github.io/QuantOS/">
+<meta property="og:image" content="https://dhruvilgalaiya.github.io/QuantOS/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"QuantOS","applicationCategory":"FinanceApplication","operatingSystem":"Web",
+ "description":"Quantitative analytics for Indian indices: HMM market regimes, next-session forecasts, SVI/SABR volatility surfaces and options strategy research.",
+ "url":"https://dhruvilgalaiya.github.io/QuantOS/","author":{"@type":"Person","name":"Dhruvil Galaiya","url":"https://github.com/DhruvilGalaiya"},
+ "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<style>
+:root {
+  --bg:#F5F3EE; --panel:#FFFFFF; --raised:#FAF8F4; --line:#E4E0D6; --text:#191B22; --muted:#5C6270; --faint:#8C919C;
+  --accent:#3346D3; --warm:#D9653B; --bull:#13875A; --side:#B7791F; --bear:#CF404D;
+  --serif:'Instrument Serif',Georgia,serif; --sans:Manrope,-apple-system,'Segoe UI',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace; --ease:cubic-bezier(.23,1,.32,1);
+  --shadow:0 1px 2px rgba(25,27,34,.04), 0 10px 30px -14px rgba(25,27,34,.16);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; color: var(--text); font: 16px/1.6 var(--sans); font-variant-numeric: tabular-nums;
+  background: radial-gradient(900px 420px at 88% -8%, rgba(51,70,211,.08), transparent 62%),
+              radial-gradient(700px 360px at -6% 2%, rgba(217,101,59,.06), transparent 60%), var(--bg); }
+a { color: inherit; }
+img { display: block; max-width: 100%; height: auto; }
+.shot-hero img, .frame img { width: 100%; }
+.wrap { width: min(1120px, 100% - 32px); margin: 0 auto; }
+
+/* nav */
+nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--serif); font-size: 1.45rem; }
+.brand img { width: 28px; height: 28px; }
+.nav-links { display: flex; align-items: center; gap: 22px; font-size: .92rem; }
+.nav-links a { text-decoration: none; color: var(--muted); transition: color .18s ease; }
+.nav-links a:hover { color: var(--text); }
+.nav-links a.btn { color: #fff; }
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 999px; font-weight: 650; font-size: .95rem;
+  text-decoration: none; border: 1px solid transparent; transition: transform .16s var(--ease), background-color .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--text); color: #fff; box-shadow: 0 6px 18px -8px rgba(25,27,34,.5); }
+.btn-ghost { background: var(--panel); border-color: var(--line); color: var(--text); }
+.btn-sm { padding: 7px 14px; font-size: .86rem; }
+@media (hover: hover) {
+  .btn-primary:hover { background: #2B2E38; }
+  .btn-ghost:hover { border-color: #CFCABD; }
+}
+.btn svg { width: 16px; height: 16px; transition: transform .2s var(--ease); }
+@media (hover: hover) { .btn:hover svg { transform: translateX(2px); } }
+
+/* hero */
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font: 500 .74rem var(--mono); letter-spacing: .02em; color: var(--accent); }
+.eyebrow::before { content: ""; width: 18px; height: 1px; background: currentColor; }
+header.hero { padding: 84px 0 40px; }
+.hero h1 { margin: 14px 0 0; font: 400 clamp(2.8rem, 1.6rem + 4.6vw, 5.2rem)/1 var(--serif); letter-spacing: -0.015em; max-width: 14ch; }
+.hero h1 em { color: var(--accent); }
+.lede { margin: 22px 0 0; max-width: 60ch; font-size: 1.12rem; color: var(--muted); }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.note { margin-top: 14px; font-size: .84rem; color: var(--faint); }
+.shot-hero { margin-top: 56px; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); box-shadow: var(--shadow); }
+
+/* stats */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+.stat b { display: block; font-size: 1.7rem; font-weight: 650; letter-spacing: -0.025em; line-height: 1.15; }
+.stat span { display: block; margin-top: 4px; font-size: .84rem; color: var(--muted); }
+.stat small { display: block; margin-top: 6px; font: .7rem var(--mono); color: var(--faint); }
+
+/* sections */
+section { padding: 72px 0 8px; }
+.sec-head { border-top: 1px solid var(--line); padding-top: 22px; margin-bottom: 30px; }
+.sec-head h2 { margin: 10px 0 0; font: 400 clamp(2rem, 1.5rem + 1.6vw, 2.8rem)/1.05 var(--serif); letter-spacing: -0.01em; }
+.sec-head p { margin: 10px 0 0; max-width: 66ch; color: var(--muted); }
+
+.feature { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: center; padding: 26px 0; }
+.feature:nth-child(even) .feature-text { order: 2; }
+.feature h3 { margin: 10px 0 0; font: 400 1.9rem/1.1 var(--serif); }
+.feature p { margin: 12px 0 0; color: var(--muted); }
+.feature ul { margin: 14px 0 0; padding: 0; list-style: none; font-size: .94rem; }
+.feature li { position: relative; padding: 6px 0 6px 20px; border-top: 1px solid var(--line); }
+.feature li:last-child { border-bottom: 1px solid var(--line); }
+.feature li::before { content: ""; position: absolute; left: 2px; top: 15px; width: 7px; height: 7px; border-radius: 2px; background: var(--accent); }
+.frame { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); box-shadow: var(--shadow); }
+
+/* stack */
+.stack { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; box-shadow: var(--shadow); }
+.card h4 { margin: 0; font: 500 .74rem var(--mono); color: var(--accent); letter-spacing: .02em; }
+.card p { margin: 8px 0 0; font-size: .94rem; color: var(--muted); }
+.card p b { color: var(--text); font-weight: 650; }
+
+.disclaimer { margin-top: 28px; padding: 14px 16px; border-radius: 12px; font-size: .88rem; color: var(--muted);
+  background: color-mix(in srgb, var(--side) 8%, white); border: 1px solid color-mix(in srgb, var(--side) 24%, transparent); }
+
+footer { margin-top: 80px; border-top: 1px solid var(--line); padding: 28px 0 44px; font-size: .9rem; color: var(--muted); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: center; }
+footer a { text-decoration: none; color: var(--text); font-weight: 600; }
+
+/* motion: one entrance on load, then scroll reveals */
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.hero > * { animation: rise .8s var(--ease) both; }
+.hero > :nth-child(2) { animation-delay: .06s; } .hero > :nth-child(3) { animation-delay: .12s; }
+.hero > :nth-child(4) { animation-delay: .18s; } .hero > :nth-child(n+5) { animation-delay: .26s; }
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+.reveal.in { opacity: 1; transform: none; }
+
+@media (max-width: 860px) {
+  .feature { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .feature:nth-child(even) .feature-text { order: 0; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stack { grid-template-columns: minmax(0, 1fr); }
+  header.hero { padding-top: 56px; }
+  .nav-links a.hide-sm { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <a class="brand" href="./"><img src="assets/mark.svg" alt="" width="28" height="28">QuantOS</a>
+    <div class="nav-links">
+      <a class="hide-sm" href="#features">Features</a>
+      <a class="hide-sm" href="#stack">How it's built</a>
+      <a class="hide-sm" href="https://github.com/DhruvilGalaiya/QuantOS">GitHub</a>
+      <a class="btn btn-primary btn-sm" href="https://quantos.streamlit.app" data-app>Open dashboard</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <header class="hero wrap">
+    <div class="eyebrow">Quantitative analytics · Indian indices</div>
+    <h1>Read the market's <em>regime</em>, not just its price.</h1>
+    <p class="lede">QuantOS identifies Bull, Sideways and Bear regimes with a Gaussian Hidden Markov Model, forecasts the next session,
+      builds implied-volatility surfaces calibrated with SVI and SABR, and tests an expiry-week options strategy, for NIFTY 50, BANK NIFTY and SENSEX.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://quantos.streamlit.app" data-app>Open the live dashboard
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9m-3.5-4L12 8l-3.5 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a class="btn btn-ghost" href="https://github.com/DhruvilGalaiya/QuantOS">View the source</a>
+    </div>
+    <p class="note">The dashboard is hosted on a free plan. If it has been idle, the first visit takes about 30 seconds to wake up.</p>
+    <div class="shot-hero"><img src="assets/market.webp" width="1060" height="1000" alt="QuantOS market regimes page showing a Bull regime for NIFTY 50 with next-session probabilities" fetchpriority="high"></div>
+    <div class="stats">
+      <div class="stat"><b>3-state</b><span>Gaussian HMM regimes</span><small>Bull · Sideways · Bear</small></div>
+      <div class="stat"><b>8</b><span>Indian indices tracked</span><small>NIFTY 50, BANK, IT, VIX…</small></div>
+      <div class="stat"><b>56.2%</b><span>V11 direction accuracy</span><small>496 walk-forward sessions</small></div>
+      <div class="stat"><b>SVI + SABR</b><span>Volatility surface fits</span><small>with no-arbitrage checks</small></div>
+    </div>
+  </header>
+
+  <section id="features" class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Features</div>
+      <h2>Four tools, one dashboard</h2>
+      <p>Scheduled jobs pull market and options data from the Upstox API and run the models. The dashboard only reads their results, so pages load fast and stay consistent.</p>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-text">
+        <div class="eyebrow">01 · Market regimes</div>
+        <h3>Which regime are we in, and how long will it last?</h3>
+        <p>A three-state Gaussian HMM over returns, rolling volatility, drawdowns and sector dispersion labels every session and estimates transition probabilities.</p>
+        <ul>
+          <li>Regime timeline over two years of closes</li>
+          <li>Persistence score and expected regime duration</li>
+          <li>V11 next-session forecast using the overnight US session</li>
+          <li>Prediction log scored against realised closes</li>
+        </ul>
+      </div>
+      <div class="frame"><img src="assets/market.webp" width="1060" height="1000" loading="lazy" alt="Market regimes page"></div>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-text">
+        <div class="eyebrow">02 · Volatility surface</div>
+        <h3>Implied volatility across strikes and expiries</h3>
+        <p>Option quotes are converted to implied volatilities and fitted per expiry with SVI and SABR, then joined into a smooth surface by interpolating total variance.</p>
+        <ul>
+          <li>Interactive 3D surface with market quotes overlaid</li>
+          <li>Smiles, ATM term structure, 25Δ risk reversal and butterfly</li>
+          <li>Butterfly and calendar no-arbitrage checks</li>
+        </ul>
+      </div>
+      <div class="frame"><img src="assets/vol.webp" width="1000" height="657" loading="lazy" alt="3D implied volatility surface for NIFTY 50"></div>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-text">
+        <div class="eyebrow">03 · Expiry playbook</div>
+        <h3>An options strategy, paper-traded in public</h3>
+        <p>On the last two sessions before expiry, sell the roughly 1% out-of-the-money option on the side a 15:15 model favours, and buy it back at 15:15 the next session.</p>
+        <ul>
+          <li>Tonight's signal, contract and premium per lot</li>
+          <li>Paper-trade log scored against real option prices</li>
+          <li>Backtest against simpler short-option rules, after costs</li>
+        </ul>
+      </div>
+      <div class="frame"><img src="assets/play.webp" width="1060" height="940" loading="lazy" alt="Expiry playbook page with tonight's signal"></div>
+    </div>
+
+    <div class="feature reveal">
+      <div class="feature-text">
+        <div class="eyebrow">04 · US stocks</div>
+        <h3>Fundamentals and history for 100+ US stocks</h3>
+        <p>The Nasdaq-100 top 50 and S&amp;P 500 top 100: key ratios, returns, price history with moving averages, and quarterly and annual statements.</p>
+        <ul>
+          <li>Valuation, profitability and risk ratios</li>
+          <li>Price and P/E history with CAGR</li>
+          <li>Quarterly results, P&amp;L and balance sheet</li>
+        </ul>
+      </div>
+      <div class="frame"><img src="assets/us.webp" width="1060" height="1340" loading="lazy" alt="US stocks page for Apple"></div>
+    </div>
+  </section>
+
+  <section id="stack" class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">How it's built</div>
+      <h2>The engine behind it</h2>
+      <p>A Python package with separate data jobs, models and strategy code, covered by tests and CI.</p>
+    </div>
+    <div class="stack reveal">
+      <div class="card"><h4>Regime models</h4><p><b>Gaussian HMM</b> on engineered features (returns, rolling volatility, drawdowns, sector dispersion), with transition matrices and walk-forward evaluation.</p></div>
+      <div class="card"><h4>Volatility</h4><p><b>SVI and SABR</b> calibration per expiry, total-variance interpolation, and <b>GARCH(1,1) Student-t</b> forecasting.</p></div>
+      <div class="card"><h4>Risk</h4><p><b>10,000-path Monte Carlo</b> simulations for market-risk scenarios.</p></div>
+      <div class="card"><h4>Data</h4><p><b>Upstox API</b> for Indian index and option-chain data, Yahoo Finance for US equities, Parquet and SQLite storage.</p></div>
+      <div class="card"><h4>App</h4><p><b>Streamlit</b> and <b>Plotly</b> with a custom design system; <b>FastAPI</b> service for model outputs.</p></div>
+      <div class="card"><h4>Engineering</h4><p><b>pandas, NumPy, SciPy, scikit-learn</b>; pytest and ruff in GitHub Actions CI.</p></div>
+    </div>
+    <p class="disclaimer reveal">QuantOS is a research and portfolio project. Nothing on this site or the dashboard is investment advice.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Built by <strong>Dhruvil Galaiya</strong></span>
+    <span><a href="https://github.com/DhruvilGalaiya/QuantOS">GitHub</a> &nbsp;·&nbsp; <a href="https://quantos.streamlit.app" data-app>Live dashboard</a></span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('in')); return; }
+  const io = new IntersectionObserver(entries => entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { rootMargin: '0px 0px -10% 0px' });
+  els.forEach(e => io.observe(e));
+})();
+</script>
+</body>
+</html>

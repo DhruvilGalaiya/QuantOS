@@ -788,12 +788,19 @@ with st.sidebar:
         _clear_artifact_caches()
         st.rerun()
 
-    st.caption(ui.freshness_caption("india_daily", "Daily data"))
-    st.caption(ui.freshness_caption("v11", "V11 forecast for"))
-    st.caption(
-        "Scheduled jobs keep this data current (`python -m quantos_platform.jobs india`)"
-        + ("." if ui.PUBLIC else ". In local mode, stale data is also refreshed when the page opens.")
-    )
+    _closes = load_daily_closes("NIFTY_50")
+    _v11 = load_v11_history("NIFTY_50")
+    st.caption(ui.freshness_caption(
+        "india_daily", "Daily data",
+        fallback=str(pd.Timestamp(_closes.index.max()).date()) if len(_closes) else None))
+    st.caption(ui.freshness_caption(
+        "v11", "V11 forecast",
+        fallback=str(_v11["target_trading_date"].max().date()) if len(_v11) else None))
+    if ui.PUBLIC:
+        st.caption("Data is refreshed after each market close.")
+    else:
+        st.caption("Scheduled jobs keep this data current (`python -m quantos_platform.jobs india`). "
+                   "In local mode, stale data is also refreshed when the page opens.")
 
 
 # ============================================================

@@ -39,9 +39,12 @@ def _fmt(ts: str | None) -> str:
         return str(ts)
 
 
-def freshness_caption(dataset: str, label: str = "Data") -> str:
+def freshness_caption(dataset: str, label: str = "Data", fallback: str | None = None) -> str:
+    """`fallback` is a date read from the data itself, used when the job-status DB has no record
+    (e.g. a fresh deployment, since data/system/ is not in git)."""
     f = status.freshness(dataset)
-    return f"{label} as of **{_fmt(f['as_of']) if f else 'unknown'}**"
+    as_of = f["as_of"] if f else fallback
+    return f"{label} as of **{_fmt(as_of) if as_of else 'unknown'}**"
 
 
 def job_health(job: str, dataset: str | None = None) -> None:

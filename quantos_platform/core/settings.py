@@ -21,7 +21,10 @@ ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(ROOT / ".env")
 
 IST = "Asia/Kolkata"
-MODE = os.getenv("QUANTOS_MODE", "local").strip().lower()
+# Streamlit Community Cloud checks repos out under /mount/src; default to read-only there
+# so the public site never tries to fetch data even if QUANTOS_MODE was not set.
+_HOSTED = str(ROOT).startswith("/mount/src/")
+MODE = os.getenv("QUANTOS_MODE", "public" if _HOSTED else "local").strip().lower()
 PUBLIC = MODE == "public"
 LOG_LEVEL = os.getenv("QUANTOS_LOG_LEVEL", "INFO").upper()
 
