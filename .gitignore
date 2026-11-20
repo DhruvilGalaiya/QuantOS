@@ -30,3 +30,6 @@ data/system/
 *.tmp
 data/regime/volatility_surface/.refresh.lock
 data/derivatives/playbook/.cache_*
+
+# Stray nested clone (not a submodule)
+/QuantOS/
