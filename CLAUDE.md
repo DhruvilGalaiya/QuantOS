@@ -13,20 +13,8 @@ React	Frontend application for presenting platform functionality and analytical 
 Streamlit	Interactive dashboards for specialised HMM and volatility-surface analysis.
 SQLite	Local storage for live options snapshots and related market data.
 
-Terminal 1: live option feed
-cd ~/QuantOS
-./.venv/bin/python src/quantos_volatility/live_option_feed.py
+python -m streamlit run backend/app/regime_dashboard_v10.py
 
-Terminal 2: SABR engine
-cd ~/QuantOS
-./.venv/bin/python src/quantos_volatility/sabr_surface.py
-
-Terminal 3: dashboard
-cd ~/QuantOS
-./.venv/bin/python -m streamlit run src/quantos_volatility/volatility_surface_dashboard.pypython src/update_live_data.pycd ~/QuantOS/backend
-python -m uvicorn app.main:app --reload --port 8000cd ~/QuantOS/frontend
-npm run buildcd ~/QuantOS/frontend
-npm run dev
 ## Production platform (quantos_platform package)
 Setup once: ./.venv/bin/pip install -e ".[dev]"
 Layout: quantos_platform/{core,data,models,vol,strategies}, jobs.py; UI pages in backend/app/views/ (+ backend/app/ui.py); research code stays in src/ (old src/ entry points for moved modules are thin compatibility shims).

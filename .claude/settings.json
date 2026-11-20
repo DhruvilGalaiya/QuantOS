@@ -5,5 +5,10 @@
       "Read(**/.env.*)",
       "Read(./secrets/**)"
     ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
   }
 }
