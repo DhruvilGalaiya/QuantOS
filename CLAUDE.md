@@ -27,6 +27,8 @@ python -m quantos_platform.models.v11 [--rebuild]        # V11 full walk-forward
 python -m quantos_platform.strategies.expiry_playbook --backtest   # rebuild expiry playbook backtest book
 python -m quantos_platform.data.backfill      # one-off: extend daily index history back to 2007
 python -m quantos_platform.data.us_universe   # rebuild US Stocks list (Nasdaq-100 top 50 + S&P 500 top 100)
+python -m quantos_platform.data.expiry_week     # expiry-week option chains for the Expiry Strategy Lab (resumable; first run ~2.5 h)
+python -m quantos_platform.analytics.news_calendar   # coming week's scheduled news (also runs inside the analytics job)
 python -m pytest -q && ruff check quantos_platform tests backend/app/ui.py   # tests + lint (CI: .github/workflows/platform-ci.yml)
 Deployment plan / change log: docs/Deployment_Plan.pdf
 python -m streamlit run src/quantos_volatility/volatility_surface_dashboard.pygit add . && git commit -m "Update project changes" && git push

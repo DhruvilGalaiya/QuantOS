@@ -7,7 +7,7 @@ import pytest
 from tests.conftest import has_local_data
 
 ROUTER = str(Path(__file__).resolve().parents[1] / "backend" / "app" / "regime_dashboard_v10.py")
-PAGES = ["views/market_regimes.py", "views/volatility_surface.py", "views/expiry_playbook.py", "views/us_stocks.py"]
+PAGES = ["views/today.py", "views/volatility_edge.py", "views/event_lab.py", "views/market_regimes.py", "views/volatility_surface.py", "views/us_stocks.py"]
 
 pytestmark = [pytest.mark.slow, pytest.mark.skipif(not has_local_data(), reason="no local data directory")]
 

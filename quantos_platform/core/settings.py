@@ -48,6 +48,9 @@ PLAYBOOK_DIR = DERIV_DIR / "playbook"
 OPTIONS_DB = REGIME_DIR / "options_live" / "options_live.sqlite"
 SURFACE_DIR = REGIME_DIR / "volatility_surface"
 
+# --- descriptive analytics (Volatility & Edge, Event Lab, Today brief)
+ANALYTICS_DIR = DATA_DIR / "analytics"
+
 # --- system (job status, logs, caches)
 SYSTEM_DIR = DATA_DIR / "system"
 STATUS_DB = SYSTEM_DIR / "status.sqlite"

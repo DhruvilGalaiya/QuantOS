@@ -12,10 +12,13 @@ small HTML components the pages share. Colours mirror .streamlit/config.toml.
 
 from __future__ import annotations
 
+import datetime
 import html
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
 import streamlit as st
@@ -110,8 +113,74 @@ TEMPLATE.data.bar = [go.Bar(marker=dict(line=dict(width=0)))]
 TEMPLATE.data.surface = [go.Surface(colorbar=dict(outlinewidth=0, tickfont=dict(color=MUTED)))]
 
 
+def _axis_title(fig: go.Figure, ref: str | None, letter: str) -> str:
+    name = f"{letter}axis{(ref or letter)[1:]}"
+    try:
+        return fig.layout[name].title.text or ""
+    except (KeyError, AttributeError):
+        return ""
+
+
+def _unit(title: str) -> tuple[str, str]:
+    """Number format + suffix for a hover value, read from the axis title ('… %' → '1.86%')."""
+    t = title.lower()
+    if "%" in t or "percent" in t:
+        return ",.2f", "%"
+    if "pts" in t or "points" in t:
+        return ",.1f", " pts"
+    return ",.2f", ""
+
+
+def _is_date(values) -> bool:
+    if values is None or len(values) == 0:
+        return False
+    v = values[0]
+    return isinstance(v, (pd.Timestamp, np.datetime64, datetime.date)) or (
+        isinstance(v, str) and len(v) >= 10 and v[4] == "-" and v[7] == "-")
+
+
+def _auto_hover(fig: go.Figure) -> None:
+    """Readable hover labels for traces that did not set their own: trace name, axis names, rounded numbers
+    with units, instead of raw coordinates like (15 - 20, 13) or 0.7559387."""
+    unified = str(fig.layout.hovermode or "").endswith("unified")
+    for tr in fig.data:
+        if tr.type not in ("scatter", "scattergl", "bar", "histogram"):
+            continue
+        if tr.hovertemplate is not None or tr.hoverinfo == "skip":
+            continue
+        horizontal = getattr(tr, "orientation", None) == "h"
+        xt, yt = _axis_title(fig, tr.xaxis, "x"), _axis_title(fig, tr.yaxis, "y")
+        if tr.type == "histogram":
+            norm = getattr(tr, "histnorm", None) or ""
+            count = "%{y:.1f}%" if norm == "percent" else "%{y:,.0f}"
+            tr.hovertemplate = f"{xt or 'Range'}: %{{x}}<br>{yt or 'Count'}: {count}<extra></extra>"
+            continue
+        vt, val_axis, cat, cat_title = (xt, "x", "y", yt) if horizontal else (yt, "y", "x", xt)
+        fmt, suf = _unit(vt)
+        cat_vals = tr.y if horizontal else tr.x
+        cat_fmt = "|%d %b %Y" if _is_date(cat_vals) else ""
+        if not cat_fmt and cat_vals is not None and len(cat_vals) and isinstance(cat_vals[0], (int, float, np.number)):
+            cfmt, csuf = _unit(cat_title)
+            cat_fmt = f":{cfmt}"
+        else:
+            csuf = ""
+        name = tr.name or vt or "Value"
+        value = f"%{{{val_axis}:{fmt}}}{suf}"
+        if unified:
+            tr.hovertemplate = f"{name}: <b>{value}</b><extra></extra>"
+        else:
+            head = f"{cat_title}: " if cat_title and not cat_fmt.startswith("|") else ""
+            tr.hovertemplate = (f"<b>{name}</b><br>{head}%{{{cat}{cat_fmt}}}{csuf}<br>"
+                                f"{vt or 'Value'}: {value}<extra></extra>")
+    for ax in ("xaxis", "yaxis"):
+        a = fig.layout[ax]
+        if a.hoverformat is None and any(_is_date(getattr(t, ax[0], None)) for t in fig.data):
+            a.hoverformat = "%a %d %b %Y"
+
+
 def chart(fig: go.Figure, *, config: dict | None = None, key: str | None = None) -> None:
     """Render a Plotly figure with the QuantOS template (Streamlit's own chart theme off)."""
+    _auto_hover(fig)
     # Streamlit fills unset backgrounds with its secondary colour; keep charts on the card.
     if fig.layout.plot_bgcolor is None:
         fig.update_layout(plot_bgcolor="rgba(0,0,0,0)")
@@ -338,6 +407,13 @@ hr { border-color: var(--q-line) !important; }
   .q-stat-value { font-size: 1.3rem; }
   .q-section h2 { font-size: 1.6rem; }
 }
+.q-insight { display: flex; gap: 10px; align-items: flex-start; margin: 12px 0 0; padding: 11px 14px;
+  background: var(--q-accent-soft); border-left: 3px solid var(--q-accent); border-radius: 0 10px 10px 0;
+  color: var(--q-text); font-size: .9rem; line-height: 1.55; max-width: 100ch; }
+.q-insight b.q-insight-k { color: var(--q-accent); font-weight: 700; white-space: nowrap; font-size: .76rem;
+  letter-spacing: .06em; text-transform: uppercase; padding-top: 2px; }
+.q-kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: .9rem; margin: 4px 0 0; }
+.q-kv dt { color: var(--q-faint); } .q-kv dd { margin: 0; color: var(--q-text); font-weight: 600; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -382,6 +458,21 @@ def note(text: str) -> None:
     _render(f'<p class="q-note">{esc(text)}</p>')
 
 
+def insight(text: str, label: str = "What this means") -> None:
+    """The plain-language reading of a chart or number (text is escaped; use <b> via insight_html)."""
+    insight_html(esc(text), label)
+
+
+def insight_html(body_html: str, label: str = "What this means") -> None:
+    _render(f'<div class="q-insight"><b class="q-insight-k">{esc(label)}</b><span>{body_html}</span></div>')
+
+
+def method(markdown: str, title: str = "Method and caveats") -> None:
+    """Collapsed methodology note (Markdown, may include LaTeX)."""
+    with st.expander(title, icon=":material/functions:"):
+        st.markdown(markdown)
+
+
 def stat(label: str, value: str, sub: str | None = None, tone: str | None = None, help: str | None = None) -> dict:
     return {"label": label, "value": value, "sub": sub, "tone": tone, "help": help}
 
@@ -413,6 +504,22 @@ def signed_html(value: float, fmt: str = "{:+.2f}%", invert: bool = False) -> st
     good = value > 0 if not invert else value < 0
     tone = "t-muted" if value == 0 else ("t-bull" if good else "t-bear")
     return f'<span class="{tone}">{esc(fmt.format(value))}</span>'
+
+
+def rupees(value: float, signed: bool = True) -> str:
+    """'+₹1,013' / '−₹95' (or '₹1,013' unsigned)."""
+    if value is None or value != value:
+        return "—"
+    sign = ("+" if value > 0 else "−" if value < 0 else "") if signed else ("−" if value < 0 else "")
+    return f"{sign}₹{abs(value):,.0f}"
+
+
+def rupee_html(value: float) -> str:
+    """Coloured signed rupee amount."""
+    if value is None or value != value:
+        return '<span class="t-muted">—</span>'
+    tone = "t-muted" if round(value) == 0 else ("t-bull" if value > 0 else "t-bear")
+    return f'<span class="{tone}">{rupees(value)}</span>'
 
 
 def mini_bar(fraction: float, label: str, tone: str = "accent") -> str:

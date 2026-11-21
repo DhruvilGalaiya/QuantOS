@@ -106,7 +106,6 @@ theme.hero(
     "Implied volatility across strikes and expiries, fitted with SVI and SABR, "
     "with the skew and term structure that come out of it.",
     pills,
-    eyebrow="Options analytics",
 )
 
 ref_day = f"{pd.Timestamp(ref['expiry']):%d %b}"

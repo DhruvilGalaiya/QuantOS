@@ -50,6 +50,19 @@ DEFAULT_RANGE = "5Yr"
 ACCENT = theme.ACCENT
 CURRENCY_SYMBOLS = {"USD": "$", "EUR": "€", "GBP": "£", "JPY": "¥", "INR": "₹"}
 
+SEARCH_CSS = """
+<style>
+.st-key-us_search [role="group"] {
+  min-height: 46px !important; border: 1.5px solid #191B22 !important; border-radius: 10px !important; background-color: #fff !important;
+  padding-left: 38px !important; box-shadow: 0 1px 2px rgba(25,27,34,.06) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%235B6070' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat !important; background-position: 13px center !important;
+}
+.st-key-us_search [role="group"]:focus-within { box-shadow: 0 0 0 3px rgba(25,27,34,.12) !important; }
+.st-key-us_search [role="group"] input { font-size: 1rem; }
+</style>
+"""
+
 PANEL_CSS = """
 <style>
 .qs-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
@@ -544,6 +557,35 @@ def render_side(data: dict, points: list[tuple[str, str]]) -> str:
 
 
 universe = get_universe()
+LABELS = dict(zip(universe["ticker"], universe["name"]))
+DEFAULT_SYMBOL = "AAPL" if "AAPL" in LABELS else (next(iter(LABELS), "AAPL"))
+st.session_state.setdefault("us_symbol", DEFAULT_SYMBOL)
+
+
+def _pick(key: str) -> None:
+    """Search box / sidebar list -> the one selected symbol. Both pickers clear themselves after a pick."""
+    value = st.session_state.get(key)
+    if value:
+        st.session_state.us_symbol = str(value).strip().upper()
+    st.session_state[key] = None
+
+
+st.html(SEARCH_CSS)
+_, search_col, _ = st.columns([1, 2, 1])
+search_col.selectbox(
+    "Search US stocks",
+    list(LABELS),
+    index=None,
+    format_func=lambda t: f"{LABELS[t]}  ·  {t}" if t in LABELS else f"Look up ticker: {t}",
+    placeholder="Search a company or ticker, e.g. Apple or NVDA",
+    accept_new_options=True,
+    on_change=_pick,
+    args=("us_search",),
+    key="us_search",
+    label_visibility="collapsed",
+    help="Type a company name or ticker and pick it from the list. Any other US ticker can be typed and "
+         "entered too (e.g. ASML, SHOP, ^GSPC).",
+)
 
 with st.sidebar:
     st.subheader("US Stocks")
@@ -553,7 +595,7 @@ with st.sidebar:
         "S&P 500 · top 100": universe[universe["sp500_rank"].notna()].sort_values("sp500_rank"),
     }
     list_name = st.radio(
-        "List",
+        "Browse a list",
         list(lists),
         format_func=lambda k: f"{k} ({len(lists[k])})",
         key="us_list",
@@ -564,17 +606,16 @@ with st.sidebar:
     if sector != "All sectors":
         shown = shown[shown["sector"] == sector]
     names = dict(zip(shown["ticker"], shown["name"]))
-    choice = st.selectbox(
-        "Search or select a stock",
+    st.selectbox(
+        "Stocks in this list",
         list(names),
+        index=None,
         format_func=lambda t: f"{t} · {names[t]}",
-        key="us_stock_choice",
+        placeholder=f"Pick one of {len(names)}",
+        on_change=_pick,
+        args=("us_browse",),
+        key="us_browse",
     )
-    custom = st.text_input(
-        "Or enter any US ticker",
-        placeholder="e.g. ASML, SHOP, ^GSPC",
-        key="us_stock_custom",
-    ).strip().upper()
     if not ui.PUBLIC and st.button("Refresh prices", width="stretch"):
         get_prices.clear()
         get_fundamentals.clear()
@@ -590,7 +631,7 @@ with st.sidebar:
             + ("." if ui.PUBLIC else ". Rebuild: `python -m quantos_platform.data.us_universe`")
         )
 
-symbol = custom or choice
+symbol = st.session_state.us_symbol
 info = universe.set_index("ticker").to_dict("index").get(symbol, {})
 name = info.get("name", symbol)
 

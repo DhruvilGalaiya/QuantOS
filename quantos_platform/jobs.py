@@ -5,6 +5,7 @@ QuantOS | Job runner: the only code that fetches data or runs models.
     python -m quantos_platform.jobs vol          # option-chain snapshot -> IV surfaces
     python -m quantos_platform.jobs playbook     # 15-min bars + 15:15 signal -> paper log
     python -m quantos_platform.jobs us_equities  # US stock closes for the US Stocks page
+    python -m quantos_platform.jobs analytics    # volatility & edge, event studies, Today brief (reads stored data)
     python -m quantos_platform.jobs all          # everything above
     python -m quantos_platform.jobs status       # last runs + data freshness
     add --force to re-run even when nothing is stale
@@ -19,6 +20,7 @@ Suggested schedule (IST, weekdays) for deployment:
     15:12  playbook          (signal at the 15:15 snapshot)
     15:50  india, vol, playbook   (end-of-day)
     07:00  us_equities       (after the US close)
+    16:00  analytics         (after the end-of-day india/vol/playbook runs)
 """
 
 from __future__ import annotations
@@ -149,11 +151,41 @@ def job_us_equities(force: bool = False) -> dict:
     return {"tickers": len(tickers), "failed": failed}
 
 
+def job_analytics(force: bool = False) -> dict:
+    """Descriptive analytics from stored data: Volatility & Edge, Event Lab, Today brief, plus the coming week's
+    scheduled news events (free public calendars; failures there never fail the job)."""
+    from quantos_platform.analytics import INDICES, brief, events, news_calendar, volatility
+
+    out: dict = {"volatility": [], "events": [], "errors": {}}
+    for sym in INDICES:
+        for name, mod in (("volatility", volatility), ("events", events)):
+            try:
+                mod.build(sym)
+                out[name].append(sym)
+            except Exception as exc:
+                out["errors"][f"{name}:{sym}"] = f"{type(exc).__name__}: {exc}"
+    try:
+        out["news"] = news_calendar.build()["sources"]
+    except Exception as exc:
+        out["errors"]["news"] = f"{type(exc).__name__}: {exc}"
+    try:
+        b = brief.build()
+        as_of = max(v["market"]["as_of"] for v in b["symbols"].values())
+        status.set_freshness("analytics", as_of)
+        out["as_of"] = as_of
+    except Exception as exc:
+        out["errors"]["brief"] = f"{type(exc).__name__}: {exc}"
+    if not out["volatility"] and not out["events"]:
+        raise RuntimeError(f"analytics failed: {out['errors']}")
+    return out
+
+
 JOBS: dict[str, Callable[[bool], dict]] = {
     "india": job_india,
     "vol": job_vol,
     "playbook": job_playbook,
     "us_equities": job_us_equities,
+    "analytics": job_analytics,   # last: `all` runs it after the data jobs
 }
 
 
@@ -212,6 +244,14 @@ def is_stale(job: str) -> bool:
         age = calendar.now_ist() - pd.Timestamp(fresh["as_of"])
         return age > pd.Timedelta(minutes=10) if calendar.market_open_now() else \
             pd.Timestamp(fresh["as_of"]) < calendar.last_close()
+    if job == "analytics":
+        ok = status.last_run(job, ok_only=True)
+        if not ok:
+            return True
+        built = pd.Timestamp(ok["started"]).timestamp()
+        inputs = [settings.DAILY_DIR / "nifty_50.parquet", settings.PREDICTION_DIR / "latest_predictions.json",
+                  settings.SURFACE_DIR / "nifty_50_surface_v2.json"]
+        return any(p.exists() and p.stat().st_mtime > built for p in inputs)
     if job == "us_equities":
         ok = status.last_run(job, ok_only=True)
         return not ok or time.time() - pd.Timestamp(ok["started"]).timestamp() > 12 * 3600
@@ -255,7 +295,7 @@ def load_tonight(symbol: str) -> dict:
 
 def _print_status() -> None:
     pd.set_option("display.width", 200)
-    for ds in ("india_daily", "v11", "options_snapshot", "playbook", "us_equities"):
+    for ds in ("india_daily", "v11", "options_snapshot", "playbook", "us_equities", "analytics"):
         f = status.freshness(ds)
         print(f"{ds:<18} as of {f['as_of'] if f else '-':<34} updated {f['updated'][:19] if f else '-'}")
     print()

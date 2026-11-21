@@ -21,6 +21,7 @@ dependencies = [
     "lxml>=5",
     "streamlit>=1.40",
     "plotly>=5.20",
+    "arch>=7",          # GARCH in the analytics job (pages do not need it)
 ]
 
 [project.optional-dependencies]

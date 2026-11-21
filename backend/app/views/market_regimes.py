@@ -29,6 +29,7 @@ PROJECT_ROOT = APP_DIR.parents[2]                   # project root
 
 import theme  # noqa: E402  (backend/app/theme.py)
 import ui  # noqa: E402  (backend/app/ui.py)
+from quantos_platform.core.calendar import market_open_now  # noqa: E402
 from quantos_platform.data import daily as live_data  # noqa: E402
 
 # How long a launch/rerun reuses the last refresh before checking Upstox again.
@@ -863,7 +864,8 @@ def nice_day(value) -> str:
 # ============================================================
 # Intraday quote is display only; models use completed daily sessions.
 
-quotes = load_live_quotes((selected_symbol,))
+# Live quotes (and the live badge) only during NSE hours, 09:15-15:30 IST on trading days.
+quotes = load_live_quotes((selected_symbol,)) if market_open_now() else {}
 q = quotes.get(selected_symbol) if "_error" not in quotes else None
 v11_latest = load_v11_metrics(selected_symbol).get("latest") if selected_symbol in V11_SYMBOLS else None
 moves = load_daily_close_changes(selected_symbol)
@@ -998,7 +1000,7 @@ if IS_VIX:
 left, right = st.columns([1, 1.75], gap="large")
 
 with left:
-    theme.section("Persistence", "How entrenched the current regime is. It says nothing about direction.")
+    theme.section("Persistence", "How entrenched the current regime is.")
     theme.meter(stickiness, stickiness_level)
     stay = as_float(first_value(selected, ["stay_probability"]))
     consistency = as_float(first_value(selected, ["recent_consistency"]))
@@ -1178,13 +1180,29 @@ if history_file is not None and not prediction_history.empty:
             return f"color: {theme.BEAR}"
         return f"color: {theme.FAINT}"
 
-    styled = (
-        detailed.style
-        .format("{:.1%}", subset=["P(Bull)", "P(Side)", "P(Bear)"], na_rep="—")
-        .map(_move_colour, subset=close_columns)
-        .map(lambda r: tone_css.get(r, ""), subset=["Regime then", "Forecast"])
+    def _styled(frame):
+        return (
+            frame.style
+            .format("{:.1%}", subset=["P(Bull)", "P(Side)", "P(Bear)"], na_rep="—")
+            .map(_move_colour, subset=close_columns)
+            .map(lambda r: tone_css.get(r, ""), subset=["Regime then", "Forecast"])
+        )
+
+    periods = {"Last 30 days": 30, "Last 3 months": 92, "Last year": 365, "Everything": None}
+    period = st.segmented_control(
+        "Show the full log", list(periods), default=None, key=f"log_period_{log_model}",
+        help="The table loads only when you pick a period.",
     )
-    st.dataframe(styled, width="stretch", hide_index=True, height=460)
+    if period:
+        days = periods[period]
+        shown = detailed
+        if days:
+            cutoff = (pd.Timestamp.today() - pd.Timedelta(days=days)).strftime("%Y-%m-%d")
+            shown = detailed[detailed["Predicted on"] >= cutoff]
+        st.dataframe(_styled(shown), width="stretch", hide_index=True,
+                     height=min(460, 38 + 35 * max(len(shown), 1)))
+    else:
+        theme.note("Pick a period above to load the session-by-session table.")
     theme.note(
         f"Source: {history_file.name}. Next close is the close-to-close move of NIFTY 50 and BANK NIFTY on "
         "the forecast session (Upstox daily closes). Pending means that session has not closed yet. "
@@ -1216,8 +1234,7 @@ with st.expander("Methodology"):
         logged prediction was made by a model fit only on earlier data.
 
         **Persistence.** 60% stay probability + 25% ten-session consistency +
-        15% streak. It describes how entrenched a regime is, not the direction
-        of the next move.
+        15% streak. It describes how entrenched a regime is.
 
         **Regime dynamics.** Continuation probabilities come from the trailing
         transition process; typical duration is 1 / (1 − continuation).

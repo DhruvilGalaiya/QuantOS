@@ -7,9 +7,11 @@ Data is produced by scheduled jobs (python -m quantos_platform.jobs ...); pages 
 Set QUANTOS_MODE=public for the read-only public deployment.
 
 Pages:
+    views/today.py            market brief (default): price context, volatility premium, events this week
     views/market_regimes.py   Indian index regimes, V10 HMM + V11 forecast, prediction log
+    views/volatility_edge.py  volatility risk premium, vol cone, GARCH-t, rough vol, straddle decay
+    views/event_lab.py        event studies: what happened after 52-week highs, streaks, VIX spikes, ...
     views/volatility_surface.py  IV surface (SVI/SABR), smiles, skew, term structure
-    views/expiry_playbook.py  expiry-week overnight option signal + paper log
     views/us_stocks.py        US stock price history
 """
 
@@ -34,20 +36,30 @@ theme.apply()
 navigation = st.navigation(
     [
         st.Page(
+            "views/today.py",
+            title="Today",
+            icon=":material/today:",
+            default=True,
+        ),
+        st.Page(
             "views/market_regimes.py",
             title="Market Regimes",
             icon=":material/insights:",
-            default=True,
+        ),
+        st.Page(
+            "views/volatility_edge.py",
+            title="Volatility & Edge",
+            icon=":material/ssid_chart:",
+        ),
+        st.Page(
+            "views/event_lab.py",
+            title="Event Lab",
+            icon=":material/science:",
         ),
         st.Page(
             "views/volatility_surface.py",
             title="Volatility Surface",
             icon=":material/stacked_line_chart:",
-        ),
-        st.Page(
-            "views/expiry_playbook.py",
-            title="Expiry Playbook",
-            icon=":material/event_available:",
         ),
         st.Page(
             "views/us_stocks.py",
