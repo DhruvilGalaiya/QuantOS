@@ -1,0 +1,4 @@
+# Generated outputs (Plotly HTML exports with embedded plotly.js, model artifacts) are not source code;
+# keep them out of GitHub's language statistics.
+data/** linguist-generated=true
+backend/*_outputs/** linguist-generated=true
