@@ -329,3 +329,10 @@
     color: var(--foreground);
   }
 }
+
+/* owner live prices: a brief saffron wash on each new tick, and a breathing dot while streaming */
+@keyframes tick-flash { from { color: var(--accent-saffron); } to { color: inherit; } }
+@keyframes live-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.tick-flash { animation: tick-flash 900ms ease-out; }
+.live-dot { animation: live-dot 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .tick-flash, .live-dot { animation: none; } }

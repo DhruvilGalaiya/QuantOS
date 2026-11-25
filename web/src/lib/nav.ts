@@ -1,4 +1,4 @@
-import { Activity, CalendarRange, Globe2, LayoutDashboard, Layers3, ShieldAlert, Waves, Sigma, type LucideIcon } from "lucide-react";
+import { Activity, CalendarRange, Globe2, LayoutDashboard, Layers3, RefreshCw, ShieldAlert, Waves, Sigma, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   to: string;
@@ -31,6 +31,10 @@ export const NAV: { group: string; items: NavItem[] }[] = [
   {
     group: "Global",
     items: [{ to: "/us", label: "US stocks", icon: Globe2, key: "u", ready: true, blurb: "Ratios, statements and charts for large US companies" }],
+  },
+  {
+    group: "System",
+    items: [{ to: "/status", label: "Data status", icon: RefreshCw, key: "d", ready: true, blurb: "When the data last refreshed and whether every job worked" }],
   },
 ];
 

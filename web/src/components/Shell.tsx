@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { CommandPalette } from "@/components/CommandPalette";
 import { useRoute } from "@/lib/api";
+import { useLiveTicks } from "@/lib/auth";
 import { day, level, pct, tone } from "@/lib/format";
 import { ALL_NAV, NAV } from "@/lib/nav";
 import { useTheme } from "@/lib/theme";
@@ -10,19 +11,44 @@ import { cn } from "@/lib/utils";
 
 function MarketStatus() {
   const { data } = useRoute("meta");
+  const { ticks, connected } = useLiveTicks();
   if (!data) return null;
   const live = data.mode !== "static";
-  const open = live && data.market_open;
+  const open = live && (ticks?.market_open ?? data.market_open);
+  const streaming = ticks != null && connected;
   return (
-    <span className="flex items-center gap-2 text-muted-foreground" title={live ? undefined : "Public site: end-of-day data"}>
-      <span className={cn("size-1.5 rounded-full", open ? "bg-up" : "bg-faint")} aria-hidden />
-      {open ? "NSE open" : live ? "NSE closed" : "End-of-day data"}
+    <span className="flex items-center gap-2 text-muted-foreground" title={live ? (streaming ? "Live prices from Upstox" : undefined) : "Public site: end-of-day data"}>
+      <span className={cn("size-1.5 rounded-full", open ? "bg-up" : "bg-faint", streaming && open && "live-dot")} aria-hidden />
+      {open ? (streaming ? "Live, NSE open" : "NSE open") : live ? "NSE closed" : "End-of-day data"}
     </span>
+  );
+}
+
+/** Owner mode: the same strip, fed by the live stream (a soft flash marks each new price). */
+function LiveTicker() {
+  const { ticks } = useLiveTicks();
+  if (!ticks?.quotes.length) return null;
+  return (
+    <ul className="hidden items-center gap-5 font-mono text-[12.5px] lg:flex" aria-label="Live index prices" aria-live="off">
+      {ticks.quotes.map((q) => (
+        <li key={q.symbol} className="flex items-baseline gap-2">
+          <span className="text-muted-foreground">{q.name}</span>
+          <span key={q.ltp} className="num tick-flash">{level(q.ltp)}</span>
+          {q.symbol !== "INDIA_VIX" && (
+            <span className={cn("num", { up: "text-up", down: "text-down", flat: "text-muted-foreground" }[tone(q.change_pct)])}>
+              {pct(q.change_pct, 2, true)}
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }
 
 function Ticker() {
   const { data } = useRoute("today");
+  const { ticks } = useLiveTicks();
+  if (ticks?.quotes.length) return <LiveTicker />;
   if (!data?.indices.length) return null;
   const vix = data.indices.find((i) => i.vol.vix != null)?.vol.vix;
   return (

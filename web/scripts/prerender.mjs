@@ -33,6 +33,10 @@ pages.set("risk", {
   title: "Risk monitor · QuantOS",
   description: "How much a portfolio could lose on a bad day, how often that estimate held, and how tightly Indian sectors move together.",
 });
+pages.set("status", {
+  title: "Data status · QuantOS",
+  description: "When QuantOS last refreshed its data, whether every job worked, and how fresh each dataset is.",
+});
 pages.set("us", {
   title: "Large US companies, explained · QuantOS",
   description: "Ratios, statements and price history for the largest US companies, written in plain language.",
@@ -61,6 +65,17 @@ for (const t of list("us")) {
   });
 }
 
+const AUTHOR = { "@type": "Person", name: "Dhruvil Galaiya", url: "https://github.com/DhruvilGalaiya" };
+
+/** schema.org data for search engines: the site on the home page, each other page as part of it. */
+function jsonLd(path, url, title, description) {
+  const site = { "@type": "WebSite", "@id": `${SITE}/#site`, name: "QuantOS", url: `${SITE}/`, description: pages.get("").description, author: AUTHOR, inLanguage: "en" };
+  const data = path
+    ? { "@context": "https://schema.org", "@type": "WebPage", name: title, description, url, isPartOf: site, author: AUTHOR }
+    : { "@context": "https://schema.org", ...site };
+  return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>`;
+}
+
 function render(path, { title, description }) {
   const url = `${SITE}/${path ? `${path}/` : ""}`;
   const head = [
@@ -73,6 +88,7 @@ function render(path, { title, description }) {
     `<meta property="og:description" content="${esc(description)}" />`,
     `<meta property="og:url" content="${url}" />`,
     `<meta name="twitter:card" content="summary" />`,
+    jsonLd(path, url, title, description),
   ].join("\n    ");
   return template
     .replace(/<title>[\s\S]*?<\/title>/, "")

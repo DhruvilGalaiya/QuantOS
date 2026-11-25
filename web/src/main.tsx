@@ -25,6 +25,7 @@ const router = createBrowserRouter(
         { path: "/surface/:symbol?", lazy: () => import("@/pages/Surface").then((m) => ({ Component: m.SurfacePage })) },
         { path: "/risk", lazy: () => import("@/pages/Risk").then((m) => ({ Component: m.RiskPage })) },
         { path: "/us", lazy: () => import("@/pages/UsStocks").then((m) => ({ Component: m.UsStocksPage })) },
+        { path: "/status", lazy: () => import("@/pages/Status").then((m) => ({ Component: m.StatusPage })) },
         { path: "/us/:ticker", lazy: () => import("@/pages/UsCompany").then((m) => ({ Component: m.UsCompanyPage })) },
         ...ALL_NAV.filter((n) => !n.ready).map((n) => ({ path: n.to, element: <PendingPage /> })),
         { path: "*", element: <NotFoundPage /> },
