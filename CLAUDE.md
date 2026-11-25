@@ -15,6 +15,22 @@ SQLite	Local storage for live options snapshots and related market data.
 
 python -m streamlit run backend/app/regime_dashboard_v10.py
 
+## QuantOS v3: React terminal + Node gateway (replacing the Streamlit dashboard, milestones in ~/.claude/plans/mighty-sparking-graham.md)
+Layout: web/ (Vite, React 19, TS, Tailwind v4, shadcn/ui, Lightweight Charts) -> gateway/ (Fastify, TS: helmet, CORS, rate limit, ETag cache)
+-> quantos_platform/api/ (FastAPI, internal only) -> quantos_platform/services/ (page logic, JSON-ready dicts). Types: packages/types (generated).
+Setup once: npm install
+npm run dev:api      # Python quant service on 127.0.0.1:8001 (docs at /internal/docs)
+npm run dev:gateway  # Node gateway on 127.0.0.1:8787 (/api/v1/*)
+npm run dev:web      # React app on http://localhost:5173 (proxies /api to the gateway)
+npm run gen:types    # after changing quantos_platform/api/schemas.py
+npm run build && npm run preview -w @quantos/web   # public static build (exports JSON first), preview on :4173
+npm run typecheck && npm run lint && npm test      # web + gateway checks (CI: .github/workflows/web-ci.yml)
+Public site: https://dhruvilgalaiya.github.io/QuantOS/ deployed by .github/workflows/deploy-site.yml on every push to main that
+touches data/, quantos_platform/, web/ (export JSON from committed artifacts -> VITE_BASE=/QuantOS/ build -> web/scripts/prerender.mjs
+writes per-route HTML, 404.html, sitemap.xml, robots.txt). Data update = run jobs locally, git push. Pages source must be "GitHub Actions".
+python -m quantos_platform.data.us_snapshot [--force]   # weekly US fundamentals/statements snapshot (also inside the us_equities job)
+React routes: / landing · /today · /regimes/:symbol · /states/:symbol · /events/:symbol · /volatility/:symbol · /surface/:symbol · /risk · /us · /us/:ticker (all pages built; Streamlit is now the research lab only)
+
 ## Production platform (quantos_platform package)
 Setup once: ./.venv/bin/pip install -e ".[dev]"
 Layout: quantos_platform/{core,data,models,vol,strategies}, jobs.py; UI pages in backend/app/views/ (+ backend/app/ui.py); research code stays in src/ (old src/ entry points for moved modules are thin compatibility shims).

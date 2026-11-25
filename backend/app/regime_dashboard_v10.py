@@ -60,6 +60,11 @@ st.set_page_config(
 )
 theme.apply()
 
+# The public product moved to the React terminal; this app stays as the research lab.
+NEW_SITE = "https://dhruvilgalaiya.github.io/QuantOS/"
+st.info(f"QuantOS has a new home: [open the new site]({NEW_SITE}). This dashboard is now the research lab.", icon=":material/open_in_new:")
+
+
 def page(path: str, title: str, icon: str, **kw) -> st.Page:
     return st.Page(path, title=title, icon=f":material/{icon}:", **kw)
 
