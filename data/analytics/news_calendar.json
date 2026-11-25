@@ -1,29 +1,49 @@
 {
- "built_at": "2026-11-21T19:46:00.091903+05:30",
- "start": "2026-11-21",
- "end": "2026-11-28",
+ "built_at": "2026-11-25T13:48:37.398711+05:30",
+ "start": "2026-11-25",
+ "end": "2026-12-02",
  "sources": {
-  "forex_factory": "HTTP 429",
+  "forex_factory": "ok",
   "nse_results": "ok"
  },
  "events": [
   {
-   "date": "2026-11-23",
+   "date": "2026-11-25",
+   "time": "19:00",
+   "title": "Core PCE Price Index m/m",
+   "country": "US",
+   "impact": "High",
+   "why": "Inflation decides where interest rates go next. A hot number usually hurts stocks and bonds; a soft one helps.",
+   "kind": "Global macro",
+   "source": "Forex Factory"
+  },
+  {
+   "date": "2026-11-25",
+   "time": "19:00",
+   "title": "Prelim GDP q/q",
+   "country": "US",
+   "impact": "High",
+   "why": "Economic growth figures: a big miss or beat can shift views on earnings and interest rates.",
+   "kind": "Global macro",
+   "source": "Forex Factory"
+  },
+  {
+   "date": "2026-11-30",
+   "time": "16:00",
+   "title": "India GDP growth (quarterly)",
+   "country": "India",
+   "impact": "Medium",
+   "why": "Quarterly growth figure; a big surprise can shift views on earnings and rates.",
+   "kind": "India macro",
+   "source": "MoSPI (last working day)"
+  },
+  {
+   "date": "2026-12-01",
    "time": "15:30",
    "title": "NIFTY option expiry",
    "country": "India",
    "impact": "Medium",
    "why": "Weekly NIFTY options expire. Time decay is fastest and option positioning can pin or whip the index near big strikes.",
-   "kind": "Derivatives",
-   "source": "Option chain"
-  },
-  {
-   "date": "2026-11-23",
-   "time": "15:30",
-   "title": "BANK NIFTY option expiry",
-   "country": "India",
-   "impact": "Medium",
-   "why": "Monthly BANK NIFTY options and futures expire; expect heavier volumes and position rollovers.",
    "kind": "Derivatives",
    "source": "Option chain"
   }

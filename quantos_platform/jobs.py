@@ -152,11 +152,23 @@ def job_us_equities(force: bool = False) -> dict:
 
 
 def job_analytics(force: bool = False) -> dict:
-    """Descriptive analytics from stored data: Volatility & Edge, Event Lab, Today brief, plus the coming week's
+    """Descriptive analytics from stored data: Market States, Risk Monitor, Volatility & Edge, Event Lab, Today
+    brief, plus the coming week's
     scheduled news events (free public calendars; failures there never fail the job)."""
-    from quantos_platform.analytics import INDICES, brief, events, news_calendar, volatility
+    from quantos_platform.analytics import INDICES, brief, events, news_calendar, risk, states, volatility
 
-    out: dict = {"volatility": [], "events": [], "errors": {}}
+    out: dict = {"volatility": [], "events": [], "states": [], "errors": {}}
+    for sym in states.STATE_SYMBOLS:   # before events: the Event Lab reads the state labels
+        try:
+            states.build(sym)
+            out["states"].append(sym)
+        except Exception as exc:
+            out["errors"][f"states:{sym}"] = f"{type(exc).__name__}: {exc}"
+    try:
+        risk.build()
+        out["risk"] = "ok"
+    except Exception as exc:
+        out["errors"]["risk"] = f"{type(exc).__name__}: {exc}"
     for sym in INDICES:
         for name, mod in (("volatility", volatility), ("events", events)):
             try:

@@ -19,7 +19,7 @@ from typing import Callable
 import numpy as np
 import pandas as pd
 
-from quantos_platform.analytics import TRADING_DAYS, load_daily, write_frame, write_json
+from quantos_platform.analytics import TRADING_DAYS, load_daily, read_frame, write_frame, write_json
 
 HORIZONS = (1, 5, 21, 63)
 PATH_BEFORE, PATH_AFTER = 10, 63
@@ -97,6 +97,14 @@ def _down_days(df, n: int = 5):
     return neg.rolling(n).sum() == n
 
 
+def _state_turn(df, state: str) -> pd.Series:
+    """First day of a new market state (walk-forward HMM labels; no future data)."""
+    if "state" not in df:
+        return pd.Series(False, index=df.index)
+    st = df["state"]
+    return (st == state) & (st.shift(1) != state) & st.shift(1).notna()
+
+
 def _calendar(df, kind: str) -> pd.Series:
     if not CALENDAR_FILE.exists():
         return pd.Series(False, index=df.index)
@@ -133,6 +141,11 @@ EVENTS: list[Event] = [
           min_gap=63),
     Event("bear_20", "Falls into a 20% bear market", "The close first sits 20% or more below its all-time high.",
           "Drawdowns", lambda d: _drawdown_cross(d, -0.20), min_gap=126),
+    Event("turns_stressed", "Market turns Stressed", "The market-state model (see Market States) switches to "
+          "its Stressed, high-volatility state. Labels are fitted walk-forward, so no future data is used.",
+          "Market state", lambda d: _state_turn(d, "STRESSED")),
+    Event("turns_calm", "Market turns Calm", "The market-state model switches to its Calm, low-volatility state.",
+          "Market state", lambda d: _state_turn(d, "CALM")),
     Event("budget_day", "Union Budget day", "The session on which the Union Budget is presented "
           "(dates in quantos_platform/analytics/event_calendar.csv).", "Calendar",
           lambda d: _calendar(d, "budget"), min_gap=1),
@@ -232,6 +245,9 @@ def frame(symbol: str) -> pd.DataFrame:
         df["vix"] = vix.reindex(df.index)
     except FileNotFoundError:
         pass
+    states = read_frame(f"states_{symbol.lower()}_series.parquet")
+    if not states.empty and "state" in states:
+        df["state"] = states["state"].reindex(df.index)
     return df
 
 

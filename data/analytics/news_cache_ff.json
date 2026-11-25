@@ -65,6 +65,28 @@
    "why": "The US Federal Reserve sets the world's most important interest rate. Surprises move global stocks, the dollar and foreign flows into India.",
    "kind": "Global macro",
    "source": "Forex Factory"
+  },
+  {
+   "key": "USD|Core PCE Price Index m/m|2026-11-25",
+   "date": "2026-11-25",
+   "time": "19:00",
+   "title": "Core PCE Price Index m/m",
+   "country": "US",
+   "impact": "High",
+   "why": "Inflation decides where interest rates go next. A hot number usually hurts stocks and bonds; a soft one helps.",
+   "kind": "Global macro",
+   "source": "Forex Factory"
+  },
+  {
+   "key": "USD|Prelim GDP q/q|2026-11-25",
+   "date": "2026-11-25",
+   "time": "19:00",
+   "title": "Prelim GDP q/q",
+   "country": "US",
+   "impact": "High",
+   "why": "Economic growth figures: a big miss or beat can shift views on earnings and interest rates.",
+   "kind": "Global macro",
+   "source": "Forex Factory"
   }
  ]
 }

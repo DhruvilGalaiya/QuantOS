@@ -97,7 +97,13 @@ for col, (sym, d) in zip(cols, syms.items()):
             f'<span class="t-muted">Regime</span> {chip}<span class="t-muted">{streak}</span>',
             theme.tone_of(regime) if regime else "muted",
         )
+        stt = read_json(f"states_{sym.lower()}.json").get("current")
         items = [
+            *([theme.stat("Market state", {"CALM": "Calm", "NORMAL": "Normal", "STRESSED": "Stressed"}[stt["state"]],
+                          tone={"CALM": "bull", "NORMAL": "side", "STRESSED": "bear"}[stt["state"]],
+                          sub=f"for {stt['streak']} sessions · volatility-based",
+                          help="Calm, Normal or Stressed, from how violently the market is moving. See Market States.")]
+              if stt else []),
             theme.stat("From all-time high", pct(m["drawdown"], 1, True) if m["drawdown"] < 0 else "At the high",
                        tone="bear" if m["drawdown"] < -0.1 else None, sub=f"High {m['ath']:,.0f}"),
             theme.stat("52-week range position", f"{(m['range52_pos'] or 0):.0%}",
@@ -184,6 +190,14 @@ if v50.get("garch_21d"):
     lines.append(f"GARCH puts NIFTY's expected volatility over the next 21 sessions at "
                  f"<b>{v50['garch_21d'] * 100:.1f}%</b> against a long-run level of "
                  f"{(v50.get('garch_long_run') or 0) * 100:.1f}%.")
+risk = read_json("risk.json")
+if risk.get("tail", {}).get("NIFTY_50"):
+    f95 = risk["tail"]["NIFTY_50"]["fhs"]["0.95"]
+    rn = risk["now"]
+    lines.append(f"At today's volatility, NIFTY falls <b>{f95['var'] * 100:.1f}%</b> or more on about one day in "
+                 f"twenty (₹{f95['var'] * 1e5:,.0f} per ₹1 lakh). Sectors are moving together at a "
+                 f"{'low' if rn['avg_corr_pct'] < 0.35 else 'high' if rn['avg_corr_pct'] > 0.65 else 'normal'} level "
+                 f"and market turbulence is at the {rn['turbulence_pct'] * 100:.0f}th percentile.")
 for line in lines:
     theme.insight_html(line, "Note")
 
@@ -223,7 +237,7 @@ if nev:
                 [[f'{pd.Timestamp(e["date"]):%a %d %b}' + (f'<br><span class="dim">{e["time"]} IST</span>'
                                                             if e.get("time") else ""),
                   f'<span class="strong">{theme.esc(e["title"])}</span>', theme.esc(e["country"]),
-                  IMPACT.get(e["impact"], theme.esc(e["impact"])), theme.esc(e["why"])] for e in nev])
+                  IMPACT.get(e["impact"], theme.esc(e["impact"])), f'<span class="q-wrap">{theme.esc(e["why"])}</span>'] for e in nev])
 else:
     theme.note("No major scheduled events found for the next 7 days.")
 if news:
@@ -237,8 +251,10 @@ if news:
 # ============================================================
 
 theme.section("Go deeper")
-c1, c2, c3, c4 = st.columns(4)
+c1, c2, c3, c4, c5, c6 = st.columns(6)
 c1.page_link("views/volatility_edge.py", label="Volatility & Edge", icon=":material/ssid_chart:")
 c2.page_link("views/event_lab.py", label="Event Lab", icon=":material/science:")
 c3.page_link("views/market_regimes.py", label="Market Regimes", icon=":material/insights:")
 c4.page_link("views/volatility_surface.py", label="Volatility Surface", icon=":material/stacked_line_chart:")
+c5.page_link("views/market_states.py", label="Market States", icon=":material/waves:")
+c6.page_link("views/risk_monitor.py", label="Risk Monitor", icon=":material/shield:")

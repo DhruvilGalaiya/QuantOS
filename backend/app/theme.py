@@ -311,6 +311,7 @@ hr { border-color: var(--q-line) !important; }
   font-family: var(--q-mono); font-weight: 500; font-size: .7rem; letter-spacing: .02em;
   border-bottom: 1px solid var(--q-line); white-space: nowrap; }
 .q-table td { padding: 13px 16px; border-bottom: 1px solid var(--q-line-soft); white-space: nowrap; vertical-align: middle; }
+.q-table td .q-wrap { display: block; white-space: normal; min-width: 260px; max-width: 520px; line-height: 1.45; }
 .q-table tbody tr:last-child td { border-bottom: 0; }
 .q-table tbody tr { transition: background-color .18s ease; }
 .q-table tbody tr:hover { background: var(--q-raised); }
