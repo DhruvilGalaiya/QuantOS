@@ -28,11 +28,13 @@ def etag_for(paths: Iterable[Path]) -> str:
 
 def cached_json(request: Request, paths: Iterable[Path], build: Callable[[], object], model=None) -> Response:
     """304 when the client's If-None-Match matches the artifacts' ETag, else the built (validated) payload."""
+    paths = list(paths)
     tag = etag_for(paths)
-    headers = {"ETag": tag, "Cache-Control": "no-cache"}
     if request.headers.get("if-none-match") == tag:
-        return Response(status_code=304, headers=headers)
+        return Response(status_code=304, headers={"ETag": tag, "Cache-Control": "no-cache"})
     payload = build()
     if model is not None:
         payload = model.model_validate(payload).model_dump(mode="json", by_alias=True)
-    return JSONResponse(payload, headers=headers)
+    # stamp after building: a build can create a source it reads (the status DB on a fresh checkout), and a tag taken
+    # before that would never match the next request
+    return JSONResponse(payload, headers={"ETag": etag_for(paths), "Cache-Control": "no-cache"})
