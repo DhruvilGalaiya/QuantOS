@@ -12,36 +12,36 @@
   },
   "test": {
     "start": "2024-11-01",
-    "end": "2026-11-23",
-    "n": 509,
-    "direction_accuracy": 0.5442043222003929,
-    "direction_calls": 509,
-    "three_class_accuracy": 0.4165029469548134,
-    "always_up_accuracy": 0.5206286836935167
+    "end": "2026-11-25",
+    "n": 510,
+    "direction_accuracy": 0.5450980392156862,
+    "direction_calls": 510,
+    "three_class_accuracy": 0.4176470588235294,
+    "always_up_accuracy": 0.5215686274509804
   },
   "v10_same_rows": {
-    "n": 495,
-    "direction_accuracy": 0.475,
-    "direction_calls": 280,
-    "three_class_accuracy": 0.32525252525252524,
-    "always_up_accuracy": 0.5191919191919192
+    "n": 496,
+    "direction_accuracy": 0.4767025089605735,
+    "direction_calls": 279,
+    "three_class_accuracy": 0.3286290322580645,
+    "always_up_accuracy": 0.5201612903225806
   },
   "v11_same_rows": {
-    "n": 495,
-    "direction_accuracy": 0.5454545454545454,
-    "direction_calls": 495,
-    "three_class_accuracy": 0.41818181818181815,
-    "always_up_accuracy": 0.5191919191919192
+    "n": 496,
+    "direction_accuracy": 0.5463709677419355,
+    "direction_calls": 496,
+    "three_class_accuracy": 0.41935483870967744,
+    "always_up_accuracy": 0.5201612903225806
   },
-  "generated_at": "2026-11-25T13:46:48.780587+05:30",
+  "generated_at": "2026-11-25T17:33:04.506061+05:30",
   "latest": {
-    "prediction_date": "2026-11-23",
-    "target_trading_date": "2026-11-24",
+    "prediction_date": "2026-11-25",
+    "target_trading_date": "2026-11-26",
     "next_regime": "BULL",
-    "next_day_probability": 0.7728419231729864,
-    "bull_probability": 0.7728419231729864,
-    "side_probability": 0.11574094285347587,
-    "bear_probability": 0.11141713397353774,
-    "status": "FINAL"
+    "next_day_probability": 0.46191961173165996,
+    "bull_probability": 0.46191961173165996,
+    "side_probability": 0.19019503099232765,
+    "bear_probability": 0.34788535727601244,
+    "status": "PROVISIONAL"
   }
 }
