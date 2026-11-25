@@ -31,8 +31,11 @@ writes per-route HTML, 404.html, sitemap.xml, robots.txt). Pages source must be 
 Daily data: .github/workflows/daily-data.yml runs the jobs on GitHub (14:45 IST vol, 18:00 IST india+analytics, 07:00 IST US;
 manual "Run workflow" too), saves data/ to the "data-latest" release (not git), then redeploys. Needs repo secret UPSTOX_ANALYTICS_TOKEN.
 scripts/data_bundle.sh pull   # bring the cloud's newest data/ down to this Mac (do this before running jobs locally)
+Owner live prices: npm run hash-password -w gateway -> put the 2 lines in gateway/.env -> restart gateway -> ⌘K "Sign in for live prices"
+(Server-Sent Events /api/v1/ticks/stream, Python /internal/v1/ticks; off in public mode). Data status page: /status (/internal/v1/system).
+npm run e2e -w @quantos/web   # Playwright smoke tests on the built site (installed Chrome; BASE=/QuantOS/ for a Pages build)
 python -m quantos_platform.data.us_snapshot [--force]   # weekly US fundamentals/statements snapshot (also inside the us_equities job)
-React routes: / landing · /today · /regimes/:symbol · /states/:symbol · /events/:symbol · /volatility/:symbol · /surface/:symbol · /risk · /us · /us/:ticker (all pages built; Streamlit is now the research lab only)
+React routes: / landing · /today · /status · /regimes/:symbol · /states/:symbol · /events/:symbol · /volatility/:symbol · /surface/:symbol · /risk · /us · /us/:ticker (all pages built; Streamlit is now the research lab only)
 
 ## Production platform (quantos_platform package)
 Setup once: ./.venv/bin/pip install -e ".[dev]"

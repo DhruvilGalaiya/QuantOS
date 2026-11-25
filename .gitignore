@@ -43,3 +43,5 @@ web/public/data/
 gateway/.env
 *.tsbuildinfo
 web/.taste-skill/
+web/test-results/
+web/playwright-report/

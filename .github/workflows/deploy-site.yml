@@ -55,6 +55,10 @@ jobs:
           VITE_BASE: /QuantOS/
           SITE_URL: https://dhruvilgalaiya.github.io/QuantOS
         run: npm run build -w @quantos/web
+      - name: Smoke-test every page in Chrome before publishing
+        env:
+          BASE: /QuantOS/
+        run: npm run e2e -w @quantos/web
 
       - uses: actions/upload-pages-artifact@v3
         with:
