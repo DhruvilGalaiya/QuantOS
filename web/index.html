@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="QuantOS: the state of Indian index markets. Volatility, option-implied ranges, market regimes and historical base rates for NIFTY 50 and NIFTY BANK." />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>QuantOS</title>
+    <script>
+      try { const t = localStorage.getItem("quantos-theme"); if (t === "light") document.documentElement.classList.remove("dark"); else document.documentElement.classList.add("dark"); } catch { document.documentElement.classList.add("dark"); }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
