@@ -1,0 +1,9 @@
+name: Restore latest data
+description: >
+  Unpack the newest data/ (written by the daily refresh) from the data-latest release over the checkout.
+  Before the first refresh there is no release, and the data committed to the repo is used as is.
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: bash scripts/data_bundle.sh pull

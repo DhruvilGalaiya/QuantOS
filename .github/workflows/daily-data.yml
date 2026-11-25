@@ -1,0 +1,94 @@
+name: Daily data refresh
+
+# Runs the data and model jobs on GitHub's machines, so the public site stays current without the owner's Mac.
+# State between runs (parquet history, models, the status DB) lives in the data-latest release, not in git.
+# Times are UTC; NSE hours are 03:45-10:00 UTC (09:15-15:30 IST). GitHub may start a scheduled run late.
+on:
+  schedule:
+    - cron: "15 9 * * 1-5"    # 14:45 IST, market open: option-chain snapshot -> volatility surfaces
+    - cron: "30 12 * * 1-5"   # 18:00 IST, after the close: index candles, regime models, analytics
+    - cron: "30 1 * * 2-6"    # 07:00 IST, after the US close: US stock prices (fundamentals weekly)
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: Jobs to run, in order (india, vol, us_equities, analytics, playbook)
+        default: india vol us_equities analytics
+      force:
+        description: Rebuild even when the data looks fresh
+        type: boolean
+        default: false
+
+permissions:
+  contents: write    # replace the data-latest release file
+  actions: write     # keep this schedule from being paused after 60 quiet days
+  pages: write
+  id-token: write
+
+concurrency:
+  group: data        # one writer at a time; a queued run starts from the previous run's data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      QUANTOS_MODE: local
+      UPSTOX_ANALYTICS_TOKEN: ${{ secrets.UPSTOX_ANALYTICS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: python -m pip install -e .
+      - uses: ./.github/actions/restore-data
+
+      - name: Pick the jobs for this run
+        id: pick
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          INPUT_JOBS: ${{ inputs.jobs }}
+          FORCE: ${{ inputs.force && '--force' || '' }}
+        run: |
+          case "$SCHEDULE" in
+            "15 9 * * 1-5")  jobs="vol analytics" ;;
+            "30 12 * * 1-5") jobs="india analytics" ;;
+            "30 1 * * 2-6")  jobs="us_equities" ;;
+            *)               jobs="$INPUT_JOBS" ;;
+          esac
+          echo "jobs=$jobs" >> "$GITHUB_OUTPUT"
+          echo "force=$FORCE" >> "$GITHUB_OUTPUT"
+          echo "Running: $jobs $FORCE"
+
+      - name: Run jobs
+        id: run
+        # keep going when one job fails so the others' data is still saved and published; fail the run afterwards
+        continue-on-error: true
+        run: python -m quantos_platform.jobs ${{ steps.pick.outputs.jobs }} ${{ steps.pick.outputs.force }}
+
+      - name: Data freshness
+        if: always()
+        run: python -m quantos_platform.jobs status
+
+      - name: Save data to the data-latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/data_bundle.sh push
+
+      - name: Keep the schedule active
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow enable daily-data.yml --repo "$GITHUB_REPOSITORY" || true
+
+      - name: Report job failures
+        if: steps.run.outcome == 'failure'
+        run: |
+          echo "::error::One or more jobs failed; see the 'Run jobs' step. Data from the jobs that succeeded was saved."
+          exit 1
+
+  deploy:
+    needs: refresh
+    if: ${{ !cancelled() }}
+    uses: ./.github/workflows/deploy-site.yml

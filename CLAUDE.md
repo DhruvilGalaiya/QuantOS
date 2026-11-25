@@ -27,7 +27,10 @@ npm run build && npm run preview -w @quantos/web   # public static build (export
 npm run typecheck && npm run lint && npm test      # web + gateway checks (CI: .github/workflows/web-ci.yml)
 Public site: https://dhruvilgalaiya.github.io/QuantOS/ deployed by .github/workflows/deploy-site.yml on every push to main that
 touches data/, quantos_platform/, web/ (export JSON from committed artifacts -> VITE_BASE=/QuantOS/ build -> web/scripts/prerender.mjs
-writes per-route HTML, 404.html, sitemap.xml, robots.txt). Data update = run jobs locally, git push. Pages source must be "GitHub Actions".
+writes per-route HTML, 404.html, sitemap.xml, robots.txt). Pages source must be "GitHub Actions".
+Daily data: .github/workflows/daily-data.yml runs the jobs on GitHub (14:45 IST vol, 18:00 IST india+analytics, 07:00 IST US;
+manual "Run workflow" too), saves data/ to the "data-latest" release (not git), then redeploys. Needs repo secret UPSTOX_ANALYTICS_TOKEN.
+scripts/data_bundle.sh pull   # bring the cloud's newest data/ down to this Mac (do this before running jobs locally)
 python -m quantos_platform.data.us_snapshot [--force]   # weekly US fundamentals/statements snapshot (also inside the us_equities job)
 React routes: / landing · /today · /regimes/:symbol · /states/:symbol · /events/:symbol · /volatility/:symbol · /surface/:symbol · /risk · /us · /us/:ticker (all pages built; Streamlit is now the research lab only)
 
