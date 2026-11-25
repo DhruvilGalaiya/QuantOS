@@ -14,5 +14,6 @@ export default defineConfig({
     // dev: the browser talks to the Node gateway only; it never reaches the Python service
     proxy: { "/api": "http://127.0.0.1:8787" },
   },
-  test: { environment: "jsdom", globals: false },
+  // unit tests live next to the code; web/e2e holds the Playwright browser tests (npm run e2e)
+  test: { environment: "jsdom", globals: false, include: ["src/**/*.{test,spec}.{ts,tsx}"] },
 });
