@@ -402,6 +402,50 @@
      }
     }
    }
+  },
+  "/internal/v1/system": {
+   "get": {
+    "tags": [
+     "system"
+    ],
+    "summary": "Get System",
+    "description": "Last runs of every data job and the freshness of each dataset.",
+    "operationId": "get_system_internal_v1_system_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/System"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/internal/v1/ticks": {
+   "get": {
+    "tags": [
+     "system"
+    ],
+    "summary": "Get Ticks",
+    "description": "Live NIFTY 50, NIFTY BANK and India VIX prices. The gateway serves these only to the signed-in owner.",
+    "operationId": "get_ticks_internal_v1_ticks_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Ticks"
+        }
+       }
+      }
+     }
+    }
+   }
   }
  },
  "components": {
@@ -2023,6 +2067,173 @@
      "history"
     ],
     "title": "IndexBrief"
+   },
+   "JobRun": {
+    "properties": {
+     "job": {
+      "type": "string",
+      "title": "Job"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "started": {
+      "type": "string",
+      "title": "Started"
+     },
+     "finished": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Finished"
+     },
+     "ok": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ok"
+     },
+     "duration_s": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Duration S"
+     },
+     "message": {
+      "type": "string",
+      "title": "Message",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "job",
+     "label",
+     "started"
+    ],
+    "title": "JobRun"
+   },
+   "JobSummary": {
+    "properties": {
+     "job": {
+      "type": "string",
+      "title": "Job"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "schedule": {
+      "type": "string",
+      "title": "Schedule"
+     },
+     "last_run": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Run"
+     },
+     "last_ok": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Ok"
+     },
+     "last_success": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Success"
+     },
+     "message": {
+      "type": "string",
+      "title": "Message",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "job",
+     "label",
+     "schedule"
+    ],
+    "title": "JobSummary"
+   },
+   "LiveQuote": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "ltp": {
+      "type": "number",
+      "title": "Ltp"
+     },
+     "prev_close": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Prev Close"
+     },
+     "change_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Change Pct"
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name",
+     "ltp"
+    ],
+    "title": "LiveQuote"
    },
    "LogRow": {
     "properties": {
@@ -4769,6 +4980,43 @@
     ],
     "title": "SurfaceRef"
    },
+   "System": {
+    "properties": {
+     "now": {
+      "type": "string",
+      "title": "Now"
+     },
+     "jobs": {
+      "items": {
+       "$ref": "#/components/schemas/JobSummary"
+      },
+      "type": "array",
+      "title": "Jobs"
+     },
+     "freshness": {
+      "items": {
+       "$ref": "#/components/schemas/Freshness"
+      },
+      "type": "array",
+      "title": "Freshness"
+     },
+     "runs": {
+      "items": {
+       "$ref": "#/components/schemas/JobRun"
+      },
+      "type": "array",
+      "title": "Runs"
+     }
+    },
+    "type": "object",
+    "required": [
+     "now",
+     "jobs",
+     "freshness",
+     "runs"
+    ],
+    "title": "System"
+   },
    "Tail": {
     "properties": {
      "symbol": {
@@ -4858,6 +5106,32 @@
      "vol"
     ],
     "title": "TermPoint"
+   },
+   "Ticks": {
+    "properties": {
+     "ts": {
+      "type": "string",
+      "title": "Ts"
+     },
+     "market_open": {
+      "type": "boolean",
+      "title": "Market Open"
+     },
+     "quotes": {
+      "items": {
+       "$ref": "#/components/schemas/LiveQuote"
+      },
+      "type": "array",
+      "title": "Quotes"
+     }
+    },
+    "type": "object",
+    "required": [
+     "ts",
+     "market_open",
+     "quotes"
+    ],
+    "title": "Ticks"
    },
    "Today": {
     "properties": {

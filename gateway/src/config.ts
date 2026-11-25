@@ -10,6 +10,14 @@ const Env = z.object({
   UPSTREAM_TIMEOUT_MS: z.coerce.number().int().positive().default(15000),
   CACHE_FRESH_MS: z.coerce.number().int().nonnegative().default(5000),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
+  // owner sign-in (live prices). Both unset = sign-in off. Make them with `npm run hash-password -w gateway`.
+  OWNER_PASSWORD_HASH: z.string().startsWith("scrypt$").optional(),
+  SESSION_SECRET: z.string().min(32).optional(),
+  SESSION_DAYS: z.coerce.number().positive().default(7),
+  // Secure cookies need HTTPS; true whenever the gateway is served over HTTPS
+  COOKIE_SECURE: z.stringbool().default(false),
+  TICK_OPEN_MS: z.coerce.number().int().positive().default(3000),
+  TICK_CLOSED_MS: z.coerce.number().int().positive().default(60000),
 });
 
 export type Config = z.infer<typeof Env> & { corsOrigins: string[] };

@@ -204,6 +204,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/internal/v1/system": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get System
+         * @description Last runs of every data job and the freshness of each dataset.
+         */
+        get: operations["get_system_internal_v1_system_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/v1/ticks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Ticks
+         * @description Live NIFTY 50, NIFTY BANK and India VIX prices. The gateway serves these only to the signed-in owner.
+         */
+        get: operations["get_ticks_internal_v1_ticks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -665,6 +705,59 @@ export interface components {
             implied?: components["schemas"]["Implied"] | null;
             /** History */
             history: components["schemas"]["SeriesPoint"][];
+        };
+        /** JobRun */
+        JobRun: {
+            /** Job */
+            job: string;
+            /** Label */
+            label: string;
+            /** Started */
+            started: string;
+            /** Finished */
+            finished?: string | null;
+            /** Ok */
+            ok?: boolean | null;
+            /** Duration S */
+            duration_s?: number | null;
+            /**
+             * Message
+             * @default
+             */
+            message: string;
+        };
+        /** JobSummary */
+        JobSummary: {
+            /** Job */
+            job: string;
+            /** Label */
+            label: string;
+            /** Schedule */
+            schedule: string;
+            /** Last Run */
+            last_run?: string | null;
+            /** Last Ok */
+            last_ok?: boolean | null;
+            /** Last Success */
+            last_success?: string | null;
+            /**
+             * Message
+             * @default
+             */
+            message: string;
+        };
+        /** LiveQuote */
+        LiveQuote: {
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string;
+            /** Ltp */
+            ltp: number;
+            /** Prev Close */
+            prev_close?: number | null;
+            /** Change Pct */
+            change_pct?: number | null;
         };
         /** LogRow */
         LogRow: {
@@ -1422,6 +1515,17 @@ export interface components {
             /** Bf25 */
             bf25?: number | null;
         };
+        /** System */
+        System: {
+            /** Now */
+            now: string;
+            /** Jobs */
+            jobs: components["schemas"]["JobSummary"][];
+            /** Freshness */
+            freshness: components["schemas"]["Freshness"][];
+            /** Runs */
+            runs: components["schemas"]["JobRun"][];
+        };
         /** Tail */
         Tail: {
             /** Symbol */
@@ -1451,6 +1555,15 @@ export interface components {
             days: number;
             /** Vol */
             vol: number;
+        };
+        /** Ticks */
+        Ticks: {
+            /** Ts */
+            ts: string;
+            /** Market Open */
+            market_open: boolean;
+            /** Quotes */
+            quotes: components["schemas"]["LiveQuote"][];
         };
         /** Today */
         Today: {
@@ -2092,6 +2205,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_system_internal_v1_system_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["System"];
+                };
+            };
+        };
+    };
+    get_ticks_internal_v1_ticks_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Ticks"];
                 };
             };
         };

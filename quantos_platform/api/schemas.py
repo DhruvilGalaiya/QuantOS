@@ -25,6 +25,50 @@ class Meta(Model):
     freshness: list[Freshness]
 
 
+
+# ------------------------------------------------------------------ system status
+class JobSummary(Model):
+    job: str
+    label: str
+    schedule: str
+    last_run: str | None = None
+    last_ok: bool | None = None
+    last_success: str | None = None
+    message: str = ""
+
+
+class JobRun(Model):
+    job: str
+    label: str
+    started: str
+    finished: str | None = None
+    ok: bool | None = None
+    duration_s: float | None = None
+    message: str = ""
+
+
+class System(Model):
+    now: str
+    jobs: list[JobSummary]
+    freshness: list[Freshness]
+    runs: list[JobRun]
+
+
+# ------------------------------------------------------------------ live ticks (owner only)
+class LiveQuote(Model):
+    symbol: str
+    name: str
+    ltp: float
+    prev_close: float | None = None
+    change_pct: float | None = None
+
+
+class Ticks(Model):
+    ts: str
+    market_open: bool
+    quotes: list[LiveQuote]
+
+
 # ------------------------------------------------------------------ today
 class SeriesPoint(Model):
     time: str

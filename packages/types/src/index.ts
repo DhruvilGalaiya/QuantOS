@@ -20,6 +20,7 @@ export type NewsEvent = S["NewsEvent"];
 export interface ApiRoutes {
   meta: Meta;
   today: Today;
+  system: System;
 }
 export type RouteName = keyof ApiRoutes;
 export type Risk = S["Risk"];
@@ -44,3 +45,8 @@ export type RiskMonitor = S["RiskMonitor"];
 export type Surface = S["Surface"];
 export type SurfaceExpiry = S["SurfaceExpiry"];
 export type Quote = S["Quote"];
+export type System = S["System"];
+export type JobSummary = S["JobSummary"];
+export type JobRun = S["JobRun"];
+export type Ticks = S["Ticks"];
+export type LiveQuote = S["LiveQuote"];

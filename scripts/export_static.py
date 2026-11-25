@@ -20,7 +20,18 @@ sys.path.insert(0, str(ROOT))
 from quantos_platform.analytics import INDICES  # noqa: E402
 from quantos_platform.api import API_VERSION, schemas  # noqa: E402
 from quantos_platform.core import calendar  # noqa: E402
-from quantos_platform.services import common, events, regimes, risk, states, surface, today, us_stocks, volatility  # noqa: E402
+from quantos_platform.services import (  # noqa: E402
+    common,
+    events,
+    regimes,
+    risk,
+    states,
+    surface,
+    system,
+    today,
+    us_stocks,
+    volatility,
+)
 
 
 def routes() -> dict:
@@ -28,6 +39,7 @@ def routes() -> dict:
     out = {
         "today": (today.build, schemas.Today),
         "us": (us_stocks.universe, schemas.UsUniverse),
+        "system": (system.build, schemas.System),
         "meta": (lambda: {"version": API_VERSION, "mode": "static", "market_open": False,
                           "now": calendar.now_ist().isoformat(), "freshness": common.freshness()}, schemas.Meta),
     }
