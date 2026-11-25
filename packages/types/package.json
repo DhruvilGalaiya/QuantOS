@@ -1,0 +1,15 @@
+{
+  "name": "@quantos/types",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API types generated from the quant service's OpenAPI schema (npm run gen:types at the repo root)",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": {
+    "gen": "openapi-typescript openapi.json -o src/api.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": { "openapi-typescript": "7.13.0" }
+}

@@ -1,0 +1,27 @@
+name: QuantOS web + gateway CI
+
+on:
+  push:
+    branches: [main]
+    paths: ["web/**", "gateway/**", "packages/**", "package.json", "package-lock.json", ".github/workflows/web-ci.yml"]
+  pull_request:
+    paths: ["web/**", "gateway/**", "packages/**", "package.json", "package-lock.json", ".github/workflows/web-ci.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Unit tests (gateway routes, security headers, formatting)
+        run: npm test
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high

@@ -1,0 +1,5965 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "QuantOS quant service",
+  "description": "Internal analytics API behind the QuantOS gateway. Descriptive measurements and historical base rates; no forecasts.",
+  "version": "1.0.0"
+ },
+ "paths": {
+  "/internal/v1/meta": {
+   "get": {
+    "tags": [
+     "meta"
+    ],
+    "summary": "Get Meta",
+    "description": "Run mode, whether NSE is open now, and how fresh each dataset is.",
+    "operationId": "get_meta_internal_v1_meta_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Meta"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/internal/v1/today": {
+   "get": {
+    "tags": [
+     "today"
+    ],
+    "summary": "Get Today",
+    "description": "The Today brief: index cards, the range options are pricing by expiry, readings, events and news.",
+    "operationId": "get_today_internal_v1_today_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Today"
+        }
+       }
+      }
+     },
+     "304": {
+      "description": "Not modified"
+     }
+    }
+   }
+  },
+  "/internal/v1/regimes/{symbol}": {
+   "get": {
+    "tags": [
+     "pages"
+    ],
+    "summary": "Get Regimes",
+    "description": "Trend regime, persistence, transitions, every instrument, and the next-session forecast with its record.",
+    "operationId": "get_regimes_internal_v1_regimes__symbol__get",
+    "parameters": [
+     {
+      "name": "symbol",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^[A-Z0-9_]{2,24}$",
+       "title": "Symbol"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Regimes"
+        }
+       }
+      }
+     },
+     "304": {
+      "description": "Not modified"
+     },
+     "404": {
+      "description": "Not Found"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/internal/v1/volatility/{symbol}": {
+   "get": {
+    "tags": [
+     "pages"
+    ],
+    "summary": "Get Volatility",
+    "description": "Realized vs implied volatility, the premium sellers collect, the vol cone, GARCH-t and overnight straddle results.",
+    "operationId": "get_volatility_internal_v1_volatility__symbol__get",
+    "parameters": [
+     {
+      "name": "symbol",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^[A-Z0-9_]{2,24}$",
+       "title": "Symbol"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Volatility"
+        }
+       }
+      }
+     },
+     "304": {
+      "description": "Not modified"
+     },
+     "404": {
+      "description": "Not Found"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/internal/v1/us": {
+   "get": {
+    "tags": [
+     "pages"
+    ],
+    "summary": "Get Us Universe",
+    "description": "The US large-cap universe with returns and 3-month sparklines.",
+    "operationId": "get_us_universe_internal_v1_us_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UsUniverse"
+        }
+       }
+      }
+     },
+     "304": {
+      "description": "Not modified"
+     }
+    }
+   }
+  },
+  "/internal/v1/us/{ticker}": {
+   "get": {
+    "tags": [
+     "pages"
+    ],
+    "summary": "Get Us Company",
+    "description": "One company in plain language: price, returns, explained ratios, business summary and statements.",
+    "operationId": "get_us_company_internal_v1_us__ticker__get",
+    "parameters": [
+     {
+      "name": "ticker",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^[A-Za-z][A-Za-z0-9.\\-]{0,9}$",
+       "title": "Ticker"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UsCompany"
+        }
+       }
+      }
+     },
+     "304": {
+      "description": "Not modified"
+     },
+     "404": {
+      "description": "Not Found"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/internal/v1/states/{symbol}": {
+   "get": {
+    "tags": [
+     "pages"
+    ],
+    "summary": "Get States",
+    "description": "Calm, Normal or Stressed: behaviour by state, how long states last, the timeline and every major fall.",
+    "operationId": "get_states_internal_v1_states__symbol__get",
+    "parameters": [
+     {
+      "name": "symbol",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^[A-Z0-9_]{2,24}$",
+       "title": "Symbol"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/States"
+        }
+       }
+      }
+     },
+     "304": {
+      "description": "Not modified"
+     },
+     "404": {
+      "description": "Not Found"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/internal/v1/events/{symbol}": {
+   "get": {
+    "tags": [
+     "pages"
+    ],
+    "summary": "Get Events",
+    "description": "What followed each market event, against ordinary days, with confidence intervals and every occurrence.",
+    "operationId": "get_events_internal_v1_events__symbol__get",
+    "parameters": [
+     {
+      "name": "symbol",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^[A-Z0-9_]{2,24}$",
+       "title": "Symbol"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Events"
+        }
+       }
+      }
+     },
+     "304": {
+      "description": "Not modified"
+     },
+     "404": {
+      "description": "Not Found"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/internal/v1/risk": {
+   "get": {
+    "tags": [
+     "pages"
+    ],
+    "summary": "Get Risk",
+    "description": "Sector co-movement, turbulence, the sector scoreboard, loss levels and past crashes for replay.",
+    "operationId": "get_risk_internal_v1_risk_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RiskMonitor"
+        }
+       }
+      }
+     },
+     "304": {
+      "description": "Not modified"
+     }
+    }
+   }
+  },
+  "/internal/v1/surface/{symbol}": {
+   "get": {
+    "tags": [
+     "pages"
+    ],
+    "summary": "Get Surface",
+    "description": "The SVI/SABR implied-volatility surface, smiles against quotes, term structures and calibration checks.",
+    "operationId": "get_surface_internal_v1_surface__symbol__get",
+    "parameters": [
+     {
+      "name": "symbol",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^[A-Z0-9_]{2,24}$",
+       "title": "Symbol"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Surface"
+        }
+       }
+      }
+     },
+     "304": {
+      "description": "Not modified"
+     },
+     "404": {
+      "description": "Not Found"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "Backtest": {
+    "properties": {
+     "n": {
+      "type": "integer",
+      "title": "N"
+     },
+     "start": {
+      "type": "string",
+      "title": "Start"
+     },
+     "rate95": {
+      "type": "number",
+      "title": "Rate95"
+     },
+     "rate99": {
+      "type": "number",
+      "title": "Rate99"
+     }
+    },
+    "type": "object",
+    "required": [
+     "n",
+     "start",
+     "rate95",
+     "rate99"
+    ],
+    "title": "Backtest"
+   },
+   "BaseRate": {
+    "properties": {
+     "from": {
+      "type": "number",
+      "title": "From"
+     },
+     "to": {
+      "type": "number",
+      "title": "To"
+     },
+     "n": {
+      "type": "integer",
+      "title": "N"
+     },
+     "went_on": {
+      "type": "integer",
+      "title": "Went On"
+     },
+     "share": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Share"
+     },
+     "median_recover_days": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Median Recover Days"
+     }
+    },
+    "type": "object",
+    "required": [
+     "from",
+     "to",
+     "n",
+     "went_on"
+    ],
+    "title": "BaseRate"
+   },
+   "ConeRow": {
+    "properties": {
+     "horizon": {
+      "type": "integer",
+      "title": "Horizon"
+     },
+     "current": {
+      "type": "number",
+      "title": "Current"
+     },
+     "percentile": {
+      "type": "number",
+      "title": "Percentile"
+     },
+     "min": {
+      "type": "number",
+      "title": "Min"
+     },
+     "p10": {
+      "type": "number",
+      "title": "P10"
+     },
+     "p25": {
+      "type": "number",
+      "title": "P25"
+     },
+     "p50": {
+      "type": "number",
+      "title": "P50"
+     },
+     "p75": {
+      "type": "number",
+      "title": "P75"
+     },
+     "p90": {
+      "type": "number",
+      "title": "P90"
+     },
+     "max": {
+      "type": "number",
+      "title": "Max"
+     }
+    },
+    "type": "object",
+    "required": [
+     "horizon",
+     "current",
+     "percentile",
+     "min",
+     "p10",
+     "p25",
+     "p50",
+     "p75",
+     "p90",
+     "max"
+    ],
+    "title": "ConeRow"
+   },
+   "CorrMatrix": {
+    "properties": {
+     "names": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Names"
+     },
+     "matrix": {
+      "items": {
+       "items": {
+        "type": "number"
+       },
+       "type": "array"
+      },
+      "type": "array",
+      "title": "Matrix"
+     }
+    },
+    "type": "object",
+    "required": [
+     "names",
+     "matrix"
+    ],
+    "title": "CorrMatrix"
+   },
+   "Crash": {
+    "properties": {
+     "peak": {
+      "type": "string",
+      "title": "Peak"
+     },
+     "trough": {
+      "type": "string",
+      "title": "Trough"
+     },
+     "depth": {
+      "type": "number",
+      "title": "Depth"
+     },
+     "days_down": {
+      "type": "integer",
+      "title": "Days Down"
+     },
+     "dates": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Dates"
+     },
+     "returns": {
+      "additionalProperties": {
+       "items": {
+        "type": "number"
+       },
+       "type": "array"
+      },
+      "type": "object",
+      "title": "Returns"
+     }
+    },
+    "type": "object",
+    "required": [
+     "peak",
+     "trough",
+     "depth",
+     "days_down",
+     "dates",
+     "returns"
+    ],
+    "title": "Crash"
+   },
+   "Decay": {
+    "properties": {
+     "lot": {
+      "type": "integer",
+      "title": "Lot"
+     },
+     "n": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "N"
+     },
+     "start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Start"
+     },
+     "end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "End"
+     },
+     "edges": {
+      "items": {
+       "type": "integer"
+      },
+      "type": "array",
+      "title": "Edges"
+     },
+     "rows": {
+      "items": {
+       "$ref": "#/components/schemas/DecayRow"
+      },
+      "type": "array",
+      "title": "Rows"
+     }
+    },
+    "type": "object",
+    "required": [
+     "lot",
+     "edges",
+     "rows"
+    ],
+    "title": "Decay"
+   },
+   "DecayRow": {
+    "properties": {
+     "tdte": {
+      "type": "integer",
+      "title": "Tdte"
+     },
+     "nights": {
+      "type": "integer",
+      "title": "Nights"
+     },
+     "win_rate": {
+      "type": "number",
+      "title": "Win Rate"
+     },
+     "avg_rupees": {
+      "type": "number",
+      "title": "Avg Rupees"
+     },
+     "median_per100": {
+      "type": "number",
+      "title": "Median Per100"
+     },
+     "worst_rupees": {
+      "type": "number",
+      "title": "Worst Rupees"
+     },
+     "verdict": {
+      "type": "string",
+      "title": "Verdict"
+     },
+     "hist": {
+      "items": {
+       "type": "integer"
+      },
+      "type": "array",
+      "title": "Hist"
+     }
+    },
+    "type": "object",
+    "required": [
+     "tdte",
+     "nights",
+     "win_rate",
+     "avg_rupees",
+     "median_per100",
+     "worst_rupees",
+     "verdict",
+     "hist"
+    ],
+    "title": "DecayRow"
+   },
+   "Drawdown": {
+    "properties": {
+     "now": {
+      "type": "number",
+      "title": "Now"
+     },
+     "stage": {
+      "type": "string",
+      "title": "Stage"
+     },
+     "peak": {
+      "type": "number",
+      "title": "Peak"
+     },
+     "base_rates": {
+      "items": {
+       "$ref": "#/components/schemas/BaseRate"
+      },
+      "type": "array",
+      "title": "Base Rates"
+     },
+     "falls": {
+      "items": {
+       "$ref": "#/components/schemas/Fall"
+      },
+      "type": "array",
+      "title": "Falls"
+     },
+     "series": {
+      "items": {
+       "$ref": "#/components/schemas/SeriesPoint"
+      },
+      "type": "array",
+      "title": "Series"
+     }
+    },
+    "type": "object",
+    "required": [
+     "now",
+     "stage",
+     "peak",
+     "base_rates",
+     "falls",
+     "series"
+    ],
+    "title": "Drawdown"
+   },
+   "Dynamics": {
+    "properties": {
+     "regime": {
+      "type": "string",
+      "title": "Regime"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "stay": {
+      "type": "number",
+      "title": "Stay"
+     },
+     "lasts": {
+      "type": "number",
+      "title": "Lasts"
+     },
+     "exits_to": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Exits To"
+     },
+     "exits_share": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Exits Share"
+     },
+     "long_run": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Long Run"
+     }
+    },
+    "type": "object",
+    "required": [
+     "regime",
+     "label",
+     "stay",
+     "lasts"
+    ],
+    "title": "Dynamics"
+   },
+   "EventHit": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "index": {
+      "type": "string",
+      "title": "Index"
+     },
+     "date": {
+      "type": "string",
+      "title": "Date"
+     },
+     "n": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "N"
+     },
+     "mean": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mean"
+     },
+     "baseline_mean": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Baseline Mean"
+     },
+     "hit_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hit Rate"
+     },
+     "ci_low": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ci Low"
+     },
+     "ci_high": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ci High"
+     },
+     "p_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "P Value"
+     },
+     "unusual": {
+      "type": "boolean",
+      "title": "Unusual"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "index",
+     "date",
+     "unusual"
+    ],
+    "title": "EventHit"
+   },
+   "EventPath": {
+    "properties": {
+     "offsets": {
+      "items": {
+       "type": "integer"
+      },
+      "type": "array",
+      "title": "Offsets"
+     },
+     "mean": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Mean"
+     },
+     "ci_low": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Ci Low"
+     },
+     "ci_high": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Ci High"
+     },
+     "baseline": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Baseline"
+     }
+    },
+    "type": "object",
+    "required": [
+     "offsets",
+     "mean",
+     "ci_low",
+     "ci_high",
+     "baseline"
+    ],
+    "title": "EventPath"
+   },
+   "EventStat": {
+    "properties": {
+     "n": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "N"
+     },
+     "mean": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mean"
+     },
+     "median": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Median"
+     },
+     "hit_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hit Rate"
+     },
+     "worst": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Worst"
+     },
+     "best": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Best"
+     },
+     "ci_low": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ci Low"
+     },
+     "ci_high": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ci High"
+     },
+     "baseline_mean": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Baseline Mean"
+     },
+     "baseline_hit_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Baseline Hit Rate"
+     },
+     "excess": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Excess"
+     },
+     "p_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "P Value"
+     },
+     "unusual": {
+      "type": "boolean",
+      "title": "Unusual",
+      "default": false
+     }
+    },
+    "type": "object",
+    "title": "EventStat"
+   },
+   "EventStudy": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "description": {
+      "type": "string",
+      "title": "Description"
+     },
+     "group": {
+      "type": "string",
+      "title": "Group"
+     },
+     "min_gap": {
+      "type": "integer",
+      "title": "Min Gap"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     },
+     "last": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last"
+     },
+     "stats": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/EventStat"
+      },
+      "type": "object",
+      "title": "Stats"
+     },
+     "path": {
+      "$ref": "#/components/schemas/EventPath"
+     },
+     "occurrences": {
+      "items": {
+       "$ref": "#/components/schemas/Occurrence"
+      },
+      "type": "array",
+      "title": "Occurrences"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "description",
+     "group",
+     "min_gap",
+     "count",
+     "stats",
+     "path",
+     "occurrences"
+    ],
+    "title": "EventStudy"
+   },
+   "Events": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "symbols": {
+      "items": {
+       "$ref": "#/components/schemas/Named"
+      },
+      "type": "array",
+      "title": "Symbols"
+     },
+     "as_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "As Of"
+     },
+     "since": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Since"
+     },
+     "sessions": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sessions"
+     },
+     "horizons": {
+      "items": {
+       "type": "integer"
+      },
+      "type": "array",
+      "title": "Horizons",
+      "default": []
+     },
+     "n_boot": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "N Boot"
+     },
+     "recent": {
+      "items": {
+       "$ref": "#/components/schemas/RecentEvent"
+      },
+      "type": "array",
+      "title": "Recent",
+      "default": []
+     },
+     "events": {
+      "items": {
+       "$ref": "#/components/schemas/EventStudy"
+      },
+      "type": "array",
+      "title": "Events",
+      "default": []
+     },
+     "alpha": {
+      "type": "number",
+      "title": "Alpha",
+      "default": 0.05
+     },
+     "min_n": {
+      "type": "integer",
+      "title": "Min N",
+      "default": 10
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name",
+     "symbols"
+    ],
+    "title": "Events"
+   },
+   "Fact": {
+    "properties": {
+     "title": {
+      "type": "string",
+      "title": "Title"
+     },
+     "text": {
+      "type": "string",
+      "title": "Text"
+     }
+    },
+    "type": "object",
+    "required": [
+     "title",
+     "text"
+    ],
+    "title": "Fact"
+   },
+   "Fall": {
+    "properties": {
+     "peak": {
+      "type": "string",
+      "title": "Peak"
+     },
+     "trough": {
+      "type": "string",
+      "title": "Trough"
+     },
+     "depth": {
+      "type": "number",
+      "title": "Depth"
+     },
+     "days_down": {
+      "type": "integer",
+      "title": "Days Down"
+     },
+     "days_to_recover": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Days To Recover"
+     },
+     "ongoing": {
+      "type": "boolean",
+      "title": "Ongoing"
+     }
+    },
+    "type": "object",
+    "required": [
+     "peak",
+     "trough",
+     "depth",
+     "days_down",
+     "ongoing"
+    ],
+    "title": "Fall"
+   },
+   "Financials": {
+    "properties": {
+     "quarterly": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Statement"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "annual": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Statement"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "balance": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Statement"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "cashflow": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Statement"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "ratios": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Statement"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "title": "Financials"
+   },
+   "Forecast": {
+    "properties": {
+     "model": {
+      "type": "string",
+      "title": "Model"
+     },
+     "target_date": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Target Date"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status"
+     },
+     "pick": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Pick"
+     },
+     "confidence": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Confidence"
+     },
+     "probs": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "type": "object",
+      "title": "Probs"
+     }
+    },
+    "type": "object",
+    "required": [
+     "model",
+     "probs"
+    ],
+    "title": "Forecast"
+   },
+   "Freshness": {
+    "properties": {
+     "dataset": {
+      "type": "string",
+      "title": "Dataset"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "as_of": {
+      "type": "string",
+      "title": "As Of"
+     },
+     "updated": {
+      "type": "string",
+      "title": "Updated"
+     }
+    },
+    "type": "object",
+    "required": [
+     "dataset",
+     "label",
+     "as_of",
+     "updated"
+    ],
+    "title": "Freshness"
+   },
+   "Garch": {
+    "properties": {
+     "alpha": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Alpha"
+     },
+     "beta": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Beta"
+     },
+     "nu": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Nu"
+     },
+     "persistence": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Persistence"
+     },
+     "half_life_days": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Half Life Days"
+     },
+     "long_run_vol": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Long Run Vol"
+     },
+     "current_vol": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Current Vol"
+     },
+     "vol_21d": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vol 21D"
+     },
+     "fit_start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fit Start"
+     },
+     "n_obs": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "N Obs"
+     },
+     "term_structure": {
+      "items": {
+       "$ref": "#/components/schemas/TermPoint"
+      },
+      "type": "array",
+      "title": "Term Structure",
+      "default": []
+     },
+     "history": {
+      "items": {
+       "$ref": "#/components/schemas/GarchPoint"
+      },
+      "type": "array",
+      "title": "History",
+      "default": []
+     }
+    },
+    "type": "object",
+    "title": "Garch"
+   },
+   "GarchPoint": {
+    "properties": {
+     "time": {
+      "type": "string",
+      "title": "Time"
+     },
+     "garch": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Garch"
+     },
+     "realized": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Realized"
+     }
+    },
+    "type": "object",
+    "required": [
+     "time"
+    ],
+    "title": "GarchPoint"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "Hurst": {
+    "properties": {
+     "H": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "H"
+     },
+     "zeta": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "type": "object",
+      "title": "Zeta"
+     },
+     "rolling": {
+      "items": {
+       "$ref": "#/components/schemas/HurstRoll"
+      },
+      "type": "array",
+      "title": "Rolling"
+     },
+     "proxy": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Proxy"
+     }
+    },
+    "type": "object",
+    "required": [
+     "zeta",
+     "rolling"
+    ],
+    "title": "Hurst"
+   },
+   "HurstRoll": {
+    "properties": {
+     "end": {
+      "type": "string",
+      "title": "End"
+     },
+     "H": {
+      "type": "number",
+      "title": "H"
+     }
+    },
+    "type": "object",
+    "required": [
+     "end",
+     "H"
+    ],
+    "title": "HurstRoll"
+   },
+   "Implied": {
+    "properties": {
+     "expiry": {
+      "type": "string",
+      "title": "Expiry"
+     },
+     "days": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Days"
+     },
+     "atm_iv": {
+      "type": "number",
+      "title": "Atm Iv"
+     },
+     "move_points": {
+      "type": "number",
+      "title": "Move Points"
+     },
+     "move_pct": {
+      "type": "number",
+      "title": "Move Pct"
+     },
+     "snapshot_ts": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Snapshot Ts"
+     },
+     "spot": {
+      "type": "number",
+      "title": "Spot"
+     },
+     "forward": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Forward"
+     },
+     "lower": {
+      "type": "number",
+      "title": "Lower"
+     },
+     "upper": {
+      "type": "number",
+      "title": "Upper"
+     },
+     "rr25": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rr25"
+     },
+     "bf25": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Bf25"
+     },
+     "atm_strike": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Atm Strike"
+     },
+     "atm_call": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Atm Call"
+     },
+     "atm_put": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Atm Put"
+     },
+     "straddle": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Straddle"
+     }
+    },
+    "type": "object",
+    "required": [
+     "expiry",
+     "atm_iv",
+     "move_points",
+     "move_pct",
+     "spot",
+     "lower",
+     "upper"
+    ],
+    "title": "Implied"
+   },
+   "ImpliedNow": {
+    "properties": {
+     "atm_iv": {
+      "type": "number",
+      "title": "Atm Iv"
+     },
+     "expiry": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Expiry"
+     }
+    },
+    "type": "object",
+    "required": [
+     "atm_iv"
+    ],
+    "title": "ImpliedNow"
+   },
+   "IndexBrief": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "market": {
+      "$ref": "#/components/schemas/Market"
+     },
+     "regime": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Regime"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "state": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/State"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "vol": {
+      "$ref": "#/components/schemas/Vol"
+     },
+     "implied": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Implied"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "history": {
+      "items": {
+       "$ref": "#/components/schemas/SeriesPoint"
+      },
+      "type": "array",
+      "title": "History"
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name",
+     "market",
+     "vol",
+     "history"
+    ],
+    "title": "IndexBrief"
+   },
+   "LogRow": {
+    "properties": {
+     "date": {
+      "type": "string",
+      "title": "Date"
+     },
+     "target": {
+      "type": "string",
+      "title": "Target"
+     },
+     "regime_then": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Regime Then"
+     },
+     "forecast": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Forecast"
+     },
+     "confidence": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Confidence"
+     },
+     "move": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Move"
+     },
+     "hit": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hit"
+     }
+    },
+    "type": "object",
+    "required": [
+     "date",
+     "target"
+    ],
+    "title": "LogRow"
+   },
+   "Market": {
+    "properties": {
+     "as_of": {
+      "type": "string",
+      "title": "As Of"
+     },
+     "close": {
+      "type": "number",
+      "title": "Close"
+     },
+     "change_pct": {
+      "type": "number",
+      "title": "Change Pct"
+     },
+     "week_pct": {
+      "type": "number",
+      "title": "Week Pct"
+     },
+     "month_pct": {
+      "type": "number",
+      "title": "Month Pct"
+     },
+     "drawdown": {
+      "type": "number",
+      "title": "Drawdown"
+     },
+     "ath": {
+      "type": "number",
+      "title": "Ath"
+     },
+     "hi52": {
+      "type": "number",
+      "title": "Hi52"
+     },
+     "lo52": {
+      "type": "number",
+      "title": "Lo52"
+     },
+     "range52_pos": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Range52 Pos"
+     }
+    },
+    "type": "object",
+    "required": [
+     "as_of",
+     "close",
+     "change_pct",
+     "week_pct",
+     "month_pct",
+     "drawdown",
+     "ath",
+     "hi52",
+     "lo52"
+    ],
+    "title": "Market"
+   },
+   "Meta": {
+    "properties": {
+     "version": {
+      "type": "string",
+      "title": "Version"
+     },
+     "mode": {
+      "type": "string",
+      "title": "Mode"
+     },
+     "market_open": {
+      "type": "boolean",
+      "title": "Market Open"
+     },
+     "now": {
+      "type": "string",
+      "title": "Now"
+     },
+     "freshness": {
+      "items": {
+       "$ref": "#/components/schemas/Freshness"
+      },
+      "type": "array",
+      "title": "Freshness"
+     }
+    },
+    "type": "object",
+    "required": [
+     "version",
+     "mode",
+     "market_open",
+     "now",
+     "freshness"
+    ],
+    "title": "Meta"
+   },
+   "MonteCarlo": {
+    "properties": {
+     "p01": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "P01"
+     },
+     "p05": {
+      "type": "number",
+      "title": "P05"
+     },
+     "p25": {
+      "type": "number",
+      "title": "P25"
+     },
+     "p50": {
+      "type": "number",
+      "title": "P50"
+     },
+     "p75": {
+      "type": "number",
+      "title": "P75"
+     },
+     "p95": {
+      "type": "number",
+      "title": "P95"
+     },
+     "down5": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Down5"
+     },
+     "down10": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Down10"
+     },
+     "hist": {
+      "items": {
+       "type": "integer"
+      },
+      "type": "array",
+      "title": "Hist"
+     },
+     "edges": {
+      "items": {
+       "type": "number"
+      },
+      "type": "array",
+      "title": "Edges"
+     }
+    },
+    "type": "object",
+    "required": [
+     "p05",
+     "p25",
+     "p50",
+     "p75",
+     "p95",
+     "hist",
+     "edges"
+    ],
+    "title": "MonteCarlo"
+   },
+   "Named": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name"
+    ],
+    "title": "Named"
+   },
+   "News": {
+    "properties": {
+     "built_at": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Built At"
+     },
+     "start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Start"
+     },
+     "end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "End"
+     },
+     "events": {
+      "items": {
+       "$ref": "#/components/schemas/NewsEvent"
+      },
+      "type": "array",
+      "title": "Events"
+     }
+    },
+    "type": "object",
+    "required": [
+     "events"
+    ],
+    "title": "News"
+   },
+   "NewsEvent": {
+    "properties": {
+     "date": {
+      "type": "string",
+      "title": "Date"
+     },
+     "time": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Time"
+     },
+     "title": {
+      "type": "string",
+      "title": "Title"
+     },
+     "country": {
+      "type": "string",
+      "title": "Country"
+     },
+     "impact": {
+      "type": "string",
+      "title": "Impact"
+     },
+     "why": {
+      "type": "string",
+      "title": "Why"
+     },
+     "kind": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Kind"
+     },
+     "source": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "date",
+     "title",
+     "country",
+     "impact",
+     "why"
+    ],
+    "title": "NewsEvent"
+   },
+   "Occurrence": {
+    "properties": {
+     "date": {
+      "type": "string",
+      "title": "Date"
+     },
+     "close": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Close"
+     },
+     "h1": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "H1"
+     },
+     "h5": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "H5"
+     },
+     "h21": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "H21"
+     },
+     "h63": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "H63"
+     }
+    },
+    "type": "object",
+    "required": [
+     "date"
+    ],
+    "title": "Occurrence"
+   },
+   "OverviewRow": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "close": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Close"
+     },
+     "change_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Change Pct"
+     },
+     "regime": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Regime"
+     },
+     "streak": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Streak"
+     },
+     "persistence": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Persistence"
+     },
+     "next": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Next"
+     },
+     "next_model": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Next Model"
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name"
+    ],
+    "title": "OverviewRow"
+   },
+   "PredictionLog": {
+    "properties": {
+     "model": {
+      "type": "string",
+      "title": "Model"
+     },
+     "rows": {
+      "items": {
+       "$ref": "#/components/schemas/LogRow"
+      },
+      "type": "array",
+      "title": "Rows"
+     }
+    },
+    "type": "object",
+    "required": [
+     "model",
+     "rows"
+    ],
+    "title": "PredictionLog"
+   },
+   "Quote": {
+    "properties": {
+     "expiry": {
+      "type": "string",
+      "title": "Expiry"
+     },
+     "strike": {
+      "type": "number",
+      "title": "Strike"
+     },
+     "k": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "K"
+     },
+     "iv": {
+      "type": "number",
+      "title": "Iv"
+     },
+     "iv_bid": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Iv Bid"
+     },
+     "iv_ask": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Iv Ask"
+     },
+     "svi": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Svi"
+     },
+     "sabr": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sabr"
+     },
+     "type": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Type"
+     },
+     "used": {
+      "type": "boolean",
+      "title": "Used"
+     },
+     "oi": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Oi"
+     }
+    },
+    "type": "object",
+    "required": [
+     "expiry",
+     "strike",
+     "iv",
+     "used"
+    ],
+    "title": "Quote"
+   },
+   "Ratio": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "plain": {
+      "type": "string",
+      "title": "Plain"
+     },
+     "group": {
+      "type": "string",
+      "title": "Group"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "label",
+     "value",
+     "kind",
+     "plain",
+     "group"
+    ],
+    "title": "Ratio"
+   },
+   "Realized": {
+    "properties": {
+     "yang_zhang": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Yang Zhang"
+     },
+     "percentile": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Percentile"
+     },
+     "ordinal": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ordinal"
+     },
+     "estimators": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "type": "object",
+      "title": "Estimators"
+     }
+    },
+    "type": "object",
+    "required": [
+     "estimators"
+    ],
+    "title": "Realized"
+   },
+   "RecentEvent": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "date": {
+      "type": "string",
+      "title": "Date"
+     },
+     "today": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Today"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "date"
+    ],
+    "title": "RecentEvent"
+   },
+   "Regime": {
+    "properties": {
+     "regime": {
+      "type": "string",
+      "title": "Regime"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "streak": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Streak"
+     },
+     "stickiness": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Stickiness"
+     },
+     "as_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "As Of"
+     }
+    },
+    "type": "object",
+    "required": [
+     "regime",
+     "label"
+    ],
+    "title": "Regime"
+   },
+   "RegimeNow": {
+    "properties": {
+     "regime": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Regime"
+     },
+     "label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     },
+     "streak": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Streak"
+     },
+     "persistence": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Persistence"
+     },
+     "persistence_level": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Persistence Level"
+     },
+     "stay_probability": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Stay Probability"
+     },
+     "consistency": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Consistency"
+     },
+     "close": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Close"
+     },
+     "change_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Change Pct"
+     }
+    },
+    "type": "object",
+    "title": "RegimeNow"
+   },
+   "RegimePoint": {
+    "properties": {
+     "time": {
+      "type": "string",
+      "title": "Time"
+     },
+     "close": {
+      "type": "number",
+      "title": "Close"
+     },
+     "regime": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Regime"
+     }
+    },
+    "type": "object",
+    "required": [
+     "time",
+     "close"
+    ],
+    "title": "RegimePoint"
+   },
+   "Regimes": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "is_vix": {
+      "type": "boolean",
+      "title": "Is Vix"
+     },
+     "states": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "States"
+     },
+     "labels": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Labels"
+     },
+     "instruments": {
+      "items": {
+       "$ref": "#/components/schemas/Named"
+      },
+      "type": "array",
+      "title": "Instruments"
+     },
+     "as_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "As Of"
+     },
+     "current": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/RegimeNow"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "forecast": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Forecast"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "scorecard": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Scorecard"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "matrix": {
+      "anyOf": [
+       {
+        "items": {
+         "items": {
+          "type": "number"
+         },
+         "type": "array"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Matrix"
+     },
+     "dynamics": {
+      "items": {
+       "$ref": "#/components/schemas/Dynamics"
+      },
+      "type": "array",
+      "title": "Dynamics"
+     },
+     "timeline": {
+      "items": {
+       "$ref": "#/components/schemas/RegimePoint"
+      },
+      "type": "array",
+      "title": "Timeline"
+     },
+     "overview": {
+      "items": {
+       "$ref": "#/components/schemas/OverviewRow"
+      },
+      "type": "array",
+      "title": "Overview"
+     },
+     "log": {
+      "$ref": "#/components/schemas/PredictionLog"
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name",
+     "is_vix",
+     "states",
+     "labels",
+     "instruments",
+     "dynamics",
+     "timeline",
+     "overview",
+     "log"
+    ],
+    "title": "Regimes"
+   },
+   "Returns": {
+    "properties": {
+     "m1": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "M1"
+     },
+     "m6": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "M6"
+     },
+     "ytd": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ytd"
+     },
+     "y1": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Y1"
+     },
+     "y5": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Y5"
+     }
+    },
+    "type": "object",
+    "title": "Returns"
+   },
+   "Risk": {
+    "properties": {
+     "var95": {
+      "type": "number",
+      "title": "Var95"
+     },
+     "cvar95": {
+      "type": "number",
+      "title": "Cvar95"
+     },
+     "sigma_next": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sigma Next"
+     },
+     "mc_paths": {
+      "type": "integer",
+      "title": "Mc Paths"
+     },
+     "mc_days": {
+      "type": "integer",
+      "title": "Mc Days"
+     },
+     "mc_p05": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mc P05"
+     },
+     "mc_p50": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mc P50"
+     },
+     "mc_p95": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mc P95"
+     },
+     "mc_hist": {
+      "items": {
+       "type": "integer"
+      },
+      "type": "array",
+      "title": "Mc Hist"
+     },
+     "mc_edges": {
+      "items": {
+       "type": "number"
+      },
+      "type": "array",
+      "title": "Mc Edges"
+     },
+     "turbulence_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Turbulence Pct"
+     },
+     "avg_corr_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Corr Pct"
+     }
+    },
+    "type": "object",
+    "required": [
+     "var95",
+     "cvar95",
+     "mc_paths",
+     "mc_days",
+     "mc_hist",
+     "mc_edges"
+    ],
+    "title": "Risk"
+   },
+   "RiskMonitor": {
+    "properties": {
+     "as_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "As Of"
+     },
+     "names": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Names",
+      "default": {}
+     },
+     "sectors": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Sectors",
+      "default": {}
+     },
+     "indices": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Indices",
+      "default": {}
+     },
+     "now": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/RiskNow"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "turbulence_base": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/TurbulenceBase"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "corr_matrix": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/CorrMatrix"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "scoreboard": {
+      "items": {
+       "$ref": "#/components/schemas/SectorRow"
+      },
+      "type": "array",
+      "title": "Scoreboard",
+      "default": []
+     },
+     "tail": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/Tail"
+      },
+      "type": "object",
+      "title": "Tail",
+      "default": {}
+     },
+     "series": {
+      "items": {
+       "$ref": "#/components/schemas/RiskPoint"
+      },
+      "type": "array",
+      "title": "Series",
+      "default": []
+     },
+     "crashes": {
+      "items": {
+       "$ref": "#/components/schemas/Crash"
+      },
+      "type": "array",
+      "title": "Crashes",
+      "default": []
+     }
+    },
+    "type": "object",
+    "title": "RiskMonitor"
+   },
+   "RiskNow": {
+    "properties": {
+     "avg_corr": {
+      "type": "number",
+      "title": "Avg Corr"
+     },
+     "avg_corr_pct": {
+      "type": "number",
+      "title": "Avg Corr Pct"
+     },
+     "absorption": {
+      "type": "number",
+      "title": "Absorption"
+     },
+     "absorption_pct": {
+      "type": "number",
+      "title": "Absorption Pct"
+     },
+     "turbulence": {
+      "type": "number",
+      "title": "Turbulence"
+     },
+     "turbulence_pct": {
+      "type": "number",
+      "title": "Turbulence Pct"
+     },
+     "turbulence_p95": {
+      "type": "number",
+      "title": "Turbulence P95"
+     },
+     "turbulent_days_21": {
+      "type": "integer",
+      "title": "Turbulent Days 21"
+     },
+     "dispersion": {
+      "type": "number",
+      "title": "Dispersion"
+     },
+     "dispersion_pct": {
+      "type": "number",
+      "title": "Dispersion Pct"
+     },
+     "avg_corr_level": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Corr Level"
+     },
+     "avg_corr_ordinal": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Corr Ordinal"
+     },
+     "turbulence_ordinal": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Turbulence Ordinal"
+     },
+     "dispersion_ordinal": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Dispersion Ordinal"
+     },
+     "absorption_level": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Absorption Level"
+     }
+    },
+    "type": "object",
+    "required": [
+     "avg_corr",
+     "avg_corr_pct",
+     "absorption",
+     "absorption_pct",
+     "turbulence",
+     "turbulence_pct",
+     "turbulence_p95",
+     "turbulent_days_21",
+     "dispersion",
+     "dispersion_pct"
+    ],
+    "title": "RiskNow"
+   },
+   "RiskPoint": {
+    "properties": {
+     "time": {
+      "type": "string",
+      "title": "Time"
+     },
+     "avg_corr": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Avg Corr"
+     },
+     "absorption": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Absorption"
+     },
+     "turbulence": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Turbulence"
+     },
+     "p95": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "P95"
+     }
+    },
+    "type": "object",
+    "required": [
+     "time"
+    ],
+    "title": "RiskPoint"
+   },
+   "Scorecard": {
+    "properties": {
+     "model": {
+      "type": "string",
+      "title": "Model"
+     },
+     "start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Start"
+     },
+     "end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "End"
+     },
+     "n": {
+      "type": "integer",
+      "title": "N"
+     },
+     "direction_accuracy": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Direction Accuracy"
+     },
+     "three_class_accuracy": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Three Class Accuracy"
+     },
+     "always_up": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Always Up"
+     },
+     "walk_forward": {
+      "type": "boolean",
+      "title": "Walk Forward"
+     }
+    },
+    "type": "object",
+    "required": [
+     "model",
+     "n",
+     "walk_forward"
+    ],
+    "title": "Scorecard"
+   },
+   "SectorRow": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "w1": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "W1"
+     },
+     "m1": {
+      "type": "number",
+      "title": "M1"
+     },
+     "m3": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "M3"
+     },
+     "m6": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "M6"
+     },
+     "y1": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Y1"
+     },
+     "range52": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Range52"
+     },
+     "off_high": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Off High"
+     },
+     "vol21": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vol21"
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name",
+     "m1"
+    ],
+    "title": "SectorRow"
+   },
+   "SeriesPoint": {
+    "properties": {
+     "time": {
+      "type": "string",
+      "title": "Time"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "time",
+     "value"
+    ],
+    "title": "SeriesPoint"
+   },
+   "State": {
+    "properties": {
+     "state": {
+      "type": "string",
+      "title": "State"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "streak": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Streak"
+     },
+     "since": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Since"
+     },
+     "still_after_5": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Still After 5"
+     },
+     "still_after_21": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Still After 21"
+     }
+    },
+    "type": "object",
+    "required": [
+     "state",
+     "label"
+    ],
+    "title": "State"
+   },
+   "StateBehaviour": {
+    "properties": {
+     "state": {
+      "type": "string",
+      "title": "State"
+     },
+     "share": {
+      "type": "number",
+      "title": "Share"
+     },
+     "typical_day": {
+      "type": "number",
+      "title": "Typical Day"
+     },
+     "vol_annual": {
+      "type": "number",
+      "title": "Vol Annual"
+     },
+     "big_down_share": {
+      "type": "number",
+      "title": "Big Down Share"
+     },
+     "next_day_up": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Next Day Up"
+     },
+     "fwd21_mean": {
+      "type": "number",
+      "title": "Fwd21 Mean"
+     },
+     "fwd21_p10": {
+      "type": "number",
+      "title": "Fwd21 P10"
+     },
+     "fwd21_p90": {
+      "type": "number",
+      "title": "Fwd21 P90"
+     },
+     "fwd21_up": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fwd21 Up"
+     },
+     "worst_day": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Worst Day"
+     }
+    },
+    "type": "object",
+    "required": [
+     "state",
+     "share",
+     "typical_day",
+     "vol_annual",
+     "big_down_share",
+     "fwd21_mean",
+     "fwd21_p10",
+     "fwd21_p90"
+    ],
+    "title": "StateBehaviour"
+   },
+   "StateEpisodes": {
+    "properties": {
+     "state": {
+      "type": "string",
+      "title": "State"
+     },
+     "n": {
+      "type": "integer",
+      "title": "N"
+     },
+     "median_days": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Median Days"
+     },
+     "longest": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Longest"
+     },
+     "next": {
+      "additionalProperties": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "object",
+      "title": "Next"
+     }
+    },
+    "type": "object",
+    "required": [
+     "state",
+     "n",
+     "next"
+    ],
+    "title": "StateEpisodes"
+   },
+   "StateNow": {
+    "properties": {
+     "state": {
+      "type": "string",
+      "title": "State"
+     },
+     "since": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Since"
+     },
+     "streak": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Streak"
+     },
+     "probs": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "type": "object",
+      "title": "Probs"
+     },
+     "still_after_5": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Still After 5"
+     },
+     "still_after_21": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Still After 21"
+     }
+    },
+    "type": "object",
+    "required": [
+     "state",
+     "probs"
+    ],
+    "title": "StateNow"
+   },
+   "StatePoint": {
+    "properties": {
+     "time": {
+      "type": "string",
+      "title": "Time"
+     },
+     "close": {
+      "type": "number",
+      "title": "Close"
+     },
+     "state": {
+      "type": "string",
+      "title": "State"
+     }
+    },
+    "type": "object",
+    "required": [
+     "time",
+     "close",
+     "state"
+    ],
+    "title": "StatePoint"
+   },
+   "StateTransition": {
+    "properties": {
+     "p": {
+      "items": {
+       "items": {
+        "type": "number"
+       },
+       "type": "array"
+      },
+      "type": "array",
+      "title": "P"
+     },
+     "lo": {
+      "items": {
+       "items": {
+        "type": "number"
+       },
+       "type": "array"
+      },
+      "type": "array",
+      "title": "Lo"
+     },
+     "hi": {
+      "items": {
+       "items": {
+        "type": "number"
+       },
+       "type": "array"
+      },
+      "type": "array",
+      "title": "Hi"
+     },
+     "duration": {
+      "items": {
+       "type": "number"
+      },
+      "type": "array",
+      "title": "Duration"
+     },
+     "dur_lo": {
+      "items": {
+       "type": "number"
+      },
+      "type": "array",
+      "title": "Dur Lo"
+     },
+     "dur_hi": {
+      "items": {
+       "type": "number"
+      },
+      "type": "array",
+      "title": "Dur Hi"
+     }
+    },
+    "type": "object",
+    "required": [
+     "p",
+     "lo",
+     "hi",
+     "duration",
+     "dur_lo",
+     "dur_hi"
+    ],
+    "title": "StateTransition"
+   },
+   "Statement": {
+    "properties": {
+     "columns": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Columns",
+      "default": []
+     },
+     "rows": {
+      "items": {
+       "$ref": "#/components/schemas/StatementRow"
+      },
+      "type": "array",
+      "title": "Rows",
+      "default": []
+     }
+    },
+    "type": "object",
+    "title": "Statement"
+   },
+   "StatementRow": {
+    "properties": {
+     "label": {
+      "type": "string",
+      "title": "Label"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind"
+     },
+     "bold": {
+      "type": "boolean",
+      "title": "Bold",
+      "default": false
+     },
+     "values": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Values"
+     }
+    },
+    "type": "object",
+    "required": [
+     "label",
+     "kind",
+     "values"
+    ],
+    "title": "StatementRow"
+   },
+   "States": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "symbols": {
+      "items": {
+       "$ref": "#/components/schemas/Named"
+      },
+      "type": "array",
+      "title": "Symbols"
+     },
+     "labels": {
+      "additionalProperties": {
+       "type": "string"
+      },
+      "type": "object",
+      "title": "Labels"
+     },
+     "states": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "States"
+     },
+     "as_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "As Of"
+     },
+     "switch_prob": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Switch Prob"
+     },
+     "current": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/StateNow"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "behaviour": {
+      "items": {
+       "$ref": "#/components/schemas/StateBehaviour"
+      },
+      "type": "array",
+      "title": "Behaviour",
+      "default": []
+     },
+     "transition": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/StateTransition"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "episodes": {
+      "items": {
+       "$ref": "#/components/schemas/StateEpisodes"
+      },
+      "type": "array",
+      "title": "Episodes",
+      "default": []
+     },
+     "survival": {
+      "additionalProperties": {
+       "items": {
+        "type": "number"
+       },
+       "type": "array"
+      },
+      "type": "object",
+      "title": "Survival",
+      "default": {}
+     },
+     "timeline": {
+      "items": {
+       "$ref": "#/components/schemas/StatePoint"
+      },
+      "type": "array",
+      "title": "Timeline",
+      "default": []
+     },
+     "drawdown": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Drawdown"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name",
+     "symbols",
+     "labels",
+     "states"
+    ],
+    "title": "States"
+   },
+   "Summary": {
+    "properties": {
+     "lead": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lead"
+     },
+     "rest": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rest"
+     }
+    },
+    "type": "object",
+    "title": "Summary"
+   },
+   "Surface": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "symbols": {
+      "items": {
+       "$ref": "#/components/schemas/Named"
+      },
+      "type": "array",
+      "title": "Symbols"
+     },
+     "snapshot_ts": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Snapshot Ts"
+     },
+     "spot": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Spot"
+     },
+     "realized_20d": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Realized 20D"
+     },
+     "ref": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/SurfaceRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "arb_warnings": {
+      "type": "integer",
+      "title": "Arb Warnings",
+      "default": 0
+     },
+     "quotes": {
+      "type": "integer",
+      "title": "Quotes",
+      "default": 0
+     },
+     "expiries": {
+      "items": {
+       "$ref": "#/components/schemas/SurfaceExpiry"
+      },
+      "type": "array",
+      "title": "Expiries",
+      "default": []
+     },
+     "points": {
+      "items": {
+       "$ref": "#/components/schemas/Quote"
+      },
+      "type": "array",
+      "title": "Points",
+      "default": []
+     },
+     "grid": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/SurfaceGrid"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name",
+     "symbols"
+    ],
+    "title": "Surface"
+   },
+   "SurfaceExpiry": {
+    "properties": {
+     "expiry": {
+      "type": "string",
+      "title": "Expiry"
+     },
+     "days": {
+      "type": "number",
+      "title": "Days"
+     },
+     "T": {
+      "type": "number",
+      "title": "T"
+     },
+     "forward": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Forward"
+     },
+     "n_points": {
+      "type": "integer",
+      "title": "N Points"
+     },
+     "atm_iv": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Atm Iv"
+     },
+     "rr25": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rr25"
+     },
+     "bf25": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Bf25"
+     },
+     "svi_rmse": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Svi Rmse"
+     },
+     "sabr_rmse": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sabr Rmse"
+     },
+     "butterfly_ok": {
+      "type": "boolean",
+      "title": "Butterfly Ok"
+     },
+     "calendar_ok": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Calendar Ok"
+     },
+     "sabr_rho": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sabr Rho"
+     },
+     "sabr_nu": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sabr Nu"
+     },
+     "svi_rho": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Svi Rho"
+     },
+     "k_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "K Min"
+     },
+     "k_max": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "K Max"
+     }
+    },
+    "type": "object",
+    "required": [
+     "expiry",
+     "days",
+     "T",
+     "n_points",
+     "butterfly_ok"
+    ],
+    "title": "SurfaceExpiry"
+   },
+   "SurfaceGrid": {
+    "properties": {
+     "k": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "K"
+     },
+     "moneyness": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Moneyness"
+     },
+     "days": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "number"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Days"
+     },
+     "svi": {
+      "items": {
+       "items": {
+        "anyOf": [
+         {
+          "type": "number"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "type": "array"
+      },
+      "type": "array",
+      "title": "Svi"
+     },
+     "sabr": {
+      "items": {
+       "items": {
+        "anyOf": [
+         {
+          "type": "number"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "type": "array"
+      },
+      "type": "array",
+      "title": "Sabr"
+     }
+    },
+    "type": "object",
+    "required": [
+     "k",
+     "moneyness",
+     "days",
+     "svi",
+     "sabr"
+    ],
+    "title": "SurfaceGrid"
+   },
+   "SurfaceRef": {
+    "properties": {
+     "expiry": {
+      "type": "string",
+      "title": "Expiry"
+     },
+     "days": {
+      "type": "number",
+      "title": "Days"
+     },
+     "forward": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Forward"
+     },
+     "atm_iv": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Atm Iv"
+     },
+     "rr25": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rr25"
+     },
+     "bf25": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Bf25"
+     }
+    },
+    "type": "object",
+    "required": [
+     "expiry",
+     "days"
+    ],
+    "title": "SurfaceRef"
+   },
+   "Tail": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "close": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Close"
+     },
+     "fhs": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/VarLevel"
+      },
+      "type": "object",
+      "title": "Fhs"
+     },
+     "hist": {
+      "additionalProperties": {
+       "$ref": "#/components/schemas/VarLevel"
+      },
+      "type": "object",
+      "title": "Hist"
+     },
+     "backtest": {
+      "$ref": "#/components/schemas/Backtest"
+     },
+     "hill_alpha": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hill Alpha"
+     },
+     "worst_days": {
+      "items": {
+       "$ref": "#/components/schemas/WorstDay"
+      },
+      "type": "array",
+      "title": "Worst Days"
+     },
+     "mc": {
+      "$ref": "#/components/schemas/MonteCarlo"
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name",
+     "fhs",
+     "hist",
+     "backtest",
+     "worst_days",
+     "mc"
+    ],
+    "title": "Tail"
+   },
+   "TermPoint": {
+    "properties": {
+     "days": {
+      "type": "integer",
+      "title": "Days"
+     },
+     "vol": {
+      "type": "number",
+      "title": "Vol"
+     }
+    },
+    "type": "object",
+    "required": [
+     "days",
+     "vol"
+    ],
+    "title": "TermPoint"
+   },
+   "Today": {
+    "properties": {
+     "as_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "As Of"
+     },
+     "built": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Built"
+     },
+     "indices": {
+      "items": {
+       "$ref": "#/components/schemas/IndexBrief"
+      },
+      "type": "array",
+      "title": "Indices"
+     },
+     "readings": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Readings"
+     },
+     "risk": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Risk"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "events": {
+      "items": {
+       "$ref": "#/components/schemas/EventHit"
+      },
+      "type": "array",
+      "title": "Events"
+     },
+     "news": {
+      "$ref": "#/components/schemas/News"
+     },
+     "freshness": {
+      "items": {
+       "$ref": "#/components/schemas/Freshness"
+      },
+      "type": "array",
+      "title": "Freshness"
+     }
+    },
+    "type": "object",
+    "required": [
+     "indices",
+     "readings",
+     "events",
+     "news",
+     "freshness"
+    ],
+    "title": "Today"
+   },
+   "TurbulenceBase": {
+    "properties": {
+     "n_turbulent": {
+      "type": "integer",
+      "title": "N Turbulent"
+     },
+     "n_all": {
+      "type": "integer",
+      "title": "N All"
+     },
+     "fwd_vol_turbulent": {
+      "type": "number",
+      "title": "Fwd Vol Turbulent"
+     },
+     "fwd_vol_all": {
+      "type": "number",
+      "title": "Fwd Vol All"
+     },
+     "fwd_ret_turbulent": {
+      "type": "number",
+      "title": "Fwd Ret Turbulent"
+     },
+     "fwd_ret_all": {
+      "type": "number",
+      "title": "Fwd Ret All"
+     }
+    },
+    "type": "object",
+    "required": [
+     "n_turbulent",
+     "n_all",
+     "fwd_vol_turbulent",
+     "fwd_vol_all",
+     "fwd_ret_turbulent",
+     "fwd_ret_all"
+    ],
+    "title": "TurbulenceBase"
+   },
+   "UsCompany": {
+    "properties": {
+     "ticker": {
+      "type": "string",
+      "title": "Ticker"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "sector": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sector"
+     },
+     "industry": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Industry"
+     },
+     "exchange": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Exchange"
+     },
+     "website": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Website"
+     },
+     "currency": {
+      "type": "string",
+      "title": "Currency"
+     },
+     "as_of": {
+      "type": "string",
+      "title": "As Of"
+     },
+     "fundamentals_as_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fundamentals As Of"
+     },
+     "price": {
+      "type": "number",
+      "title": "Price"
+     },
+     "change_pct": {
+      "type": "number",
+      "title": "Change Pct"
+     },
+     "returns": {
+      "$ref": "#/components/schemas/Returns"
+     },
+     "ratios": {
+      "items": {
+       "$ref": "#/components/schemas/Ratio"
+      },
+      "type": "array",
+      "title": "Ratios"
+     },
+     "facts": {
+      "items": {
+       "$ref": "#/components/schemas/Fact"
+      },
+      "type": "array",
+      "title": "Facts"
+     },
+     "summary": {
+      "$ref": "#/components/schemas/Summary"
+     },
+     "financials": {
+      "$ref": "#/components/schemas/Financials"
+     },
+     "history": {
+      "items": {
+       "$ref": "#/components/schemas/SeriesPoint"
+      },
+      "type": "array",
+      "title": "History"
+     }
+    },
+    "type": "object",
+    "required": [
+     "ticker",
+     "currency",
+     "as_of",
+     "price",
+     "change_pct",
+     "returns",
+     "ratios",
+     "facts",
+     "summary",
+     "financials",
+     "history"
+    ],
+    "title": "UsCompany"
+   },
+   "UsRow": {
+    "properties": {
+     "ticker": {
+      "type": "string",
+      "title": "Ticker"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "sector": {
+      "type": "string",
+      "title": "Sector"
+     },
+     "market_cap": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Market Cap"
+     },
+     "sp500_rank": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sp500 Rank"
+     },
+     "nasdaq_rank": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Nasdaq Rank"
+     },
+     "close": {
+      "type": "number",
+      "title": "Close"
+     },
+     "d1": {
+      "type": "number",
+      "title": "D1"
+     },
+     "m1": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "M1"
+     },
+     "ytd": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ytd"
+     },
+     "y1": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Y1"
+     },
+     "vol20": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vol20"
+     },
+     "spark": {
+      "items": {
+       "type": "number"
+      },
+      "type": "array",
+      "title": "Spark"
+     }
+    },
+    "type": "object",
+    "required": [
+     "ticker",
+     "name",
+     "sector",
+     "close",
+     "d1",
+     "spark"
+    ],
+    "title": "UsRow"
+   },
+   "UsUniverse": {
+    "properties": {
+     "as_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "As Of"
+     },
+     "sectors": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Sectors"
+     },
+     "stocks": {
+      "items": {
+       "$ref": "#/components/schemas/UsRow"
+      },
+      "type": "array",
+      "title": "Stocks"
+     }
+    },
+    "type": "object",
+    "required": [
+     "sectors",
+     "stocks"
+    ],
+    "title": "UsUniverse"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   },
+   "VarLevel": {
+    "properties": {
+     "var": {
+      "type": "number",
+      "title": "Var"
+     },
+     "cvar": {
+      "type": "number",
+      "title": "Cvar"
+     }
+    },
+    "type": "object",
+    "required": [
+     "var",
+     "cvar"
+    ],
+    "title": "VarLevel"
+   },
+   "VixBucket": {
+    "properties": {
+     "bucket": {
+      "type": "string",
+      "title": "Bucket"
+     },
+     "vix_range": {
+      "items": {
+       "type": "number"
+      },
+      "type": "array",
+      "title": "Vix Range"
+     },
+     "n": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "N"
+     },
+     "share_implied_above": {
+      "type": "number",
+      "title": "Share Implied Above"
+     },
+     "mean_spread": {
+      "type": "number",
+      "title": "Mean Spread"
+     },
+     "median_spread": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Median Spread"
+     }
+    },
+    "type": "object",
+    "required": [
+     "bucket",
+     "vix_range",
+     "share_implied_above",
+     "mean_spread"
+    ],
+    "title": "VixBucket"
+   },
+   "Vol": {
+    "properties": {
+     "rv21": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rv21"
+     },
+     "rv21_percentile": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rv21 Percentile"
+     },
+     "rv21_level": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rv21 Level"
+     },
+     "rv21_ordinal": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rv21 Ordinal"
+     },
+     "garch_21d": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Garch 21D"
+     },
+     "garch_long_run": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Garch Long Run"
+     },
+     "hurst": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hurst"
+     },
+     "vix": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vix"
+     },
+     "vix_percentile_1y": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vix Percentile 1Y"
+     },
+     "vix_level": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vix Level"
+     },
+     "vix_ordinal": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vix Ordinal"
+     },
+     "vrp_now": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vrp Now"
+     },
+     "vrp_percentile": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vrp Percentile"
+     },
+     "vrp_ordinal": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vrp Ordinal"
+     },
+     "vrp_share_positive": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vrp Share Positive"
+     },
+     "vrp_vs_garch": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vrp Vs Garch"
+     },
+     "iv_vs_garch": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Iv Vs Garch"
+     }
+    },
+    "type": "object",
+    "title": "Vol"
+   },
+   "Volatility": {
+    "properties": {
+     "symbol": {
+      "type": "string",
+      "title": "Symbol"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "indices": {
+      "items": {
+       "$ref": "#/components/schemas/Named"
+      },
+      "type": "array",
+      "title": "Indices"
+     },
+     "as_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "As Of"
+     },
+     "close": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Close"
+     },
+     "realized": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Realized"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "implied": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ImpliedNow"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "vrp": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Vrp"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "cone": {
+      "items": {
+       "$ref": "#/components/schemas/ConeRow"
+      },
+      "type": "array",
+      "title": "Cone",
+      "default": []
+     },
+     "garch": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Garch"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "decay": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Decay"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "hurst": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Hurst"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "symbol",
+     "name",
+     "indices"
+    ],
+    "title": "Volatility"
+   },
+   "Vrp": {
+    "properties": {
+     "since": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Since"
+     },
+     "n_complete": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "N Complete"
+     },
+     "share_implied_above": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Share Implied Above"
+     },
+     "mean_spread": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mean Spread"
+     },
+     "median_spread": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Median Spread"
+     },
+     "worst_spread": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Worst Spread"
+     },
+     "worst_date": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Worst Date"
+     },
+     "vix_now": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vix Now"
+     },
+     "vix_percentile_1y": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vix Percentile 1Y"
+     },
+     "premium_now": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Premium Now"
+     },
+     "premium_percentile": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Premium Percentile"
+     },
+     "premium_ordinal": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Premium Ordinal"
+     },
+     "by_vix_level": {
+      "items": {
+       "$ref": "#/components/schemas/VixBucket"
+      },
+      "type": "array",
+      "title": "By Vix Level"
+     },
+     "yearly": {
+      "items": {
+       "$ref": "#/components/schemas/VrpYear"
+      },
+      "type": "array",
+      "title": "Yearly"
+     },
+     "series": {
+      "items": {
+       "$ref": "#/components/schemas/VrpPoint"
+      },
+      "type": "array",
+      "title": "Series"
+     }
+    },
+    "type": "object",
+    "required": [
+     "by_vix_level",
+     "yearly",
+     "series"
+    ],
+    "title": "Vrp"
+   },
+   "VrpPoint": {
+    "properties": {
+     "time": {
+      "type": "string",
+      "title": "Time"
+     },
+     "vix": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vix"
+     },
+     "rv": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rv"
+     },
+     "gap_avg": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Gap Avg"
+     }
+    },
+    "type": "object",
+    "required": [
+     "time"
+    ],
+    "title": "VrpPoint"
+   },
+   "VrpYear": {
+    "properties": {
+     "year": {
+      "type": "integer",
+      "title": "Year"
+     },
+     "mean_spread": {
+      "type": "number",
+      "title": "Mean Spread"
+     },
+     "share_implied_above": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Share Implied Above"
+     },
+     "mean_vix": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mean Vix"
+     },
+     "mean_rv": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mean Rv"
+     }
+    },
+    "type": "object",
+    "required": [
+     "year",
+     "mean_spread"
+    ],
+    "title": "VrpYear"
+   },
+   "WorstDay": {
+    "properties": {
+     "date": {
+      "type": "string",
+      "title": "Date"
+     },
+     "ret": {
+      "type": "number",
+      "title": "Ret"
+     }
+    },
+    "type": "object",
+    "required": [
+     "date",
+     "ret"
+    ],
+    "title": "WorstDay"
+   }
+  }
+ }
+}

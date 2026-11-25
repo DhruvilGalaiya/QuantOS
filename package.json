@@ -1,0 +1,22 @@
+{
+  "name": "quantos",
+  "private": true,
+  "description": "QuantOS: React terminal (web) and Node gateway over the Python quant engine",
+  "workspaces": ["packages/*", "gateway", "web"],
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev:api": "./.venv/bin/uvicorn quantos_platform.api.app:app --host 127.0.0.1 --port 8001 --reload --reload-dir quantos_platform",
+    "dev:gateway": "npm run dev -w gateway",
+    "dev:web": "npm run dev -w web",
+    "gen:types": "./.venv/bin/python scripts/export_openapi.py packages/types/openapi.json && npm run gen -w @quantos/types",
+    "export:static": "./.venv/bin/python scripts/export_static.py",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run export:static && npm run build -w web"
+  },
+  "devDependencies": {
+    "shadcn": "^4.23.0",
+    "typescript": "5.9.3"
+  }
+}
