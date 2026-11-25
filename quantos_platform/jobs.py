@@ -148,7 +148,12 @@ def job_us_equities(force: bool = False) -> dict:
         status.set_freshness("us_equities", str(pd.Timestamp(last).date()))
     if tickers and len(failed) == len(tickers):
         raise RuntimeError(f"all US updates failed: {next(iter(failed.values()))}")
-    return {"tickers": len(tickers), "failed": failed}
+    # fundamentals and statements change quarterly: refresh each ticker's snapshot about once a week
+    from quantos_platform.data import us_snapshot
+
+    snap = us_snapshot.refresh(tickers, force=False)
+    return {"tickers": len(tickers), "failed": failed, "fundamentals_updated": snap["updated"],
+            "fundamentals_failed": len(snap["failed"])}
 
 
 def job_analytics(force: bool = False) -> dict:

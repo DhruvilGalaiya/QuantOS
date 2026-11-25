@@ -22,10 +22,12 @@ dependencies = [
     "streamlit>=1.40",
     "plotly>=5.20",
     "arch>=7",          # GARCH in the analytics job (pages do not need it)
+    "fastapi>=0.110",   # internal quant API behind the Node gateway
+    "uvicorn>=0.29",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.5"]
+dev = ["pytest>=8", "ruff>=0.5", "httpx>=0.27"]
 
 [project.scripts]
 quantos-jobs = "quantos_platform.jobs:main"
@@ -43,7 +45,7 @@ filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]
 [tool.ruff]
 line-length = 120
 target-version = "py311"
-extend-exclude = ["src", "backend/models", "backend/data", "mlops", "frontend", "QuantOS"]
+extend-exclude = ["src", "backend/models", "backend/data", "mlops", "frontend", "QuantOS", "web", "gateway", "packages", "node_modules"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
